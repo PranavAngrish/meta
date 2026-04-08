@@ -678,412 +678,700 @@ def gr_state():
     return _fmt_state_panel()
 
 
+"""
+Incident Response Environment — Premium UI Redesign
+Aesthetic: Luxury Editorial / High-end SRE Platform
+Fonts: Playfair Display (headings) + DM Mono (data) + DM Sans (body)
+Palette: Deep obsidian, warm cream, electric amber, surgical cyan
+"""
 
 CUSTOM_CSS = """
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Mono:wght@300;400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap');
 
-/* ── FORCE DARK EVERYWHERE ── */
-*, *::before, *::after { box-sizing: border-box; }
+/* ── RESET & ROOT ─────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-.gradio-container {
-    background: #060810 !important;
-    max-width: 100% !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    font-family: 'Syne', sans-serif !important;
-    min-height: 100vh;
+:root {
+    --ink:       #0c0d0f;
+    --ink-2:     #161820;
+    --ink-3:     #1f2230;
+    --surface:   #252838;
+    --muted:     #3d4160;
+    --subtle:    #5a6080;
+    --dim:       #8892b0;
+    --cream:     #f5f0e8;
+    --cream-2:   #ede7d9;
+    --amber:     #e8a020;
+    --amber-d:   #c88010;
+    --amber-glow:rgba(232,160,32,0.12);
+    --cyan:      #00c8d7;
+    --cyan-glow: rgba(0,200,215,0.10);
+    --rose:      #e0515a;
+    --rose-glow: rgba(224,81,90,0.10);
+    --emerald:   #2ec98a;
+    --em-glow:   rgba(46,201,138,0.10);
+    --border:    rgba(255,255,255,0.06);
+    --border-hi: rgba(255,255,255,0.12);
+    --r-sm: 8px;
+    --r-md: 14px;
+    --r-lg: 20px;
+    --shadow: 0 4px 32px rgba(0,0,0,0.4);
+    --shadow-amber: 0 0 40px rgba(232,160,32,0.15);
 }
 
 body, html {
-    background: #060810 !important;
-    color: #f0f2f8 !important;
+    background: var(--ink) !important;
+    color: var(--cream) !important;
+    font-family: 'DM Sans', sans-serif !important;
+    -webkit-font-smoothing: antialiased;
 }
 
-/* ── HIDE GRADIO CHROME ── */
-footer { display: none !important; }
-.svelte-1ipelgc { display: none !important; }
-#component-0 { background: #060810 !important; }
+.gradio-container {
+    background: var(--ink) !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    min-height: 100vh;
+}
 
-/* ── TABS ── */
+footer, .svelte-1ipelgc { display: none !important; }
+#component-0 { background: var(--ink) !important; }
+
+/* ── NOISE TEXTURE OVERLAY ────────────────────────────────────────────────── */
+.gradio-container::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+    opacity: 0.025;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* ── TABS ─────────────────────────────────────────────────────────────────── */
 .tab-nav {
-    background: #0d1117 !important;
-    border-bottom: 1px solid rgba(255,255,255,0.07) !important;
-    padding: 0 32px !important;
+    background: var(--ink-2) !important;
+    border-bottom: 1px solid var(--border) !important;
+    padding: 0 48px !important;
     gap: 0 !important;
+    position: relative;
+}
+
+.tab-nav::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--amber), var(--cyan), transparent);
+    opacity: 0.25;
 }
 
 .tab-nav button {
-    font-family: 'Syne', sans-serif !important;
-    font-weight: 700 !important;
-    font-size: 13px !important;
-    color: #4a5568 !important;
+    font-family: 'DM Mono', monospace !important;
+    font-weight: 400 !important;
+    font-size: 11px !important;
+    letter-spacing: 0.12em !important;
+    text-transform: uppercase !important;
+    color: var(--muted) !important;
     background: transparent !important;
     border: none !important;
     border-bottom: 2px solid transparent !important;
     border-radius: 0 !important;
-    padding: 16px 22px !important;
-    transition: all 0.2s !important;
-    letter-spacing: 0.02em !important;
+    padding: 18px 24px !important;
+    transition: color 0.25s, border-color 0.25s !important;
 }
 
 .tab-nav button:hover {
-    color: #8b95aa !important;
-    background: rgba(255,255,255,0.03) !important;
+    color: var(--dim) !important;
 }
 
 .tab-nav button.selected {
-    color: #f0f2f8 !important;
-    border-bottom: 2px solid #ff3a5c !important;
-    background: rgba(255,58,92,0.06) !important;
+    color: var(--cream) !important;
+    border-bottom-color: var(--amber) !important;
 }
 
-/* ── PANELS / BLOCKS ── */
+/* ── GROUPS / BLOCKS ─────────────────────────────────────────────────────── */
 .gr-group, .gr-box, .gr-form, div.gr-block {
-    background: #111620 !important;
-    border: 1px solid rgba(255,255,255,0.07) !important;
-    border-radius: 14px !important;
+    background: var(--ink-2) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: var(--r-md) !important;
+    transition: border-color 0.25s !important;
 }
 
-/* ── INPUTS ── */
+.gr-group:hover {
+    border-color: var(--border-hi) !important;
+}
+
+/* ── INPUTS ──────────────────────────────────────────────────────────────── */
 input[type="text"], input[type="number"], textarea, select {
-    background: rgba(255,255,255,0.04) !important;
-    border: 1px solid rgba(255,255,255,0.08) !important;
-    border-radius: 10px !important;
-    color: #f0f2f8 !important;
-    font-family: 'Syne', sans-serif !important;
+    background: rgba(255,255,255,0.03) !important;
+    border: 1px solid rgba(255,255,255,0.07) !important;
+    border-radius: var(--r-sm) !important;
+    color: var(--cream) !important;
+    font-family: 'DM Sans', sans-serif !important;
     font-size: 13px !important;
-    padding: 10px 14px !important;
-    transition: border-color 0.2s, box-shadow 0.2s !important;
+    padding: 11px 14px !important;
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s !important;
 }
 
-input[type="text"]:focus, input[type="number"]:focus, textarea:focus, select:focus {
-    border-color: rgba(255,58,92,0.5) !important;
-    box-shadow: 0 0 0 3px rgba(255,58,92,0.1) !important;
+input[type="text"]:focus, input[type="number"]:focus, textarea:focus {
+    border-color: rgba(232,160,32,0.4) !important;
+    box-shadow: 0 0 0 3px rgba(232,160,32,0.08) !important;
+    background: rgba(255,255,255,0.05) !important;
     outline: none !important;
 }
 
-input::placeholder, textarea::placeholder { color: #4a5568 !important; }
-
-/* ── LABELS ── */
-label span, .gr-input-label, .block-title {
-    font-family: 'Syne', sans-serif !important;
-    font-size: 11px !important;
-    font-weight: 700 !important;
-    letter-spacing: 0.1em !important;
-    text-transform: uppercase !important;
-    color: #4a5568 !important;
+input::placeholder, textarea::placeholder {
+    color: var(--muted) !important;
+    font-style: italic;
 }
 
-/* ── BUTTONS ── */
+/* ── LABELS ──────────────────────────────────────────────────────────────── */
+label span, .gr-input-label, .block-title {
+    font-family: 'DM Mono', monospace !important;
+    font-size: 10px !important;
+    font-weight: 400 !important;
+    letter-spacing: 0.14em !important;
+    text-transform: uppercase !important;
+    color: var(--subtle) !important;
+}
+
+/* ── BUTTONS ─────────────────────────────────────────────────────────────── */
 .gr-button {
-    font-family: 'Syne', sans-serif !important;
-    font-weight: 700 !important;
-    font-size: 13px !important;
-    border-radius: 10px !important;
-    letter-spacing: 0.02em !important;
-    transition: all 0.2s !important;
-    border: none !important;
+    font-family: 'DM Mono', monospace !important;
+    font-weight: 500 !important;
+    font-size: 11px !important;
+    letter-spacing: 0.10em !important;
+    text-transform: uppercase !important;
+    border-radius: var(--r-sm) !important;
+    transition: all 0.25s !important;
+    border: 1px solid transparent !important;
     cursor: pointer !important;
+    position: relative !important;
+    overflow: hidden !important;
+}
+
+.gr-button::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.06), transparent);
+    pointer-events: none;
 }
 
 .gr-button-primary {
-    background: #ff3a5c !important;
-    color: #fff !important;
-    box-shadow: 0 0 20px rgba(255,58,92,0.2) !important;
+    background: linear-gradient(135deg, var(--amber) 0%, #d07010 100%) !important;
+    color: var(--ink) !important;
+    border-color: var(--amber-d) !important;
+    box-shadow: 0 2px 20px rgba(232,160,32,0.25), inset 0 1px 0 rgba(255,255,255,0.15) !important;
+    font-weight: 600 !important;
 }
 
 .gr-button-primary:hover {
-    background: #ff5575 !important;
-    box-shadow: 0 0 32px rgba(255,58,92,0.35) !important;
+    background: linear-gradient(135deg, #f0aa28 0%, #e08020 100%) !important;
+    box-shadow: 0 4px 32px rgba(232,160,32,0.40), inset 0 1px 0 rgba(255,255,255,0.2) !important;
     transform: translateY(-1px) !important;
 }
 
 .gr-button-secondary {
-    background: rgba(255,255,255,0.05) !important;
-    color: #8b95aa !important;
-    border: 1px solid rgba(255,255,255,0.08) !important;
+    background: rgba(255,255,255,0.04) !important;
+    color: var(--dim) !important;
+    border-color: var(--border-hi) !important;
 }
 
 .gr-button-secondary:hover {
-    background: rgba(255,255,255,0.09) !important;
-    color: #f0f2f8 !important;
-    border-color: rgba(255,255,255,0.15) !important;
+    background: rgba(255,255,255,0.07) !important;
+    color: var(--cream) !important;
+    border-color: rgba(255,255,255,0.18) !important;
+    transform: translateY(-1px) !important;
 }
 
-/* ── MARKDOWN ── */
+/* ── MARKDOWN ────────────────────────────────────────────────────────────── */
 .gr-markdown, .md, .prose {
-    color: #8b95aa !important;
-    font-family: 'Syne', sans-serif !important;
+    color: var(--dim) !important;
+    font-family: 'DM Sans', sans-serif !important;
     background: transparent !important;
+    line-height: 1.75 !important;
 }
 
-.gr-markdown h1, .gr-markdown h2, .gr-markdown h3,
-.md h1, .md h2, .md h3 {
-    color: #f0f2f8 !important;
-    font-family: 'Syne', sans-serif !important;
-    font-weight: 800 !important;
+.gr-markdown h1, .md h1 {
+    font-family: 'Playfair Display', serif !important;
+    font-size: 32px !important;
+    font-weight: 900 !important;
+    color: var(--cream) !important;
+    letter-spacing: -0.5px !important;
+    line-height: 1.2 !important;
+    margin-bottom: 8px !important;
 }
 
-.gr-markdown h3, .md h3 { color: #00d4ff !important; }
+.gr-markdown h2, .md h2 {
+    font-family: 'Playfair Display', serif !important;
+    font-size: 22px !important;
+    font-weight: 700 !important;
+    color: var(--cream) !important;
+    margin-top: 32px !important;
+    margin-bottom: 12px !important;
+    border-bottom: 1px solid var(--border) !important;
+    padding-bottom: 8px !important;
+}
+
+.gr-markdown h3, .md h3 {
+    font-family: 'DM Sans', sans-serif !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    color: var(--amber) !important;
+    letter-spacing: 0.04em !important;
+    margin-top: 24px !important;
+    margin-bottom: 10px !important;
+    text-transform: uppercase !important;
+    font-size: 11px !important;
+}
+
+.gr-markdown h4, .md h4 {
+    font-family: 'DM Mono', monospace !important;
+    font-size: 11px !important;
+    color: var(--subtle) !important;
+    letter-spacing: 0.1em !important;
+    text-transform: uppercase !important;
+    margin-top: 20px !important;
+    margin-bottom: 8px !important;
+}
 
 .gr-markdown code, .md code {
-    background: rgba(255,58,92,0.12) !important;
-    color: #ff6b7a !important;
-    border-radius: 5px !important;
-    padding: 2px 6px !important;
-    font-family: 'JetBrains Mono', monospace !important;
+    background: rgba(232,160,32,0.08) !important;
+    color: var(--amber) !important;
+    border-radius: 4px !important;
+    padding: 2px 7px !important;
+    font-family: 'DM Mono', monospace !important;
     font-size: 12px !important;
-    border: 1px solid rgba(255,58,92,0.2) !important;
+    border: 1px solid rgba(232,160,32,0.15) !important;
 }
 
 .gr-markdown pre, .md pre {
-    background: #080b12 !important;
-    border: 1px solid rgba(255,255,255,0.07) !important;
-    border-radius: 10px !important;
-    padding: 16px !important;
+    background: var(--ink) !important;
+    border: 1px solid var(--border) !important;
+    border-left: 3px solid var(--amber) !important;
+    border-radius: var(--r-sm) !important;
+    padding: 18px 20px !important;
+    margin: 16px 0 !important;
 }
 
 .gr-markdown pre code, .md pre code {
     background: none !important;
     border: none !important;
-    color: #00d4ff !important;
+    color: var(--cream-2) !important;
+    font-size: 12px !important;
+    line-height: 1.8 !important;
     padding: 0 !important;
 }
 
 .gr-markdown table, .md table {
     border-collapse: collapse !important;
     width: 100% !important;
+    margin: 16px 0 !important;
+    font-size: 13px !important;
 }
 
 .gr-markdown th, .md th {
-    background: rgba(255,58,92,0.1) !important;
-    color: #f0f2f8 !important;
-    font-weight: 700 !important;
-    padding: 10px 12px !important;
-    border: 1px solid rgba(255,255,255,0.07) !important;
-    font-size: 12px !important;
+    background: rgba(232,160,32,0.06) !important;
+    color: var(--amber) !important;
+    font-family: 'DM Mono', monospace !important;
+    font-size: 10px !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.12em !important;
+    text-transform: uppercase !important;
+    padding: 10px 14px !important;
+    border: 1px solid var(--border) !important;
+    text-align: left !important;
 }
 
 .gr-markdown td, .md td {
-    padding: 9px 12px !important;
-    border: 1px solid rgba(255,255,255,0.05) !important;
-    color: #8b95aa !important;
+    padding: 9px 14px !important;
+    border: 1px solid rgba(255,255,255,0.04) !important;
+    color: var(--dim) !important;
     font-size: 13px !important;
 }
 
 .gr-markdown tr:hover td, .md tr:hover td {
-    background: rgba(255,58,92,0.04) !important;
+    background: rgba(255,255,255,0.02) !important;
+    color: var(--cream) !important;
 }
 
 .gr-markdown blockquote, .md blockquote {
-    border-left: 3px solid #00d4ff !important;
-    background: rgba(0,212,255,0.06) !important;
-    padding: 12px 16px !important;
-    border-radius: 0 8px 8px 0 !important;
-    color: #8b95aa !important;
-    margin: 12px 0 !important;
+    border-left: 2px solid var(--cyan) !important;
+    background: var(--cyan-glow) !important;
+    padding: 12px 18px !important;
+    border-radius: 0 var(--r-sm) var(--r-sm) 0 !important;
+    color: var(--dim) !important;
+    font-style: italic !important;
+    margin: 14px 0 !important;
 }
 
-.gr-markdown a, .md a { color: #00d4ff !important; }
-.gr-markdown strong, .md strong { color: #f0f2f8 !important; }
-.gr-markdown li, .md li { color: #8b95aa !important; line-height: 1.7 !important; }
+.gr-markdown strong, .md strong { color: var(--cream-2) !important; font-weight: 600 !important; }
+.gr-markdown a, .md a { color: var(--cyan) !important; text-decoration: none !important; border-bottom: 1px solid rgba(0,200,215,0.3) !important; }
+.gr-markdown li, .md li { color: var(--dim) !important; line-height: 1.8 !important; margin-bottom: 4px !important; }
+.gr-markdown hr, .md hr { border-color: var(--border) !important; margin: 28px 0 !important; }
 
-/* ── DROPDOWN ── */
+/* ── DROPDOWN ─────────────────────────────────────────────────────────────── */
 .gr-dropdown ul {
-    background: #111620 !important;
-    border: 1px solid rgba(255,255,255,0.1) !important;
-    border-radius: 10px !important;
+    background: var(--ink-3) !important;
+    border: 1px solid var(--border-hi) !important;
+    border-radius: var(--r-sm) !important;
+    box-shadow: var(--shadow) !important;
 }
 
 .gr-dropdown li {
-    color: #8b95aa !important;
-    font-family: 'Syne', sans-serif !important;
+    color: var(--dim) !important;
+    font-family: 'DM Sans', sans-serif !important;
+    font-size: 13px !important;
+    padding: 9px 14px !important;
 }
 
 .gr-dropdown li:hover {
-    background: rgba(255,58,92,0.1) !important;
-    color: #f0f2f8 !important;
+    background: var(--amber-glow) !important;
+    color: var(--cream) !important;
 }
 
-/* ── ACCORDION ── */
+/* ── ACCORDION ────────────────────────────────────────────────────────────── */
 .gr-accordion {
-    background: #111620 !important;
-    border: 1px solid rgba(255,255,255,0.07) !important;
-    border-radius: 10px !important;
+    background: var(--ink-2) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: var(--r-md) !important;
 }
 
 .gr-accordion > button {
-    font-family: 'Syne', sans-serif !important;
-    font-weight: 700 !important;
-    color: #8b95aa !important;
+    font-family: 'DM Mono', monospace !important;
+    font-weight: 400 !important;
+    color: var(--subtle) !important;
     background: transparent !important;
-    font-size: 13px !important;
-    padding: 14px 16px !important;
+    font-size: 11px !important;
+    letter-spacing: 0.1em !important;
+    text-transform: uppercase !important;
+    padding: 16px 18px !important;
+    transition: color 0.2s !important;
 }
 
-.gr-accordion > button:hover { color: #f0f2f8 !important; }
+.gr-accordion > button:hover { color: var(--cream) !important; }
 
-/* ── SCROLLBAR ── */
-::-webkit-scrollbar { width: 6px; }
+/* ── SCROLLBAR ────────────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.15); }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.07); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(232,160,32,0.3); }
 
-/* ── ROW / COLUMN GAPS ── */
-.gr-row { gap: 16px !important; }
-.gr-column { gap: 12px !important; }
+/* ── GAPS ─────────────────────────────────────────────────────────────────── */
+.gr-row { gap: 20px !important; }
+.gr-column { gap: 14px !important; }
 
-/* ── SECTION HEADER HTML ── */
+/* ══════════════════════════════════════════════════════════════════════════════
+   CUSTOM COMPONENT CLASSES
+══════════════════════════════════════════════════════════════════════════════ */
+
+/* Section headers */
 .sec-head {
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.15em;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    font-weight: 400;
+    letter-spacing: 0.18em;
     text-transform: uppercase;
-    color: #4a5568;
-    padding: 10px 0 10px;
+    color: var(--muted);
+    padding: 14px 0 10px;
     display: flex;
     align-items: center;
-    gap: 10px;
-    font-family: 'Syne', sans-serif;
+    gap: 12px;
 }
-.sec-head::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.06); }
-
-.panel-header-html {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: #4a5568;
-    font-family: 'Syne', sans-serif;
-    margin-bottom: 4px;
+.sec-head::before {
+    content: '';
+    width: 16px; height: 1px;
+    background: var(--amber);
+    opacity: 0.7;
+    flex-shrink: 0;
+}
+.sec-head::after {
+    content: '';
+    flex: 1; height: 1px;
+    background: var(--border);
 }
 
-.panel-header-dot {
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    background: #ff3a5c;
-    display: inline-block;
-}
+/* Difficulty badges */
+.diff-easy   { display:inline;background:rgba(46,201,138,0.1);color:var(--emerald);border:1px solid rgba(46,201,138,0.25);font-family:'DM Mono',monospace;font-size:10px;padding:2px 9px;border-radius:4px;letter-spacing:0.08em; }
+.diff-med    { display:inline;background:rgba(232,160,32,0.1);color:var(--amber);border:1px solid rgba(232,160,32,0.25);font-family:'DM Mono',monospace;font-size:10px;padding:2px 9px;border-radius:4px;letter-spacing:0.08em; }
+.diff-hard   { display:inline;background:rgba(224,81,90,0.1);color:var(--rose);border:1px solid rgba(224,81,90,0.25);font-family:'DM Mono',monospace;font-size:10px;padding:2px 9px;border-radius:4px;letter-spacing:0.08em; }
+.diff-triage { display:inline;background:rgba(0,200,215,0.1);color:var(--cyan);border:1px solid rgba(0,200,215,0.25);font-family:'DM Mono',monospace;font-size:10px;padding:2px 9px;border-radius:4px;letter-spacing:0.08em; }
 
-.diff-easy  { display:inline;background:rgba(0,229,160,0.1);color:#00e5a0;border:1px solid rgba(0,229,160,0.2);font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;padding:2px 8px;border-radius:5px;letter-spacing:0.06em; }
-.diff-med   { display:inline;background:rgba(255,176,32,0.1);color:#ffb020;border:1px solid rgba(255,176,32,0.2);font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;padding:2px 8px;border-radius:5px;letter-spacing:0.06em; }
-.diff-hard  { display:inline;background:rgba(255,58,92,0.1);color:#ff3a5c;border:1px solid rgba(255,58,92,0.2);font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;padding:2px 8px;border-radius:5px;letter-spacing:0.06em; }
-.diff-triage{ display:inline;background:rgba(0,212,255,0.1);color:#00d4ff;border:1px solid rgba(0,212,255,0.2);font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;padding:2px 8px;border-radius:5px;letter-spacing:0.06em; }
-
+/* Stat cards */
 .stat-mini {
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.07);
-    border-radius: 10px;
-    padding: 12px 14px;
-    font-family: 'Syne', sans-serif;
+    background: rgba(255,255,255,0.025);
+    border: 1px solid var(--border);
+    border-radius: var(--r-sm);
+    padding: 14px 16px;
+    font-family: 'DM Sans', sans-serif;
+    transition: border-color 0.2s;
+    position: relative;
+    overflow: hidden;
 }
-.stat-mini .sl { font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#4a5568;margin-bottom:4px; }
-.stat-mini .sv { font-size:22px;font-weight:800;letter-spacing:-0.5px; }
-
-.reward-pos { color: #00e5a0 !important; }
-.reward-neg { color: #ff3a5c !important; }
-
-.chip { display:inline-flex;align-items:center;gap:4px;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:500;padding:3px 10px;border-radius:100px; }
-.chip-diag { background:rgba(0,212,255,0.1);color:#00d4ff; }
-.chip-fix  { background:rgba(0,229,160,0.1);color:#00e5a0; }
-.chip-decl { background:rgba(155,124,248,0.1);color:#9b7cf8; }
-
-.log-out {
-    font-family:'JetBrains Mono',monospace;
-    font-size:12px;
-    background:#080b12;
-    border:1px solid rgba(255,255,255,0.06);
-    border-radius:10px;
-    padding:14px 16px;
-    color:#8b95aa;
-    line-height:1.9;
-    max-height:220px;
-    overflow-y:auto;
-    white-space:pre-wrap;
-    word-break:break-word;
+.stat-mini::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 2px; height: 100%;
+    background: var(--amber);
+    opacity: 0.5;
+}
+.stat-mini:hover { border-color: var(--border-hi); }
+.stat-mini .sl {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+}
+.stat-mini .sv {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: var(--cream);
+    line-height: 1;
 }
 
+/* Alert items */
 .alert-item {
-    display:flex;align-items:flex-start;gap:10px;
-    padding:12px 14px;border-radius:10px;border:1px solid;
-    margin-bottom:8px;font-family:'Syne',sans-serif;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 13px 16px;
+    border-radius: var(--r-sm);
+    border: 1px solid;
+    margin-bottom: 8px;
+    font-family: 'DM Sans', sans-serif;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s;
 }
-.alert-crit { background:rgba(255,58,92,0.06);border-color:rgba(255,58,92,0.2); }
-.alert-med  { background:rgba(255,176,32,0.06);border-color:rgba(255,176,32,0.2); }
-.alert-low  { background:rgba(0,229,160,0.06);border-color:rgba(0,229,160,0.15); }
+.alert-item:hover { transform: translateX(2px); }
+.alert-crit { background: var(--rose-glow); border-color: rgba(224,81,90,0.2); }
+.alert-med  { background: var(--amber-glow); border-color: rgba(232,160,32,0.2); }
+.alert-low  { background: var(--em-glow);   border-color: rgba(46,201,138,0.15); }
 
-.abadge { font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;padding:2px 8px;border-radius:5px;flex-shrink:0;margin-top:1px; }
-.abadge-c { background:rgba(255,58,92,0.15);color:#ff3a5c;border:1px solid rgba(255,58,92,0.3); }
-.abadge-m { background:rgba(255,176,32,0.15);color:#ffb020;border:1px solid rgba(255,176,32,0.3); }
-.abadge-l { background:rgba(0,229,160,0.15);color:#00e5a0;border:1px solid rgba(0,229,160,0.2); }
+.abadge {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    padding: 3px 8px;
+    border-radius: 3px;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+.abadge-c { background: rgba(224,81,90,0.15); color: var(--rose); border: 1px solid rgba(224,81,90,0.3); }
+.abadge-m { background: rgba(232,160,32,0.15); color: var(--amber); border: 1px solid rgba(232,160,32,0.3); }
+.abadge-l { background: rgba(46,201,138,0.15); color: var(--emerald); border: 1px solid rgba(46,201,138,0.2); }
 
-.svc-tbl { width:100%;border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:12px; }
-.svc-tbl th { color:#4a5568;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;padding:0 10px 8px;text-align:left;border-bottom:1px solid rgba(255,255,255,0.06); }
-.svc-tbl td { padding:9px 10px;border-bottom:1px solid rgba(255,255,255,0.03);color:#8b95aa; }
-.svc-tbl tr:last-child td { border-bottom:none; }
+/* Service table */
+.svc-tbl { width:100%;border-collapse:collapse;font-family:'DM Mono',monospace;font-size:12px; }
+.svc-tbl th {
+    color: var(--muted);
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 0 12px 10px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+}
+.svc-tbl td {
+    padding: 10px 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+    color: var(--dim);
+}
+.svc-tbl tr:last-child td { border-bottom: none; }
+.svc-tbl tr:hover td { background: rgba(255,255,255,0.015); color: var(--cream); }
 
-.hpill { display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;padding:3px 10px;border-radius:100px; }
-.hpill-ok  { background:rgba(0,229,160,0.1);color:#00e5a0; }
-.hpill-err { background:rgba(255,58,92,0.1);color:#ff3a5c; }
+/* Health pills */
+.hpill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 10px;
+    font-weight: 500;
+    padding: 3px 10px;
+    border-radius: 100px;
+    letter-spacing: 0.06em;
+}
+.hpill-ok  { background: rgba(46,201,138,0.1); color: var(--emerald); border: 1px solid rgba(46,201,138,0.2); }
+.hpill-err { background: rgba(224,81,90,0.1);  color: var(--rose);    border: 1px solid rgba(224,81,90,0.2); }
 
+/* Log output */
+.log-out {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    background: var(--ink);
+    border: 1px solid var(--border);
+    border-left: 2px solid var(--cyan);
+    border-radius: var(--r-sm);
+    padding: 14px 18px;
+    color: var(--dim);
+    line-height: 2;
+    max-height: 220px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+/* Progress bar */
+.prog-outer {
+    height: 2px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 100px;
+    overflow: hidden;
+    margin: 12px 0 6px;
+}
+.prog-inner {
+    height: 100%;
+    border-radius: 100px;
+    background: linear-gradient(90deg, var(--amber), var(--cyan));
+    transition: width 0.5s ease;
+}
+
+/* Action chips */
+.chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 3px 9px;
+    border-radius: 100px;
+    letter-spacing: 0.05em;
+}
+.chip-diag { background: var(--cyan-glow);  color: var(--cyan);    border: 1px solid rgba(0,200,215,0.2); }
+.chip-fix  { background: var(--em-glow);    color: var(--emerald); border: 1px solid rgba(46,201,138,0.2); }
+.chip-decl { background: var(--amber-glow); color: var(--amber);   border: 1px solid rgba(232,160,32,0.2); }
+
+/* Dim cards */
 .dim-card {
-    background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);
-    border-radius:10px;padding:12px 14px;font-family:'Syne',sans-serif;
+    background: rgba(255,255,255,0.025);
+    border: 1px solid var(--border);
+    border-radius: var(--r-sm);
+    padding: 13px 15px;
+    font-family: 'DM Sans', sans-serif;
 }
-.dim-name { font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#4a5568;margin-bottom:6px; }
-.dim-val  { font-size:22px;font-weight:800;letter-spacing:-0.5px;margin-bottom:6px; }
-.dim-bar-bg { height:3px;background:rgba(255,255,255,0.05);border-radius:100px;overflow:hidden; }
-.dim-bar { height:100%;border-radius:100px; }
-.dim-wt  { font-family:'JetBrains Mono',monospace;font-size:10px;color:#4a5568;margin-top:4px; }
+.dim-name {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 5px;
+}
+.dim-val {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    margin-bottom: 6px;
+}
+.dim-bar-bg { height: 2px; background: rgba(255,255,255,0.06); border-radius: 100px; overflow: hidden; }
+.dim-bar { height: 100%; border-radius: 100px; }
+.dim-wt { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--muted); margin-top: 5px; }
 
-.prog-outer { height:4px;background:rgba(255,255,255,0.05);border-radius:100px;overflow:hidden;margin:10px 0 4px; }
-.prog-inner { height:100%;border-radius:100px;background:linear-gradient(90deg,#ff3a5c,#00d4ff);transition:width 0.5s; }
+/* Failure type banners */
+.fail-banner {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 18px;
+    border-radius: var(--r-sm);
+    border: 1px solid;
+    margin-bottom: 14px;
+    font-family: 'DM Sans', sans-serif;
+}
+.fb-green { background: var(--em-glow);    border-color: rgba(46,201,138,0.2); }
+.fb-red   { background: var(--rose-glow);  border-color: rgba(224,81,90,0.2); }
+.fb-amber { background: var(--amber-glow); border-color: rgba(232,160,32,0.2); }
 
-.fail-banner { display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:10px;border:1px solid;margin-bottom:14px;font-family:'Syne',sans-serif; }
-.fb-green { background:rgba(0,229,160,0.06);border-color:rgba(0,229,160,0.2); }
-.fb-red   { background:rgba(255,58,92,0.06);border-color:rgba(255,58,92,0.2); }
-.fb-amber { background:rgba(255,176,32,0.06);border-color:rgba(255,176,32,0.2); }
+/* Pulse animation for active indicator */
+@keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.35;} }
+@keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+/* Active dot */
+.active-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--emerald);
+    display: inline-block;
+    animation: pulse 2s ease-in-out infinite;
+    box-shadow: 0 0 8px var(--emerald);
+    flex-shrink: 0;
+}
+
+/* Empty state */
+.empty-state {
+    text-align: center;
+    padding: 52px 24px;
+    font-family: 'DM Sans', sans-serif;
+}
+.empty-state-icon {
+    font-size: 36px;
+    opacity: 0.2;
+    margin-bottom: 14px;
+    filter: grayscale(1);
+}
+.empty-state-text {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.7;
+}
+.empty-state-text strong { color: var(--subtle); font-weight: 500; }
 """
 
-# ── Helpers (keep your existing ones, add these) ──────────────────────────────
+
+# ── Helpers ──────────────────────────────────────────────────────────────────
 
 _DIAG_ACTIONS = {"investigate_logs","check_metrics","read_config","check_service_health","run_diagnostic"}
 _FIX_ACTIONS  = {"restart_service","update_config","rollback_deployment","scale_service"}
 _FAILURE_TYPE_ICON = {
-    "Efficient Reasoner":        "🟢",
-    "Symptom Chaser":            "🟡",
-    "Lucky Guesser":             "🟠",
-    "Stuck in Observation Loop": "🔴",
-    "Late Corrector":            "🔵",
-    "Unknown":                   "⚪",
+    "Efficient Reasoner":        "◆",
+    "Symptom Chaser":            "◇",
+    "Lucky Guesser":             "○",
+    "Stuck in Observation Loop": "⊗",
+    "Late Corrector":            "◎",
+    "Unknown":                   "·",
 }
 _DIFFICULTY_BADGE = {
-    "db_connection_failure":     "🟢 Easy",
-    "cascading_service_timeout": "🟡 Medium",
-    "ssl_certificate_expiry":    "🟡 Medium",
-    "multi_factor_outage":       "🔴 Hard",
-    "database_deadlock":         "🔴 Hard",
-    "alert_triage":              "🔵 Triage",
+    "db_connection_failure":     "Easy",
+    "cascading_service_timeout": "Medium",
+    "ssl_certificate_expiry":    "Medium",
+    "multi_factor_outage":       "Hard",
+    "database_deadlock":         "Hard",
+    "alert_triage":              "Triage",
 }
-_action_history: List[Dict[str, Any]] = []
+_action_history = []
 
 
 def _render_alerts(alerts):
     if not alerts:
-        return "<div style='text-align:center;padding:32px 16px;color:#4a5568;font-family:Syne,sans-serif;font-size:13px;'>🔕 No alerts — reset to begin</div>"
+        return """<div class="empty-state">
+  <div class="empty-state-icon">◯</div>
+  <div class="empty-state-text">No active alerts<br><strong>Reset an episode to begin</strong></div>
+</div>"""
     out = ""
     for a in alerts:
         sev = (a.get("severity","medium")).upper()
-        cls = "alert-crit" if sev in ("CRITICAL","HIGH") else ("alert-med" if sev=="MEDIUM" else "alert-low")
-        bcls = "abadge-c" if sev in ("CRITICAL","HIGH") else ("abadge-m" if sev=="MEDIUM" else "abadge-l")
+        cls  = "alert-crit" if sev in ("CRITICAL","HIGH") else ("alert-med" if sev=="MEDIUM" else "alert-low")
+        bcls = "abadge-c"   if sev in ("CRITICAL","HIGH") else ("abadge-m"  if sev=="MEDIUM" else "abadge-l")
         out += f"""<div class="alert-item {cls}">
   <span class="abadge {bcls}">{sev}</span>
   <div>
-    <div style="font-size:13px;font-weight:700;color:#f0f2f8;margin-bottom:2px;">{a.get('service','')} <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#4a5568;font-weight:400;">{a.get('alert_id','')}</span></div>
-    <div style="font-size:12px;color:#8b95aa;line-height:1.5;">{a.get('message','')}</div>
+    <div style="font-size:13px;font-weight:600;color:#f5f0e8;margin-bottom:3px;font-family:'DM Sans',sans-serif;">
+      {a.get('service','')}
+      <span style="font-family:'DM Mono',monospace;font-size:10px;color:#5a6080;font-weight:400;margin-left:6px;">{a.get('alert_id','')}</span>
+    </div>
+    <div style="font-size:12px;color:#8892b0;line-height:1.55;font-family:'DM Sans',sans-serif;">{a.get('message','')}</div>
   </div>
 </div>"""
     return out
@@ -1094,22 +1382,22 @@ def _render_svc_table(statuses):
         return ""
     rows = ""
     for s in statuses:
-        ok = s.get("healthy", True)
+        ok  = s.get("healthy", True)
         hcls = "hpill-ok" if ok else "hpill-err"
-        htxt = "OK" if ok else "ERROR"
-        rt = f"{s['response_time_ms']:.0f}" if s.get("response_time_ms") is not None else "—"
+        htxt = "Healthy" if ok else "Error"
+        rt   = f"{s['response_time_ms']:.0f}" if s.get("response_time_ms") is not None else "—"
         er_raw = s.get("error_rate")
-        er = f"{er_raw*100:.1f}%" if er_raw is not None else "—"
-        er_color = "#ff3a5c" if not ok else "#4a5568"
+        er  = f"{er_raw*100:.1f}%" if er_raw is not None else "—"
+        er_col = "#e0515a" if not ok else "#5a6080"
         rows += f"""<tr>
-  <td style="color:#f0f2f8;font-weight:600;">{s['name']}</td>
+  <td style="color:#f5f0e8;font-weight:500;">{s['name']}</td>
   <td><span class="hpill {hcls}">● {htxt}</span></td>
-  <td>{rt}</td>
-  <td style="color:{er_color};">{er}</td>
+  <td style="color:#8892b0;">{rt} ms</td>
+  <td style="color:{er_col};">{er}</td>
 </tr>"""
-    return f"""<div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.12em;color:#4a5568;text-transform:uppercase;margin:16px 0 8px;">Service Health</div>
+    return f"""<div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.16em;color:#3d4160;text-transform:uppercase;margin:20px 0 10px;padding-left:12px;border-left:2px solid rgba(232,160,32,0.4);">Service Health</div>
 <table class="svc-tbl">
-  <thead><tr><th>Service</th><th>Status</th><th>RT ms</th><th>Err%</th></tr></thead>
+  <thead><tr><th>Service</th><th>Status</th><th>Latency</th><th>Err Rate</th></tr></thead>
   <tbody>{rows}</tbody>
 </table>"""
 
@@ -1117,184 +1405,211 @@ def _render_svc_table(statuses):
 def _render_log(text):
     if not text:
         return ""
-    import html as _html
+    import html as _html, re
     escaped = _html.escape(str(text))
-    # basic coloring via inline spans
-    import re
-    escaped = re.sub(r'(ERROR|CRITICAL|FAILED|refused|Connection refused)', r'<span style="color:#ff3a5c;">\1</span>', escaped, flags=re.IGNORECASE)
-    escaped = re.sub(r'(SUCCESS|healthy|resolved|updated successfully)', r'<span style="color:#00e5a0;">\1</span>', escaped, flags=re.IGNORECASE)
-    escaped = re.sub(r'(\[\d{2}:\d{2}:\d{2}\]|\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2})', r'<span style="color:#4a5568;">\1</span>', escaped)
-    return f'<div style="font-family:\'JetBrains Mono\',monospace;font-size:10px;letter-spacing:0.12em;color:#4a5568;text-transform:uppercase;margin:16px 0 8px;">Last Action Output</div><div class="log-out">{escaped}</div>'
+    escaped = re.sub(r'(ERROR|CRITICAL|FAILED|refused|Connection refused)',
+                     r'<span style="color:#e0515a;">\1</span>', escaped, flags=re.IGNORECASE)
+    escaped = re.sub(r'(SUCCESS|healthy|resolved|updated successfully)',
+                     r'<span style="color:#2ec98a;">\1</span>', escaped, flags=re.IGNORECASE)
+    escaped = re.sub(r'(\[\d{2}:\d{2}:\d{2}\]|\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2})',
+                     r'<span style="color:#3d4160;">\1</span>', escaped)
+    return f"""<div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.16em;color:#3d4160;text-transform:uppercase;margin:20px 0 10px;padding-left:12px;border-left:2px solid rgba(0,200,215,0.5);">Last Action Output</div>
+<div class="log-out">{escaped}</div>"""
+
+
+def _diff_cls(diff):
+    if "Easy"   in diff: return "easy"
+    if "Medium" in diff: return "med"
+    if "Hard"   in diff: return "hard"
+    return "triage"
 
 
 def _render_obs(obs_dump, action_result):
-    task = obs_dump.get("task_name", "—")
-    diff = _DIFFICULTY_BADGE.get(task, "")
-    step = obs_dump.get("step_number", 0)
-    max_s = obs_dump.get("max_steps", 30)
+    task   = obs_dump.get("task_name", "—")
+    diff   = _DIFFICULTY_BADGE.get(task, "")
+    step   = obs_dump.get("step_number", 0)
+    max_s  = obs_dump.get("max_steps", 30)
+    pct    = int(step / max(max_s, 1) * 100)
+    dcls   = _diff_cls(diff)
     alerts_html = _render_alerts(obs_dump.get("active_alerts", []))
-    svc_html = _render_svc_table(obs_dump.get("service_statuses", []))
-    log_html = _render_log(action_result) if action_result else ""
-    pct = int(step / max(max_s, 1) * 100)
-    return f"""
-<div style="font-family:'Syne',sans-serif;">
-  <div style="display:flex;align-items:center;gap:10px;padding:14px 0 16px;border-bottom:1px solid rgba(255,255,255,0.06);margin-bottom:16px;">
-    <span style="width:8px;height:8px;border-radius:50%;background:#ff3a5c;display:inline-block;animation:pulse 2s infinite;"></span>
-    <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#8b95aa;">{task}</span>
-    <span style="margin-left:4px;" class="diff-{('easy' if 'Easy' in diff else 'med' if 'Medium' in diff else 'hard' if 'Hard' in diff else 'triage')}">{diff}</span>
-    <span style="margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:11px;color:#4a5568;">{step}/{max_s}</span>
+    svc_html    = _render_svc_table(obs_dump.get("service_statuses", []))
+    log_html    = _render_log(action_result) if action_result else ""
+
+    return f"""<div style="font-family:'DM Sans',sans-serif;padding:4px 0;">
+
+  <div style="display:flex;align-items:center;gap:10px;padding-bottom:18px;border-bottom:1px solid rgba(255,255,255,0.05);margin-bottom:20px;">
+    <span class="active-dot"></span>
+    <span style="font-family:'DM Mono',monospace;font-size:11px;color:#8892b0;letter-spacing:0.06em;">{task}</span>
+    <span class="diff-{dcls}" style="margin-left:4px;">{diff}</span>
+    <div style="margin-left:auto;display:flex;align-items:center;gap:8px;">
+      <span style="font-family:'DM Mono',monospace;font-size:10px;color:#3d4160;">step</span>
+      <span style="font-family:'Playfair Display',serif;font-size:16px;color:#f5f0e8;font-weight:700;">{step}</span>
+      <span style="font-family:'DM Mono',monospace;font-size:10px;color:#3d4160;">/ {max_s}</span>
+    </div>
   </div>
+
   <div class="prog-outer"><div class="prog-inner" style="width:{pct}%;"></div></div>
-  <div style="display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:10px;color:#4a5568;margin-bottom:16px;">
-    <span>Step {step}/{max_s}</span><span>{pct}%</span>
+  <div style="display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:9px;color:#3d4160;margin-bottom:22px;letter-spacing:0.08em;">
+    <span>Progress</span><span>{pct}%</span>
   </div>
-  <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.12em;color:#4a5568;text-transform:uppercase;margin-bottom:10px;">Active Alerts</div>
+
+  <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.16em;color:#3d4160;text-transform:uppercase;margin-bottom:12px;padding-left:12px;border-left:2px solid rgba(224,81,90,0.5);">Active Alerts</div>
   {alerts_html}
   {svc_html}
   {log_html}
-</div>
-<style>@keyframes pulse{{0%,100%{{opacity:1}}50%{{opacity:0.4}}}}</style>
-"""
+</div>"""
 
 
 def _render_history(history):
     if not history:
-        return "<div style='text-align:center;padding:32px;color:#4a5568;font-family:Syne,sans-serif;font-size:13px;'>📋 No actions yet</div>"
+        return """<div class="empty-state">
+  <div class="empty-state-icon">◻</div>
+  <div class="empty-state-text">No actions recorded yet<br><strong>Execute an action to begin</strong></div>
+</div>"""
     rows = ""
     for h in history:
-        act = h.get("action","")
+        act  = h.get("action","")
         is_diag = act in _DIAG_ACTIONS
         is_fix  = act in _FIX_ACTIONS
-        chip_cls = "chip-diag" if is_diag else ("chip-fix" if is_fix else "chip-decl")
-        icon = "🔍" if is_diag else ("🔧" if is_fix else "📝")
-        r = h.get("reward", 0.0)
+        ccls  = "chip-diag" if is_diag else ("chip-fix" if is_fix else "chip-decl")
+        icon  = "◈" if is_diag else ("⬡" if is_fix else "◆")
+        r     = h.get("reward", 0.0)
         r_str = f"+{r:.3f}" if r >= 0 else f"{r:.3f}"
-        r_col = "#00e5a0" if r >= 0 else "#ff3a5c"
-        svc = h.get("service") or "—"
+        r_col = "#2ec98a" if r >= 0 else "#e0515a"
+        svc   = h.get("service") or "—"
         rows += f"""<tr>
-  <td style="color:#4a5568;">{h['step']}</td>
-  <td><span class="chip {chip_cls}">{icon}</span></td>
-  <td style="color:#f0f2f8;font-weight:600;">{act}</td>
-  <td style="color:#8b95aa;">{svc}</td>
-  <td style="color:{r_col};font-weight:700;">{r_str}</td>
+  <td style="color:#3d4160;font-size:11px;">{h['step']}</td>
+  <td><span class="chip {ccls}">{icon}</span></td>
+  <td style="color:#ede7d9;font-weight:500;">{act}</td>
+  <td style="color:#5a6080;">{svc}</td>
+  <td style="color:{r_col};font-weight:600;">{r_str}</td>
 </tr>"""
-    return f"""<table style="width:100%;border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:12px;">
+    return f"""<table style="width:100%;border-collapse:collapse;font-family:'DM Mono',monospace;font-size:12px;">
   <thead><tr>
-    <th style="color:#4a5568;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;padding:0 10px 8px;text-align:left;border-bottom:1px solid rgba(255,255,255,0.06);">Step</th>
-    <th style="color:#4a5568;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;padding:0 10px 8px;text-align:left;border-bottom:1px solid rgba(255,255,255,0.06);">Type</th>
-    <th style="color:#4a5568;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;padding:0 10px 8px;text-align:left;border-bottom:1px solid rgba(255,255,255,0.06);">Action</th>
-    <th style="color:#4a5568;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;padding:0 10px 8px;text-align:left;border-bottom:1px solid rgba(255,255,255,0.06);">Service</th>
-    <th style="color:#4a5568;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;padding:0 10px 8px;text-align:left;border-bottom:1px solid rgba(255,255,255,0.06);">Reward</th>
+    {"".join(f'<th style="color:#3d4160;font-size:9px;letter-spacing:0.14em;text-transform:uppercase;padding:0 12px 10px;text-align:left;border-bottom:1px solid rgba(255,255,255,0.05);">{h}</th>' for h in ['#','Type','Action','Service','Reward'])}
   </tr></thead>
   <tbody>{rows}</tbody>
 </table>"""
 
 
 def _render_state_panel():
+    # alert_triage branch
     if env._task_name == "alert_triage":
         step = env._step_number
-        cum = round(env._cumulative_reward, 4)
-        submitted = env._at_submitted_severity or "—"
-        pct = int(step / 3 * 100)
-        return f"""<div style="font-family:'Syne',sans-serif;">
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
-    <div class="stat-mini"><div class="sl">Step</div><div class="sv" style="color:#00d4ff;">{step}/3</div></div>
-    <div class="stat-mini"><div class="sl">Cum. Reward</div><div class="sv" style="color:#00e5a0;">{'+' if cum>=0 else ''}{cum:.4f}</div></div>
+        cum  = round(env._cumulative_reward, 4)
+        sub  = env._at_submitted_severity or "—"
+        pct  = int(step / 3 * 100)
+        c_col = "#2ec98a" if cum >= 0 else "#e0515a"
+        return f"""<div style="font-family:'DM Sans',sans-serif;">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+    <div class="stat-mini"><div class="sl">Step</div><div class="sv" style="color:#00c8d7;">{step}/3</div></div>
+    <div class="stat-mini"><div class="sl">Cum. Reward</div><div class="sv" style="color:{c_col};">{'+' if cum>=0 else ''}{cum:.4f}</div></div>
   </div>
-  <div class="stat-mini"><div class="sl">Submitted Severity</div><div class="sv" style="color:#9b7cf8;font-size:18px;">{submitted}</div></div>
+  <div class="stat-mini" style="margin-bottom:10px;">
+    <div class="sl">Submitted Severity</div>
+    <div class="sv" style="color:#e8a020;font-size:20px;">{sub}</div>
+  </div>
   <div class="prog-outer"><div class="prog-inner" style="width:{pct}%;"></div></div>
 </div>"""
 
     if not env._scenario:
-        return "<div style='color:#4a5568;font-family:Syne,sans-serif;font-size:13px;padding:16px 0;'>⏳ Select task → Reset → Begin</div>"
+        return """<div class="empty-state" style="padding:32px 16px;">
+  <div class="empty-state-icon">◌</div>
+  <div class="empty-state-text">Select a task and reset to begin</div>
+</div>"""
 
-    task = env._task_name or "—"
-    diff = _DIFFICULTY_BADGE.get(task,"")
-    step = env._step_number
-    max_s = env._scenario.max_steps
+    task     = env._task_name or "—"
+    diff     = _DIFFICULTY_BADGE.get(task,"")
+    step     = env._step_number
+    max_s    = env._scenario.max_steps
     resolved = env._incident_resolved
-    done = env._done
-    cum = round(env._cumulative_reward, 4)
-    pct = int(step / max(max_s,1) * 100)
-    status = "🏁 Resolved" if resolved else ("🏁 Done" if done else "⚡ Active")
-    streak = env._consecutive_diagnosis_count
-    collateral = len(env._collateral_degraded)
-    cum_col = "#00e5a0" if cum >= 0 else "#ff3a5c"
-    streak_col = "#ff3a5c" if streak >= 2 else "#ffb020"
-    return f"""<div style="font-family:'Syne',sans-serif;">
-  <div style="font-size:14px;font-weight:800;margin-bottom:12px;color:#f0f2f8;">{status}</div>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
-    <div class="stat-mini"><div class="sl">Step</div><div class="sv" style="color:#00d4ff;">{step}/{max_s}</div></div>
-    <div class="stat-mini"><div class="sl">Cum. Reward</div><div class="sv" style="color:{cum_col};">{'+' if cum>=0 else ''}{cum:.4f}</div></div>
-    <div class="stat-mini"><div class="sl">Diag Streak</div><div class="sv" style="color:{streak_col};">{streak}{'⚠' if streak>=2 else ''}</div></div>
-    <div class="stat-mini"><div class="sl">Collateral</div><div class="sv" style="color:#9b7cf8;">{collateral}</div></div>
+    done     = env._done
+    cum      = round(env._cumulative_reward, 4)
+    pct      = int(step / max(max_s,1) * 100)
+    streak   = env._consecutive_diagnosis_count
+    coll     = len(env._collateral_degraded)
+    c_col    = "#2ec98a" if cum >= 0 else "#e0515a"
+    s_col    = "#e0515a" if streak >= 2 else "#e8a020" if streak == 1 else "#5a6080"
+    status_label = "Resolved" if resolved else ("Complete" if done else "Active")
+    status_col   = "#2ec98a" if resolved else ("#e0515a" if done else "#e8a020")
+    dcls = _diff_cls(diff)
+
+    return f"""<div style="font-family:'DM Sans',sans-serif;">
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
+    <span class="active-dot" style="background:{status_col};box-shadow:0 0 8px {status_col};"></span>
+    <span style="font-family:'DM Mono',monospace;font-size:11px;color:{status_col};letter-spacing:0.08em;">{status_label}</span>
+    <span class="diff-{dcls}" style="margin-left:auto;">{diff}</span>
   </div>
-  <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:#8b95aa;">
-    Resolved: {'<span style="color:#00e5a0;font-weight:700;">Yes ✓</span>' if resolved else '<span style="color:#ff3a5c;">No ✗</span>'}
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+    <div class="stat-mini"><div class="sl">Step</div><div class="sv" style="color:#00c8d7;">{step}/{max_s}</div></div>
+    <div class="stat-mini"><div class="sl">Cum. Reward</div><div class="sv" style="color:{c_col};">{'+' if cum>=0 else ''}{cum:.4f}</div></div>
+    <div class="stat-mini"><div class="sl">Diag Streak</div><div class="sv" style="color:{s_col};font-size:20px;">{streak}{'⚠' if streak>=2 else ''}</div></div>
+    <div class="stat-mini"><div class="sl">Collateral</div><div class="sv" style="color:#8892b0;font-size:20px;">{coll}</div></div>
+  </div>
+  <div style="display:flex;align-items:center;gap:8px;font-family:'DM Mono',monospace;font-size:10px;color:#5a6080;letter-spacing:0.08em;margin-bottom:8px;">
+    RESOLVED:&nbsp;
+    {'<span style="color:#2ec98a;">YES ✓</span>' if resolved else '<span style="color:#e0515a;">NO ✗</span>'}
   </div>
   <div class="prog-outer"><div class="prog-inner" style="width:{pct}%;"></div></div>
-  <div style="display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:10px;color:#4a5568;">
-    <span>{step}/{max_s} steps</span><span>{pct}%</span>
+  <div style="display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:9px;color:#3d4160;letter-spacing:0.08em;">
+    <span>{step} / {max_s} steps</span><span>{pct}%</span>
   </div>
 </div>"""
 
 
 def _render_score(breakdown):
     if not breakdown:
-        return "*Click **📊 Grade** after executing actions.*"
+        return "*Execute actions, then click **Grade** to see your score.*"
 
     final = breakdown.get("final", 0.0)
-    ft = breakdown.get("failure_type", "Unknown")
-    ft_icon = _FAILURE_TYPE_ICON.get(ft, "⚪")
+    ft    = breakdown.get("failure_type", "Unknown")
+    icon  = _FAILURE_TYPE_ICON.get(ft, "·")
     obs_loop = breakdown.get("observation_loop", False)
-    score_col = "#00e5a0" if final >= 0.7 else ("#ffb020" if final >= 0.4 else "#ff3a5c")
-    fb_cls = "fb-green" if final >= 0.7 else ("fb-red" if ft == "Stuck in Observation Loop" else "fb-amber")
+    s_col = "#2ec98a" if final >= 0.7 else ("#e8a020" if final >= 0.4 else "#e0515a")
 
-    is_triage = ft == "Alert Triage" or "severity_match" in breakdown.get("breakdown", {})
+    is_triage = "severity_match" in breakdown.get("breakdown", {})
     if is_triage:
-        bd = breakdown.get("breakdown", {})
+        bd  = breakdown.get("breakdown", {})
         sub = bd.get("submitted_severity","—")
         cor = bd.get("correct_severity","—")
-        sev_m = bd.get("severity_match", 0.0)
-        inv_b = bd.get("investigation_bonus", 0.0)
-        return f"""### {ft_icon} Alert Triage Score: **{final:.4f}** / 1.0
+        sev = bd.get("severity_match", 0.0)
+        inv = bd.get("investigation_bonus", 0.0)
+        return f"""### {icon} Triage Score: **{final:.4f}** / 1.0
 
 | Component | Value |
 |---|---|
 | Submitted | `{sub}` |
 | Correct | `{cor}` |
-| Severity Score | `{sev_m:.2f}` |
-| Investigation Bonus | `+{inv_b:.2f}` |
+| Severity Score | `{sev:.2f}` |
+| Investigation Bonus | `+{inv:.2f}` |
 | **Total** | **`{final:.4f}`** |
 
-{('> ⚠ ' + breakdown.get('feedback','')) if breakdown.get('feedback') else ''}
-"""
+{('> ⚠ ' + breakdown.get('feedback','')) if breakdown.get('feedback') else ''}"""
 
     dims = [
-        ("root_cause","Root Cause",0.30,"#ff3a5c"),
-        ("remediation","Remediation",0.25,"#00d4ff"),
-        ("investigation","Investigation",0.15,"#00e5a0"),
-        ("efficiency","Efficiency",0.10,"#ffb020"),
-        ("safety","Safety",0.10,"#9b7cf8"),
-        ("sequence","Sequence",0.10,"#00e5a0"),
+        ("root_cause",    "Root Cause",    0.30, "#e0515a"),
+        ("remediation",   "Remediation",   0.25, "#00c8d7"),
+        ("investigation", "Investigation", 0.15, "#2ec98a"),
+        ("efficiency",    "Efficiency",    0.10, "#e8a020"),
+        ("safety",        "Safety",        0.10, "#9b7cf8"),
+        ("sequence",      "Sequence",      0.10, "#2ec98a"),
     ]
     rows = "\n".join(
-        f"| {label} | {breakdown.get(key,0.0):.2f} | ×{wt:.2f} | {'▓'*int(breakdown.get(key,0)*10)}{'░'*(10-int(breakdown.get(key,0)*10))} |"
+        f"| {label} | `{breakdown.get(key,0.0):.2f}` | ×{wt:.2f} | {'█'*int(breakdown.get(key,0)*10)}{'░'*(10-int(breakdown.get(key,0)*10))} |"
         for key, label, wt, _ in dims
     )
     fb = breakdown.get("feedback","")
-    obs_note = f"\n> ⚠ Observation loop — score capped at {_OBSERVATION_LOOP_CAP}" if obs_loop else ""
-    return f"""### {ft_icon} Score: **{final:.4f}** / 1.0
+    obs_note = f"\n> ⚠ Observation loop detected — score capped at 0.45" if obs_loop else ""
+    return f"""### {icon} Final Score: **{final:.4f}** / 1.0
 
-**Failure Type:** {ft}{obs_note}
+**Pattern:** {ft}{obs_note}
 
-#### 6D Breakdown
+#### 6-Dimension Breakdown
 | Dimension | Score | Weight | Bar |
 |---|---:|---:|---|
 {rows}
 
-{('> ' + fb) if fb else ''}
-"""
+{('> ' + fb) if fb else ''}"""
 
 
 # ── Gradio callbacks ──────────────────────────────────────────────────────────
@@ -1304,9 +1619,9 @@ def gr_reset(task_name, seed_str):
     _action_history = []
     try:
         seed = int(seed_str) if seed_str.strip() else None
-        obs = env.reset(task_name=task_name, seed=seed)
-        obs_dump = obs.model_dump()
-        services = obs.available_services
+        obs  = env.reset(task_name=task_name, seed=seed)
+        obs_dump  = obs.model_dump()
+        services  = obs.available_services
         return (
             _render_obs(obs_dump, obs.action_result),
             _render_history([]),
@@ -1323,14 +1638,14 @@ def gr_reset(task_name, seed_str):
 def gr_step(action_type, service_name, keyword, config_key, config_val, replicas_str, cause_text, severity_val):
     global _action_history
     try:
-        params: Dict[str, Any] = {}
+        params = {}
         at = action_type
         if at == "investigate_logs" and keyword.strip():
             params["keyword"] = keyword.strip()
         elif at == "check_metrics":
             params["metric_type"] = "all"
         elif at == "update_config":
-            if config_key.strip(): params["key"] = config_key.strip()
+            if config_key.strip(): params["key"]   = config_key.strip()
             if config_val.strip(): params["value"] = config_val.strip()
         elif at == "scale_service" and replicas_str.strip():
             try: params["replicas"] = int(replicas_str.strip())
@@ -1340,7 +1655,7 @@ def gr_step(action_type, service_name, keyword, config_key, config_val, replicas
         elif at == "submit_severity" and severity_val.strip():
             params["severity"] = severity_val.strip()
 
-        svc = service_name if service_name and service_name.strip() else None
+        svc    = service_name if service_name and service_name.strip() else None
         action = IncidentResponseAction(
             action_type=ActionType(at),
             service_name=svc,
@@ -1348,20 +1663,19 @@ def gr_step(action_type, service_name, keyword, config_key, config_val, replicas
         )
         obs, reward, done, info = env.step(action)
         obs_dump = obs.model_dump()
-
         _action_history.append({"step": obs.step_number, "action": at, "service": svc, "reward": reward})
 
-        ft = info.get("failure_type","N/A")
-        ft_icon = _FAILURE_TYPE_ICON.get(ft,"⚪")
-        r_sign = "+" if reward >= 0 else ""
+        ft      = info.get("failure_type","N/A")
+        ft_icon = _FAILURE_TYPE_ICON.get(ft,"·")
+        r_sign  = "+" if reward >= 0 else ""
         reward_md = f"""### Step reward: `{r_sign}{reward:.4f}`
 **Cumulative:** `{env._cumulative_reward:+.4f}`
 
 **Feedback:** {obs.feedback}
 
-{ft_icon} **{ft}** | Obs Loop: `{info.get('observation_loop', False)}` | Diag Streak: `{info.get('consecutive_diagnosis_count', 0)}`
-{chr(10) + '---' + chr(10) + '🏁 **Episode complete** — click **📊 Grade** for final score' if done else ''}
-"""
+{ft_icon} **{ft}** · Loop: `{info.get('observation_loop', False)}` · Streak: `{info.get('consecutive_diagnosis_count', 0)}`
+{chr(10) + '---' + chr(10) + '**Episode complete** — click **Grade** for your final score.' if done else ''}"""
+
         return (
             _render_obs(obs_dump, obs.action_result),
             _render_history(_action_history),
@@ -1376,8 +1690,7 @@ def gr_step(action_type, service_name, keyword, config_key, config_val, replicas
 
 def gr_grade():
     try:
-        breakdown = env.get_score_breakdown()
-        return _render_score(breakdown)
+        return _render_score(env.get_score_breakdown())
     except Exception as e:
         return f"❌ {e}"
 
@@ -1386,58 +1699,80 @@ def gr_state():
     return _render_state_panel()
 
 
-# ── Build Gradio Blocks ───────────────────────────────────────────────────────
+# ── Header HTML ───────────────────────────────────────────────────────────────
 
 HEADER_HTML = """
-<div style="background:linear-gradient(135deg,#ff3a5c 0%,#9b7cf8 50%,#00d4ff 100%);padding:28px 40px;display:flex;align-items:center;justify-content:space-between;position:relative;overflow:hidden;">
-  <div style="display:flex;align-items:center;gap:14px;position:relative;z-index:1;">
-    <div style="width:38px;height:38px;border-radius:10px;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:20px;backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.3);">🚨</div>
-    <div>
-      <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:900;color:#fff;letter-spacing:-0.5px;line-height:1.1;">Incident Response Environment</div>
-      <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(255,255,255,0.7);letter-spacing:0.1em;margin-top:2px;">SRE AI TRAINING PLATFORM · V4.0</div>
-    </div>
+<div style="
+    background: #161820;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    padding: 0 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 68px;
+    position: relative;
+    overflow: hidden;
+">
+  <!-- Amber accent bar at very top -->
+  <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,#e8a020 0%,#00c8d7 50%,transparent 100%);opacity:0.7;"></div>
+
+  <!-- Left: wordmark -->
+  <div style="display:flex;align-items:baseline;gap:14px;position:relative;z-index:1;">
+    <span style="font-family:'Playfair Display',serif;font-size:20px;font-weight:900;color:#f5f0e8;letter-spacing:-0.5px;">Incident Response</span>
+    <span style="font-family:'DM Mono',monospace;font-size:10px;color:#3d4160;letter-spacing:0.18em;text-transform:uppercase;margin-bottom:2px;">Environment</span>
   </div>
-  <div style="display:flex;gap:8px;position:relative;z-index:1;">
-    <span style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;padding:5px 12px;border-radius:100px;border:1px solid rgba(255,255,255,0.4);color:#fff;background:rgba(0,0,0,0.2);">6D SCORING</span>
-    <span style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;padding:5px 12px;border-radius:100px;border:1px solid rgba(255,255,255,0.4);color:#fff;background:rgba(0,0,0,0.2);">● LIVE</span>
+
+  <!-- Right: badges -->
+  <div style="display:flex;align-items:center;gap:10px;position:relative;z-index:1;">
+    <span style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:#5a6080;padding:5px 12px;border:1px solid rgba(255,255,255,0.07);border-radius:4px;">6D Scoring</span>
+    <span style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:#2ec98a;padding:5px 12px;border:1px solid rgba(46,201,138,0.2);border-radius:4px;background:rgba(46,201,138,0.06);">● Live</span>
+    <span style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:#3d4160;padding:5px 12px;border:1px solid rgba(255,255,255,0.05);border-radius:4px;">v4.0</span>
   </div>
 </div>
-<div style="height:3px;background:linear-gradient(90deg,#ff3a5c,#9b7cf8,#00d4ff);"></div>
 """
+
+
+# ── Gradio Blocks ─────────────────────────────────────────────────────────────
 
 with gr.Blocks(
     title="Incident Response Environment v4.0",
     css=CUSTOM_CSS,
-    theme=gr.themes.Base(),
+    theme=gr.themes.Base(
+        primary_hue=gr.themes.colors.orange,
+        secondary_hue=gr.themes.colors.slate,
+        neutral_hue=gr.themes.colors.slate,
+        font=[gr.themes.GoogleFont("DM Sans"), "sans-serif"],
+        font_mono=[gr.themes.GoogleFont("DM Mono"), "monospace"],
+    ),
 ) as web_ui:
 
     gr.HTML(HEADER_HTML)
 
     with gr.Tabs():
 
-        # ── TAB 1: WELCOME ───────────────────────────────────────────────────
-        with gr.TabItem("🎯 Overview"):
+        # ── TAB 1: OVERVIEW ──────────────────────────────────────────────────
+        with gr.TabItem("Overview"):
             gr.Markdown("""
 # The Flight Simulator for SREs
 
-Diagnose real production incidents in a safe, scored environment.
-Teach AI agents to **investigate first, fix with precision**.
+Train AI agents — and humans — to diagnose real production incidents with precision.
+The only platform that rewards *understanding* over lucky guessing.
 
 ---
 
-## Core Concepts
+## Workflow
 
-| Phase | Actions | Goal |
-|-------|---------|------|
-| 🔍 **Investigate** | check_service_health, investigate_logs, check_metrics, read_config | Gather evidence |
-| 🎯 **Diagnose** | declare_root_cause | Name the problem precisely |
-| 🔧 **Remediate** | update_config, restart_service, rollback_deployment, scale_service | Apply the targeted fix |
+| Phase | Actions | Purpose |
+|-------|---------|---------|
+| **Investigate** | check_service_health, investigate_logs, check_metrics, read_config | Gather evidence |
+| **Diagnose** | declare_root_cause | Name the problem precisely |
+| **Remediate** | update_config, restart_service, rollback_deployment, scale_service | Apply the targeted fix |
 
 ---
 
-## 6D Scoring Model
+## 6-Dimension Scoring Model
 
-| Dimension | Weight | What It Measures |
+| Dimension | Weight | What it measures |
 |-----------|--------|-----------------|
 | Root Cause | **30%** | Did you identify the right problem? |
 | Remediation | **25%** | Did you apply the right fix? |
@@ -1446,7 +1781,7 @@ Teach AI agents to **investigate first, fix with precision**.
 | Safety | **10%** | Did you avoid collateral damage? |
 | Sequence | **10%** | Did you diagnose before fixing? |
 
-> Scores are clamped to (0.01, 0.99). If an **observation loop** is detected (3+ diagnosis actions in a row with no fix), the score is **hard-capped at 0.45**.
+> Scores clamped to (0.01, 0.99). Observation loops (3+ diagnosis actions in a row, no fix) cap your score at **0.45**.
 
 ---
 
@@ -1454,37 +1789,39 @@ Teach AI agents to **investigate first, fix with precision**.
 
 | Scenario | Difficulty | Root Causes | Notes |
 |----------|-----------|------------|-------|
-| db_connection_failure | 🟢 Easy | 1 | Best starting point |
-| cascading_service_timeout | 🟡 Medium | 2 | Multi-hop cascade |
-| ssl_certificate_expiry | 🟡 Medium | 1 | Diagnosis gate |
-| multi_factor_outage | 🔴 Hard | 3 | Red herrings + cascades |
-| database_deadlock | 🔴 Hard | 1 | Lock mechanics |
-| alert_triage | 🔵 Triage | — | Classify P1–P4 in 3 steps |
+| db_connection_failure | Easy | 1 | Best starting point |
+| cascading_service_timeout | Medium | 2 | Multi-hop cascade |
+| ssl_certificate_expiry | Medium | 1 | Diagnosis gate |
+| multi_factor_outage | Hard | 3 | Red herrings + cascades |
+| database_deadlock | Hard | 1 | Lock mechanics |
+| alert_triage | Triage | — | Classify P1–P4 in 3 steps |
             """)
 
         # ── TAB 2: WALKTHROUGH ───────────────────────────────────────────────
-        with gr.TabItem("🎓 Walkthrough"):
+        with gr.TabItem("Walkthrough"):
             gr.Markdown("""
 # Step-by-Step: DB Connection Failure
 
-Follow along as we solve a real incident from alert to resolution.
+A complete annotated run from alert to resolution, scored 0.89.
 
-**Task:** `db_connection_failure` · 🟢 Easy · 30 steps · 3 services
+**Scenario:** `db_connection_failure` · Easy · 30 steps · 3 services
 
 ---
 
-## Phase 1 — The Alert (on Reset)
+## Phase 1 — The Alert
+
+On reset, you receive:
 
 ```
 ● CRITICAL  [ALT-001]  user-api  T=08:15:23
-  → user-api returning 503 errors
+  user-api returning 503 errors
 
 ✗ user-api          error_rate=85%   rt=450ms
 ✓ postgres-primary  healthy
 ✓ nginx-lb          healthy
 ```
 
-Two services are fine. One is broken. Start there.
+Two services are healthy. One is broken. Investigate the broken one first.
 
 ---
 
@@ -1492,7 +1829,7 @@ Two services are fine. One is broken. Start there.
 
 **Step 1** — `check_service_health` → `user-api`
 ```
-Reward: +0.04   (first-time investigation bonus)
+Reward: +0.04   # first-time investigation bonus
 ```
 
 **Step 2** — `investigate_logs` → `user-api` · keyword: `connection`
@@ -1500,15 +1837,14 @@ Reward: +0.04   (first-time investigation bonus)
 [08:15:12] ERROR: Connection refused for postgres-primary:5433
 [08:15:13] ERROR: Failed to connect to database
 
-→ Port 5433 is suspicious — default is 5432
+Port 5433 is suspicious — default Postgres port is 5432.
 Reward: +0.08
 ```
 
 **Step 3** — `read_config` → `user-api`
 ```json
 { "db_host": "postgres-primary", "db_port": 5433 }
-                                              ^^^^
-                                         Should be 5432!
+                                              ^^^^  ← should be 5432
 Reward: +0.06
 ```
 
@@ -1516,26 +1852,26 @@ Reward: +0.06
 
 ## Phase 3 — Diagnosis (Step 4)
 
-**`declare_root_cause`**
-```
-Cause: "user-api db_port misconfigured as 5433 instead of 5432"
+**`declare_root_cause`** with cause: *"user-api db_port misconfigured as 5433 instead of 5432"*
 
-✓ ROOT CAUSE MATCHED!
-Reward: +0.20  ← biggest reward, tests understanding not luck
+```
+✓ ROOT CAUSE MATCHED
+Reward: +0.20  # largest single reward — tests understanding
 ```
 
-> Always declare root cause **before** fixing. Sequence score depends on it.
+> Always declare root cause **before** applying any fix. Sequence score depends on it.
 
 ---
 
 ## Phase 4 — Remediation (Step 5)
 
 **`update_config`** → `user-api` · key: `db_port` · value: `5432`
+
 ```
 ✓ Configuration updated
-✓ user-api healthy: error_rate=0%  rt=45ms
+✓ user-api recovered: error_rate=0%  rt=45ms
 
-🏁 INCIDENT RESOLVED
+INCIDENT RESOLVED
 Reward: +0.15
 ```
 
@@ -1543,79 +1879,76 @@ Reward: +0.15
 
 ## Final Score
 
-| Dimension | Score | Why |
-|-----------|-------|-----|
-| Root Cause | 1.00 | ✅ Exact match |
-| Remediation | 1.00 | ✅ Correct fix |
-| Investigation | 0.67 | ⚠ Didn't check postgres-primary |
-| Efficiency | 1.00 | ✅ Only 5 steps |
-| Safety | 1.00 | ✅ No collateral damage |
-| Sequence | 1.00 | ✅ Diagnosed before fixing |
+| Dimension | Score | Reason |
+|-----------|-------|--------|
+| Root Cause | 1.00 | Exact match |
+| Remediation | 1.00 | Correct fix applied |
+| Investigation | 0.67 | postgres-primary not checked |
+| Efficiency | 1.00 | Only 5 steps used |
+| Safety | 1.00 | No collateral damage |
+| Sequence | 1.00 | Diagnosed before fixing |
 
-**Final: 0.89 / 1.00 — Efficient Reasoner 🟢**
+**Final: 0.89 / 1.00 — Efficient Reasoner**
 
 ---
 
-## Key Rules
+## Rules
 
-- ✅ Investigate → Diagnose → Fix (in that order)
-- ✅ Declare root cause with specific service + failure mode
-- ❌ Don't restart services hoping luck fixes it
-- ❌ Don't do 3+ diagnosis actions in a row (observation loop penalty)
-- ⚠ Cascades spread every 4 steps if unresolved
+- Investigate → Diagnose → Fix (in that order)
+- Declare root cause with specific service + failure mode
+- Do not restart services hoping luck resolves it
+- Do not run 3+ diagnosis actions consecutively (observation loop penalty)
             """)
 
         # ── TAB 3: FAQ ───────────────────────────────────────────────────────
-        with gr.TabItem("❓ FAQ"):
+        with gr.TabItem("FAQ"):
             gr.Markdown("""
-# FAQ & Concepts
+# Frequently Asked Questions
 
 ### What is an observation loop?
-3+ diagnosis actions in a row with no fix action triggers the observation loop detector.
-Your score is **hard-capped at 0.45** and you receive a -0.08 penalty.
-Fix it by alternating investigation with fix actions.
+Three or more consecutive diagnosis actions with no fix action in between triggers the loop detector.
+Score is **hard-capped at 0.45** and you receive a –0.08 penalty per occurrence.
+Alternate investigation with fix actions to avoid this.
 
 ### What is collateral degradation?
-Every 4 steps, if the incident isn't resolved, dependent services degrade:
-error rates rise +10%, latency climbs +40%. Eventually the whole stack fails.
-This represents real incident dynamics — **time pressure is genuine**.
+Every 4 steps without resolution, dependent services degrade: error rates rise +10%, latency +40%.
+Eventually the full stack fails. Time pressure is real and intentional.
 
 ### What is a diagnosis gate?
-Some scenarios (like `ssl_certificate_expiry`) require you to investigate a specific service
-**before** a fix will work. If you fix blind, you only receive 50% of remediation points.
+Some scenarios (e.g. `ssl_certificate_expiry`) require investigating a specific service *before* a fix will take full effect.
+Blind fixes receive only 50% of remediation points.
 
 ### How does Alert Triage work?
-Instead of fixing an incident, you classify severity in 3 steps:
-- **P1** — Critical: complete outage or >$1k/min revenue loss
+Classify severity in exactly 3 steps. Severity scale:
+
+- **P1** — Critical: full outage or >$1k/min revenue loss
 - **P2** — High: major degradation, most users affected
-- **P3** — Medium: partial/minor, graceful fallback active
-- **P4** — Low: informational, zero user impact
+- **P3** — Medium: partial impact, graceful fallback active
+- **P4** — Low: informational, no user impact
 
-Score = severity accuracy (1.0 exact, 0.5 adjacent, 0.25 two-off) + investigation bonus.
+Score = severity accuracy (1.0 exact / 0.5 adjacent / 0.25 two-off) + investigation bonus.
 
-### What does a seed do?
-Same seed = identical incident every run. Different seed = same structure, metric values shift ±12%.
-Leave blank for a random variation. Use `seed=42` for reproducible testing.
+### What does a seed control?
+Same seed → identical incident every run. Different seed → same structure, metric values shift ±12%.
+Leave blank for random variation. Use `seed=42` for reproducible benchmarking.
 
 ### Why declare root cause separately from fixing?
-- Root cause tests **understanding** (can you diagnose?)
-- Fix tests **judgment** (do you know how to fix it?)
+Root cause tests *understanding*; the fix tests *judgment*.
+This prevents lucky guesses from scoring well and mirrors real SRE practice.
 
-This prevents lucky guessing from scoring well, and matches real SRE workflow.
-
-### How do I improve my score?
-1. Investigate multiple services (not just the broken one)
-2. Match root cause declaration to the exact expected phrasing
-3. Apply the fix that directly corresponds to your diagnosis
-4. Never do 3+ diagnosis actions without a fix in between
-5. Always declare root cause before applying any fix
+### How do I maximise my score?
+1. Investigate multiple services — not only the one throwing errors
+2. Match root cause phrasing to the expected format (service + failure mode)
+3. Apply the fix that directly follows from your diagnosis
+4. Never chain 3+ diagnosis actions without a fix
+5. Always declare root cause *before* any remediation action
             """)
 
         # ── TAB 4: SANDBOX ───────────────────────────────────────────────────
-        with gr.TabItem("⚙️ Sandbox"):
+        with gr.TabItem("Sandbox"):
             with gr.Row(equal_height=False):
 
-                # LEFT COLUMN
+                # ── LEFT COLUMN ───────────────────────────────────────────
                 with gr.Column(scale=2, min_width=360):
 
                     gr.HTML('<div class="sec-head">Episode Setup</div>')
@@ -1623,18 +1956,18 @@ This prevents lucky guessing from scoring well, and matches real SRE workflow.
                         with gr.Column():
                             task_dd = gr.Dropdown(
                                 choices=[
-                                    ("🟢 Easy — DB Connection Failure",       "db_connection_failure"),
-                                    ("🟡 Medium — Cascading Timeout",         "cascading_service_timeout"),
-                                    ("🟡 Medium — SSL Certificate Expiry",    "ssl_certificate_expiry"),
-                                    ("🔴 Hard — Multi-Factor Outage",         "multi_factor_outage"),
-                                    ("🔴 Hard — Database Deadlock",           "database_deadlock"),
-                                    ("🔵 Triage — Alert Severity (P1–P4)",    "alert_triage"),
+                                    ("Easy — DB Connection Failure",       "db_connection_failure"),
+                                    ("Medium — Cascading Timeout",         "cascading_service_timeout"),
+                                    ("Medium — SSL Certificate Expiry",    "ssl_certificate_expiry"),
+                                    ("Hard — Multi-Factor Outage",         "multi_factor_outage"),
+                                    ("Hard — Database Deadlock",           "database_deadlock"),
+                                    ("Triage — Alert Severity P1–P4",      "alert_triage"),
                                 ],
                                 value="db_connection_failure",
                                 label="Task",
                             )
-                            seed_tb = gr.Textbox(label="Seed (optional)", placeholder="e.g. 42", value="")
-                            reset_btn = gr.Button("↺ Reset Environment", variant="secondary", size="lg")
+                            seed_tb   = gr.Textbox(label="Seed (optional)", placeholder="e.g. 42", value="")
+                            reset_btn = gr.Button("Reset Environment", variant="secondary", size="lg")
 
                     gr.HTML('<div class="sec-head">Episode State</div>')
                     state_display = gr.HTML(_render_state_panel())
@@ -1644,57 +1977,59 @@ This prevents lucky guessing from scoring well, and matches real SRE workflow.
                         with gr.Column():
                             action_dd = gr.Dropdown(
                                 choices=[
-                                    ("🔍 investigate_logs",      "investigate_logs"),
-                                    ("🔍 check_metrics",         "check_metrics"),
-                                    ("🔍 read_config",           "read_config"),
-                                    ("🔍 check_service_health",  "check_service_health"),
-                                    ("🔍 run_diagnostic",        "run_diagnostic"),
-                                    ("🔧 restart_service",       "restart_service"),
-                                    ("🔧 update_config",         "update_config"),
-                                    ("🔧 rollback_deployment",   "rollback_deployment"),
-                                    ("🔧 scale_service",         "scale_service"),
-                                    ("📝 declare_root_cause",    "declare_root_cause"),
-                                    ("🔵 submit_severity",       "submit_severity"),
+                                    ("investigate_logs",     "investigate_logs"),
+                                    ("check_metrics",        "check_metrics"),
+                                    ("read_config",          "read_config"),
+                                    ("check_service_health", "check_service_health"),
+                                    ("run_diagnostic",       "run_diagnostic"),
+                                    ("restart_service",      "restart_service"),
+                                    ("update_config",        "update_config"),
+                                    ("rollback_deployment",  "rollback_deployment"),
+                                    ("scale_service",        "scale_service"),
+                                    ("declare_root_cause",   "declare_root_cause"),
+                                    ("submit_severity",      "submit_severity"),
                                 ],
                                 value="investigate_logs",
                                 label="Action Type",
                             )
                             service_dd = gr.Dropdown(choices=[], label="Target Service", allow_custom_value=True)
 
-                    with gr.Accordion("📋 Action Parameters", open=True):
-                        keyword_tb  = gr.Textbox(label="Keyword (investigate_logs)", placeholder="e.g. error, timeout, connection", value="")
+                    with gr.Accordion("Action Parameters", open=True):
+                        keyword_tb    = gr.Textbox(label="Keyword (investigate_logs)", placeholder="e.g. error, timeout, connection", value="")
                         config_key_tb = gr.Textbox(label="Config Key (update_config)", placeholder="e.g. db_port", value="")
                         config_val_tb = gr.Textbox(label="Config Value (update_config)", placeholder="e.g. 5432", value="")
-                        replicas_tb = gr.Textbox(label="Replicas (scale_service)", placeholder="e.g. 3", value="")
-                        cause_tb    = gr.Textbox(label="Root Cause (declare_root_cause)", placeholder="e.g. user-api db_port misconfigured as 5433 instead of 5432", lines=3, value="")
+                        replicas_tb   = gr.Textbox(label="Replicas (scale_service)", placeholder="e.g. 3", value="")
+                        cause_tb      = gr.Textbox(
+                            label="Root Cause (declare_root_cause)",
+                            placeholder="e.g. user-api db_port misconfigured as 5433 instead of 5432",
+                            lines=3, value=""
+                        )
                         severity_dd = gr.Dropdown(
                             choices=[
                                 ("— not submitting", ""),
-                                ("🔴 P1 — Critical outage / >$1k/min loss", "P1"),
-                                ("🟠 P2 — High: major degradation",         "P2"),
-                                ("🟡 P3 — Medium: partial, fallback active", "P3"),
-                                ("🟢 P4 — Low: informational",              "P4"),
+                                ("P1 — Critical outage / >$1k/min loss", "P1"),
+                                ("P2 — High: major degradation",         "P2"),
+                                ("P3 — Medium: partial, fallback active","P3"),
+                                ("P4 — Low: informational",              "P4"),
                             ],
                             value="", label="Severity (submit_severity)",
                         )
 
-                    step_btn = gr.Button("▶ Execute Action", variant="primary", size="lg")
+                    step_btn = gr.Button("Execute Action", variant="primary", size="lg")
 
                     gr.HTML('<div class="sec-head">Scoring</div>')
                     with gr.Row():
-                        grade_btn = gr.Button("📊 Grade (6D)", variant="secondary", size="sm")
-                        state_btn = gr.Button("📋 Refresh State", variant="secondary", size="sm")
+                        grade_btn = gr.Button("Grade (6D)", variant="secondary", size="sm")
+                        state_btn = gr.Button("Refresh State", variant="secondary", size="sm")
 
-                # RIGHT COLUMN
+                # ── RIGHT COLUMN ──────────────────────────────────────────
                 with gr.Column(scale=3, min_width=480):
 
                     gr.HTML('<div class="sec-head">Observation</div>')
-                    obs_display = gr.HTML(
-                        "<div style='text-align:center;padding:48px 16px;color:#4a5568;font-family:Syne,sans-serif;'>"
-                        "<div style='font-size:32px;margin-bottom:12px;opacity:0.3;'>🔕</div>"
-                        "<p style='font-size:13px;'>Select a task and click <strong style='color:#8b95aa;'>Reset Environment</strong> to begin.</p>"
-                        "</div>"
-                    )
+                    obs_display = gr.HTML("""<div class="empty-state">
+  <div class="empty-state-icon">◌</div>
+  <div class="empty-state-text">Select a task and click <strong>Reset Environment</strong> to begin.</div>
+</div>""")
 
                     gr.HTML('<div class="sec-head">Action History</div>')
                     history_display = gr.HTML(_render_history([]))
@@ -1703,7 +2038,7 @@ This prevents lucky guessing from scoring well, and matches real SRE workflow.
                     reward_display = gr.Markdown("*Start an episode first.*")
 
                     gr.HTML('<div class="sec-head">6D Score</div>')
-                    score_display = gr.Markdown("*Click **📊 Grade** after executing actions.*")
+                    score_display = gr.Markdown("*Execute actions then click **Grade**.*")
 
             # Wire events
             reset_btn.click(
