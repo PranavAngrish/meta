@@ -681,31 +681,34 @@ def gr_state():
 # ── CSS & JS ──────────────────────────────────────────────────────────────────
 
 CUSTOM_CSS = """
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Fira+Code:wght@400;500;600&display=swap');
 
 * { box-sizing: border-box; }
 
 :root, html, body, .gradio-container { 
     color-scheme: light !important; 
-    --primary: #f43f5e;
-    --primary-dark: #e11d48;
-    --primary-light: #fb7185;
-    --accent: #0ea5e9;
-    --bg-primary: #ffffff;
-    --bg-secondary: #f8fafc;
-    --bg-tertiary: #f1f5f9;
-    --text-primary: #0f172a;
-    --text-secondary: #475569;
-    --text-tertiary: #94a3b8;
-    --border: #e2e8f0;
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    --primary: #ff2d55;
+    --primary-dark: #cc1f43;
+    --primary-light: #ff6b7a;
+    --accent: #00d9ff;
+    --accent-2: #a78bfa;
+    --accent-3: #34d399;
+    --bg-primary: #0f1419;
+    --bg-secondary: #1a1f2e;
+    --bg-tertiary: #22283d;
+    --text-primary: #ffffff;
+    --text-secondary: #c9d1e0;
+    --text-tertiary: #8892a8;
+    --border: #2d3548;
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.5);
+    --shadow-xl: 0 40px 80px rgba(0, 0, 0, 0.6);
 }
 
 body, html, .gradio-container { 
-    background: #f9fafb !important;
+    background: linear-gradient(135deg, #0f1419 0%, #1a1f2e 50%, #16213e 100%) !important;
+    color: var(--text-primary) !important;
 }
 
 .gradio-container {
@@ -714,14 +717,14 @@ body, html, .gradio-container {
     padding: 0 !important;
 }
 
-/* HERO HEADER */
+/* HERO HEADER - STUNNING */
 .env-header {
-    background: linear-gradient(135deg, #f43f5e 0%, #e11d48 50%, #be123c 100%);
-    padding: 32px 40px;
+    background: linear-gradient(135deg, #ff2d55 0%, #a78bfa 50%, #00d9ff 100%);
+    padding: 40px 50px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: var(--shadow-xl);
+    box-shadow: 0 0 60px rgba(255, 45, 85, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
     position: relative;
     overflow: hidden;
 }
@@ -730,71 +733,96 @@ body, html, .gradio-container {
     content: '';
     position: absolute;
     top: -50%;
-    right: -10%;
-    width: 500px;
-    height: 500px;
-    background: rgba(255, 255, 255, 0.1);
+    right: -20%;
+    width: 800px;
+    height: 800px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.2), transparent);
     border-radius: 50%;
-    filter: blur(40px);
+    filter: blur(80px);
+    animation: float-slow 20s ease-in-out infinite;
 }
 
 .env-header::after {
     content: '';
     position: absolute;
-    bottom: -50%;
-    left: -10%;
-    width: 400px;
-    height: 400px;
-    background: rgba(255, 255, 255, 0.05);
+    bottom: -40%;
+    left: -15%;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.15), transparent);
     border-radius: 50%;
     filter: blur(60px);
+    animation: float-slow-reverse 25s ease-in-out infinite;
+}
+
+@keyframes float-slow {
+    0%, 100% { transform: translate(0, 0); }
+    50% { transform: translate(30px, -30px); }
+}
+
+@keyframes float-slow-reverse {
+    0%, 100% { transform: translate(0, 0); }
+    50% { transform: translate(-30px, 30px); }
 }
 
 .env-header-left {
     display: flex;
     align-items: center;
     gap: 16px;
-    font-size: 1.8rem;
-    font-weight: 800;
+    font-size: 2.2rem;
+    font-weight: 900;
     color: #ffffff;
     position: relative;
     z-index: 1;
+    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    letter-spacing: -1px;
 }
 
 .env-header-dot {
-    width: 14px;
-    height: 14px;
+    width: 16px;
+    height: 16px;
     border-radius: 50%;
-    background: #ffffff;
-    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
-    animation: pulse-dot 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.8), inset 0 -2px 4px rgba(0, 0, 0, 0.2);
+    animation: pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
-@keyframes pulse-dot {
-    0% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7); }
-    70% { box-shadow: 0 0 0 12px rgba(255, 255, 255, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
+@keyframes pulse-glow {
+    0% { 
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.8), inset 0 -2px 4px rgba(0, 0, 0, 0.2);
+        transform: scale(1);
+    }
+    50% { 
+        box-shadow: 0 0 20px 10px rgba(255, 255, 255, 0), inset 0 -2px 4px rgba(0, 0, 0, 0.2);
+        transform: scale(1.1);
+    }
+    100% { 
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0), inset 0 -2px 4px rgba(0, 0, 0, 0.2);
+        transform: scale(1);
+    }
 }
 
 .env-header-right {
     font-size: 0.75rem;
-    font-weight: 600;
-    color: rgba(255, 255, 255, 0.9);
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.95);
     text-transform: uppercase;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.15em;
     position: relative;
     z-index: 1;
-    background: rgba(255, 255, 255, 0.15);
-    padding: 8px 16px;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 10px 20px;
     border-radius: 50px;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
 
-/* TABS */
+/* TABS - MODERN */
 .gradio-tabs {
     gap: 0 !important;
-    border-bottom: 2px solid var(--border) !important;
+    border-bottom: 1px solid var(--border) !important;
+    background: rgba(255, 255, 255, 0.02) !important;
 }
 
 .gradio-tabs .tabitem {
@@ -806,67 +834,109 @@ body, html, .gradio-container {
     border-radius: 0 !important;
     border: none !important;
     border-bottom: 3px solid transparent !important;
-    font-weight: 600 !important;
+    font-weight: 700 !important;
     color: var(--text-secondary) !important;
-    font-size: 0.95rem !important;
-    padding: 16px 24px !important;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    font-size: 1rem !important;
+    padding: 18px 28px !important;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
     position: relative;
+    background: transparent !important;
+}
+
+.gradio-tabs .tabitem > button::before {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary), var(--accent), var(--accent-3));
+    transform: scaleX(0);
+    transition: transform 0.4s ease;
 }
 
 .gradio-tabs .tabitem > button:hover {
-    background: rgba(244, 63, 94, 0.05) !important;
-    color: var(--primary) !important;
+    background: rgba(255, 45, 85, 0.08) !important;
+    color: var(--accent) !important;
 }
 
 .gradio-tabs .tabitem > button.selected {
     color: var(--primary) !important;
     box-shadow: inset 0 -3px 0 0 var(--primary) !important;
-    background: rgba(244, 63, 94, 0.03) !important;
+    background: rgba(255, 45, 85, 0.12) !important;
 }
 
-/* SECTION TITLES */
+/* SECTION TITLES - BOLD */
 .section-title {
-    font-weight: 700;
-    font-size: 0.8rem;
+    font-weight: 900;
+    font-size: 0.85rem;
     color: var(--text-primary);
-    margin: 24px 0 12px;
-    padding: 8px 12px;
-    background: linear-gradient(135deg, rgba(244, 63, 94, 0.08), rgba(14, 165, 233, 0.08));
-    border-radius: 6px;
+    margin: 32px 0 16px;
+    padding: 12px 16px;
+    background: linear-gradient(135deg, rgba(255, 45, 85, 0.2), rgba(0, 217, 255, 0.1));
+    border-radius: 8px;
     border-left: 4px solid var(--primary);
     text-transform: uppercase;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.15em;
     transition: all 0.3s ease;
+    box-shadow: 0 4px 20px rgba(255, 45, 85, 0.1);
 }
 
-/* CONTENT CARDS */
+.section-title:hover {
+    box-shadow: 0 8px 30px rgba(255, 45, 85, 0.2);
+    transform: translateX(4px);
+}
+
+/* CONTENT CARDS - GLASSMORPHIC */
 .content-card {
-    background: var(--bg-primary);
-    border-radius: 12px;
-    padding: 24px;
-    box-shadow: var(--shadow-md);
-    border: 1px solid var(--border);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    margin-bottom: 16px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 28px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    margin-bottom: 20px;
+    backdrop-filter: blur(20px);
+    position: relative;
+    overflow: hidden;
+}
+
+.content-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255, 45, 85, 0.1), transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
 }
 
 .content-card:hover {
-    box-shadow: var(--shadow-lg);
-    border-color: rgba(244, 63, 94, 0.3);
-    transform: translateY(-2px);
+    box-shadow: 0 20px 60px rgba(255, 45, 85, 0.2);
+    border-color: rgba(255, 45, 85, 0.3);
+    transform: translateY(-4px);
+    background: rgba(255, 255, 255, 0.12);
 }
 
-/* BUTTONS */
+.content-card:hover::before {
+    opacity: 1;
+}
+
+/* BUTTONS - BOLD AND VIBRANT */
 .gradio-button {
-    border-radius: 8px !important;
-    font-weight: 600 !important;
-    font-size: 0.95rem !important;
-    padding: 12px 24px !important;
+    border-radius: 10px !important;
+    font-weight: 700 !important;
+    font-size: 1rem !important;
+    padding: 14px 28px !important;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
     border: none !important;
     position: relative;
     overflow: hidden;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
 .gradio-button::before {
@@ -876,8 +946,8 @@ body, html, .gradio-container {
     left: -100%;
     width: 100%;
     height: 100%;
-    background: rgba(255, 255, 255, 0.2);
-    transition: left 0.3s ease;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.5s ease;
     z-index: 0;
 }
 
@@ -886,94 +956,116 @@ body, html, .gradio-container {
 }
 
 .gradio-button.primary {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%) !important;
+    background: linear-gradient(135deg, #ff2d55 0%, #ff6b7a 100%) !important;
     color: white !important;
-    box-shadow: 0 8px 16px -4px rgba(244, 63, 94, 0.3) !important;
+    box-shadow: 0 12px 40px rgba(255, 45, 85, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
 }
 
 .gradio-button.primary:hover {
-    box-shadow: 0 12px 24px -4px rgba(244, 63, 94, 0.4) !important;
-    transform: translateY(-2px) !important;
+    box-shadow: 0 20px 60px rgba(255, 45, 85, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+    transform: translateY(-3px) !important;
+    background: linear-gradient(135deg, #ff5073 0%, #ff8899 100%) !important;
 }
 
 .gradio-button.secondary {
-    background: var(--bg-tertiary) !important;
+    background: rgba(255, 255, 255, 0.1) !important;
     color: var(--text-primary) !important;
-    border: 1.5px solid var(--border) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.2) !important;
+    backdrop-filter: blur(10px) !important;
 }
 
 .gradio-button.secondary:hover {
-    background: var(--border) !important;
+    background: rgba(255, 45, 85, 0.15) !important;
     border-color: var(--primary) !important;
     color: var(--primary) !important;
+    box-shadow: 0 12px 40px rgba(255, 45, 85, 0.2) !important;
 }
 
-/* TEXTBOXES & INPUTS */
+/* TEXTBOXES & INPUTS - MODERN */
 .gradio-textbox input,
 .gradio-textbox textarea,
 .gradio-dropdown select,
-.gradio-dropdown > div {
-    border-radius: 8px !important;
-    border: 1.5px solid var(--border) !important;
-    padding: 10px 12px !important;
-    font-size: 0.95rem !important;
+.gradio-dropdown > div,
+.gradio-number input {
+    border-radius: 10px !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.1) !important;
+    padding: 12px 16px !important;
+    font-size: 1rem !important;
     transition: all 0.3s ease !important;
     font-family: 'Inter', sans-serif !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    color: var(--text-primary) !important;
+    backdrop-filter: blur(10px) !important;
+}
+
+.gradio-textbox input::placeholder,
+.gradio-textbox textarea::placeholder {
+    color: var(--text-tertiary) !important;
 }
 
 .gradio-textbox input:focus,
 .gradio-textbox textarea:focus,
-.gradio-dropdown select:focus {
+.gradio-dropdown select:focus,
+.gradio-number input:focus {
     border-color: var(--primary) !important;
-    box-shadow: 0 0 0 3px rgba(244, 63, 94, 0.1) !important;
+    box-shadow: 0 0 0 4px rgba(255, 45, 85, 0.2), 0 8px 20px rgba(255, 45, 85, 0.15) !important;
     outline: none !important;
+    background: rgba(255, 255, 255, 0.08) !important;
 }
 
 /* LABELS */
 .gradio-textbox label,
 .gradio-dropdown label,
 .gradio-number label {
-    font-weight: 600 !important;
+    font-weight: 700 !important;
     color: var(--text-primary) !important;
-    margin-bottom: 6px !important;
+    margin-bottom: 8px !important;
+    font-size: 0.95rem !important;
 }
 
-/* PARAM HINTS */
+/* PARAM HINTS - EMPHASIZED */
 .param-hint {
-    font-size: 0.8rem;
-    color: var(--text-tertiary);
-    margin: 6px 0 8px;
-    padding: 8px 12px;
-    background: var(--bg-tertiary);
-    border-radius: 6px;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin: 8px 0 12px;
+    padding: 12px 16px;
+    background: linear-gradient(135deg, rgba(255, 45, 85, 0.1), rgba(0, 217, 255, 0.05));
+    border-radius: 8px;
     border-left: 3px solid var(--accent);
     font-style: italic;
+    font-weight: 500;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 /* ACCORDION */
 .gradio-accordion {
-    border-radius: 8px !important;
-    border: 1.5px solid var(--border) !important;
+    border-radius: 10px !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.1) !important;
     overflow: hidden !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    backdrop-filter: blur(10px) !important;
 }
 
 .gradio-accordion > button {
-    font-weight: 600 !important;
-    background: var(--bg-tertiary) !important;
+    font-weight: 700 !important;
+    background: rgba(255, 255, 255, 0.05) !important;
     transition: all 0.3s ease !important;
-    padding: 14px 16px !important;
+    padding: 16px 18px !important;
+    color: var(--text-primary) !important;
 }
 
 .gradio-accordion > button:hover {
-    background: linear-gradient(135deg, rgba(244, 63, 94, 0.08), rgba(14, 165, 233, 0.08)) !important;
+    background: linear-gradient(135deg, rgba(255, 45, 85, 0.15), rgba(0, 217, 255, 0.08)) !important;
 }
 
 .gradio-accordion > button[open] {
-    background: linear-gradient(135deg, rgba(244, 63, 94, 0.1), rgba(14, 165, 233, 0.1)) !important;
+    background: linear-gradient(135deg, rgba(255, 45, 85, 0.2), rgba(0, 217, 255, 0.1)) !important;
     border-bottom: 2px solid var(--primary) !important;
 }
 
-/* MARKDOWN */
+/* MARKDOWN - ENHANCED */
 .gradio-markdown {
     font-family: 'Inter', sans-serif !important;
 }
@@ -982,107 +1074,115 @@ body, html, .gradio-container {
 .gradio-markdown h2,
 .gradio-markdown h3 {
     color: var(--text-primary) !important;
-    font-weight: 700 !important;
-    margin: 20px 0 10px !important;
+    font-weight: 800 !important;
+    margin: 24px 0 12px !important;
 }
 
 .gradio-markdown h1 {
-    font-size: 2rem !important;
-    background: linear-gradient(135deg, var(--primary), var(--accent));
+    font-size: 2.5rem !important;
+    background: linear-gradient(135deg, #ff2d55, #00d9ff, #a78bfa);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -1px;
 }
 
 .gradio-markdown h2 {
-    font-size: 1.5rem !important;
+    font-size: 1.8rem !important;
+    background: linear-gradient(135deg, #ff2d55, #a78bfa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 .gradio-markdown h3 {
-    font-size: 1.2rem !important;
+    font-size: 1.3rem !important;
+    color: var(--accent) !important;
 }
 
 .gradio-markdown p {
     color: var(--text-secondary) !important;
-    line-height: 1.6 !important;
-    font-size: 0.95rem !important;
+    line-height: 1.7 !important;
+    font-size: 1rem !important;
 }
 
 .gradio-markdown code {
-    background: var(--bg-tertiary) !important;
-    color: var(--primary) !important;
-    padding: 2px 6px !important;
-    border-radius: 4px !important;
+    background: rgba(255, 45, 85, 0.15) !important;
+    color: #ff6b7a !important;
+    padding: 3px 8px !important;
+    border-radius: 5px !important;
     font-family: 'Fira Code', monospace !important;
-    font-size: 0.9rem !important;
+    font-size: 0.95rem !important;
+    border: 1px solid rgba(255, 45, 85, 0.2) !important;
 }
 
 .gradio-markdown pre {
-    background: var(--bg-tertiary) !important;
-    border: 1px solid var(--border) !important;
-    border-radius: 8px !important;
-    padding: 16px !important;
+    background: rgba(0, 0, 0, 0.4) !important;
+    border: 1px solid rgba(255, 45, 85, 0.2) !important;
+    border-radius: 10px !important;
+    padding: 20px !important;
     overflow-x: auto !important;
-    box-shadow: var(--shadow-md) !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
 }
 
 .gradio-markdown pre code {
     background: none !important;
     padding: 0 !important;
-    color: #0f172a !important;
+    color: #00d9ff !important;
 }
 
 .gradio-markdown table {
     border-collapse: collapse !important;
     width: 100% !important;
-    margin: 16px 0 !important;
+    margin: 20px 0 !important;
 }
 
 .gradio-markdown table th {
-    background: linear-gradient(135deg, rgba(244, 63, 94, 0.1), rgba(14, 165, 233, 0.1)) !important;
+    background: linear-gradient(135deg, rgba(255, 45, 85, 0.2), rgba(0, 217, 255, 0.1)) !important;
     color: var(--text-primary) !important;
-    font-weight: 600 !important;
-    padding: 12px !important;
+    font-weight: 700 !important;
+    padding: 14px !important;
     text-align: left !important;
-    border: 1px solid var(--border) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
 }
 
 .gradio-markdown table td {
-    padding: 10px 12px !important;
-    border: 1px solid var(--border) !important;
+    padding: 12px 14px !important;
+    border: 1px solid rgba(255, 255, 255, 0.05) !important;
     color: var(--text-secondary) !important;
 }
 
 .gradio-markdown table tr:hover {
-    background: var(--bg-secondary) !important;
+    background: rgba(255, 45, 85, 0.08) !important;
 }
 
 .gradio-markdown a {
-    color: var(--primary) !important;
+    color: var(--accent) !important;
     text-decoration: none !important;
-    font-weight: 500 !important;
+    font-weight: 600 !important;
     transition: all 0.3s ease !important;
 }
 
 .gradio-markdown a:hover {
-    color: var(--primary-dark) !important;
+    color: #00ffff !important;
     text-decoration: underline !important;
 }
 
 .gradio-markdown blockquote {
     border-left: 4px solid var(--accent) !important;
-    background: rgba(14, 165, 233, 0.05) !important;
-    padding: 12px 16px !important;
-    border-radius: 6px !important;
-    margin: 16px 0 !important;
+    background: linear-gradient(135deg, rgba(0, 217, 255, 0.1), rgba(0, 217, 255, 0.05)) !important;
+    padding: 16px 20px !important;
+    border-radius: 8px !important;
+    margin: 20px 0 !important;
     color: var(--text-secondary) !important;
 }
 
-/* ROW & COLUMN */
+/* LAYOUT */
 .gradio-row, .gradio-column {
-    gap: 16px !important;
+    gap: 20px !important;
 }
 
-/* OVERALL TRANSITIONS */
+/* SMOOTH TRANSITIONS */
 * {
     transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease !important;
 }
@@ -1090,14 +1190,14 @@ body, html, .gradio-container {
 /* FOCUS STATES */
 :focus-visible {
     outline: 2px solid var(--primary) !important;
-    outline-offset: 2px !important;
+    outline-offset: 3px !important;
 }
 
 /* ANIMATIONS */
 @keyframes fadeInUp {
     from {
         opacity: 0;
-        transform: translateY(20px);
+        transform: translateY(30px);
     }
     to {
         opacity: 1;
@@ -1108,7 +1208,7 @@ body, html, .gradio-container {
 @keyframes slideInRight {
     from {
         opacity: 0;
-        transform: translateX(-20px);
+        transform: translateX(-30px);
     }
     to {
         opacity: 1;
@@ -1116,36 +1216,56 @@ body, html, .gradio-container {
     }
 }
 
-.gradio-tabs .tabitem {
-    animation: fadeInUp 0.4s ease-out;
+@keyframes shimmer {
+    0%, 100% { background-position: 200% center; }
+    50% { background-position: -200% center; }
 }
 
-/* SCROLLBAR STYLING */
+@keyframes glow-pulse {
+    0%, 100% { 
+        box-shadow: 0 0 20px rgba(255, 45, 85, 0.3);
+    }
+    50% { 
+        box-shadow: 0 0 40px rgba(255, 45, 85, 0.6);
+    }
+}
+
+.gradio-tabs .tabitem {
+    animation: fadeInUp 0.5s ease-out;
+}
+
+/* SCROLLBAR - MODERN */
 ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+    width: 10px;
+    height: 10px;
 }
 
 ::-webkit-scrollbar-track {
-    background: var(--bg-secondary);
+    background: rgba(255, 255, 255, 0.05);
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
-    border-radius: 4px;
+    background: linear-gradient(180deg, #ff2d55, #a78bfa);
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(255, 45, 85, 0.2);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: #94a3b8;
+    background: linear-gradient(180deg, #ff6b7a, #b89cff);
+    box-shadow: 0 0 20px rgba(255, 45, 85, 0.4);
 }
 
 /* RESPONSIVE */
 @media (max-width: 768px) {
     .env-header {
         flex-direction: column;
-        padding: 20px;
+        padding: 24px 20px;
         text-align: center;
-        gap: 12px;
+        gap: 16px;
+    }
+    
+    .env-header-left {
+        font-size: 1.6rem;
     }
     
     .env-header-right {
@@ -1153,8 +1273,8 @@ body, html, .gradio-container {
     }
     
     .gradio-tabs .tabitem > button {
-        padding: 12px 16px !important;
-        font-size: 0.85rem !important;
+        padding: 14px 12px !important;
+        font-size: 0.9rem !important;
     }
 }
 """
