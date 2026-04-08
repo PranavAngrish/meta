@@ -678,1462 +678,1048 @@ def gr_state():
     return _fmt_state_panel()
 
 
-# ── CSS & JS ──────────────────────────────────────────────────────────────────
 
 CUSTOM_CSS = """
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Fira+Code:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
 
-* { box-sizing: border-box; }
-
-:root, html, body, .gradio-container { 
-    color-scheme: light !important; 
-    --primary: #ff2d55;
-    --primary-dark: #cc1f43;
-    --primary-light: #ff6b7a;
-    --accent: #00d9ff;
-    --accent-2: #a78bfa;
-    --accent-3: #34d399;
-    --bg-primary: #0f1419;
-    --bg-secondary: #1a1f2e;
-    --bg-tertiary: #22283d;
-    --text-primary: #ffffff;
-    --text-secondary: #c9d1e0;
-    --text-tertiary: #8892a8;
-    --border: #2d3548;
-    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
-    --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.4);
-    --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.5);
-    --shadow-xl: 0 40px 80px rgba(0, 0, 0, 0.6);
-}
-
-body, html, .gradio-container { 
-    background: linear-gradient(135deg, #0f1419 0%, #1a1f2e 50%, #16213e 100%) !important;
-    color: var(--text-primary) !important;
-}
+/* ── FORCE DARK EVERYWHERE ── */
+*, *::before, *::after { box-sizing: border-box; }
 
 .gradio-container {
+    background: #060810 !important;
     max-width: 100% !important;
     margin: 0 !important;
     padding: 0 !important;
+    font-family: 'Syne', sans-serif !important;
+    min-height: 100vh;
 }
 
-/* HERO HEADER - STUNNING */
-.env-header {
-    background: linear-gradient(135deg, #ff2d55 0%, #a78bfa 50%, #00d9ff 100%);
-    padding: 40px 50px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    box-shadow: 0 0 60px rgba(255, 45, 85, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-    position: relative;
-    overflow: hidden;
+body, html {
+    background: #060810 !important;
+    color: #f0f2f8 !important;
 }
 
-.env-header::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    right: -20%;
-    width: 800px;
-    height: 800px;
-    background: radial-gradient(circle, rgba(255, 255, 255, 0.2), transparent);
-    border-radius: 50%;
-    filter: blur(80px);
-    animation: float-slow 20s ease-in-out infinite;
-}
+/* ── HIDE GRADIO CHROME ── */
+footer { display: none !important; }
+.svelte-1ipelgc { display: none !important; }
+#component-0 { background: #060810 !important; }
 
-.env-header::after {
-    content: '';
-    position: absolute;
-    bottom: -40%;
-    left: -15%;
-    width: 600px;
-    height: 600px;
-    background: radial-gradient(circle, rgba(255, 255, 255, 0.15), transparent);
-    border-radius: 50%;
-    filter: blur(60px);
-    animation: float-slow-reverse 25s ease-in-out infinite;
-}
-
-@keyframes float-slow {
-    0%, 100% { transform: translate(0, 0); }
-    50% { transform: translate(30px, -30px); }
-}
-
-@keyframes float-slow-reverse {
-    0%, 100% { transform: translate(0, 0); }
-    50% { transform: translate(-30px, 30px); }
-}
-
-.env-header-left {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    font-size: 2.2rem;
-    font-weight: 900;
-    color: #ffffff;
-    position: relative;
-    z-index: 1;
-    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-    letter-spacing: -1px;
-}
-
-.env-header-dot {
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.95);
-    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.8), inset 0 -2px 4px rgba(0, 0, 0, 0.2);
-    animation: pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-@keyframes pulse-glow {
-    0% { 
-        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.8), inset 0 -2px 4px rgba(0, 0, 0, 0.2);
-        transform: scale(1);
-    }
-    50% { 
-        box-shadow: 0 0 20px 10px rgba(255, 255, 255, 0), inset 0 -2px 4px rgba(0, 0, 0, 0.2);
-        transform: scale(1.1);
-    }
-    100% { 
-        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0), inset 0 -2px 4px rgba(0, 0, 0, 0.2);
-        transform: scale(1);
-    }
-}
-
-.env-header-right {
-    font-size: 0.75rem;
-    font-weight: 700;
-    color: rgba(255, 255, 255, 0.95);
-    text-transform: uppercase;
-    letter-spacing: 0.15em;
-    position: relative;
-    z-index: 1;
-    background: rgba(0, 0, 0, 0.2);
-    padding: 10px 20px;
-    border-radius: 50px;
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-}
-
-/* TABS - MODERN */
-.gradio-tabs {
+/* ── TABS ── */
+.tab-nav {
+    background: #0d1117 !important;
+    border-bottom: 1px solid rgba(255,255,255,0.07) !important;
+    padding: 0 32px !important;
     gap: 0 !important;
-    border-bottom: 1px solid var(--border) !important;
-    background: rgba(255, 255, 255, 0.02) !important;
 }
 
-.gradio-tabs .tabitem {
-    border: none !important;
-    padding: 0 !important;
-}
-
-.gradio-tabs .tabitem > button {
-    border-radius: 0 !important;
-    border: none !important;
-    border-bottom: 3px solid transparent !important;
+.tab-nav button {
+    font-family: 'Syne', sans-serif !important;
     font-weight: 700 !important;
-    color: var(--text-secondary) !important;
-    font-size: 1rem !important;
-    padding: 18px 28px !important;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
-    position: relative;
+    font-size: 13px !important;
+    color: #4a5568 !important;
+    background: transparent !important;
+    border: none !important;
+    border-bottom: 2px solid transparent !important;
+    border-radius: 0 !important;
+    padding: 16px 22px !important;
+    transition: all 0.2s !important;
+    letter-spacing: 0.02em !important;
+}
+
+.tab-nav button:hover {
+    color: #8b95aa !important;
+    background: rgba(255,255,255,0.03) !important;
+}
+
+.tab-nav button.selected {
+    color: #f0f2f8 !important;
+    border-bottom: 2px solid #ff3a5c !important;
+    background: rgba(255,58,92,0.06) !important;
+}
+
+/* ── PANELS / BLOCKS ── */
+.gr-group, .gr-box, .gr-form, div.gr-block {
+    background: #111620 !important;
+    border: 1px solid rgba(255,255,255,0.07) !important;
+    border-radius: 14px !important;
+}
+
+/* ── INPUTS ── */
+input[type="text"], input[type="number"], textarea, select {
+    background: rgba(255,255,255,0.04) !important;
+    border: 1px solid rgba(255,255,255,0.08) !important;
+    border-radius: 10px !important;
+    color: #f0f2f8 !important;
+    font-family: 'Syne', sans-serif !important;
+    font-size: 13px !important;
+    padding: 10px 14px !important;
+    transition: border-color 0.2s, box-shadow 0.2s !important;
+}
+
+input[type="text"]:focus, input[type="number"]:focus, textarea:focus, select:focus {
+    border-color: rgba(255,58,92,0.5) !important;
+    box-shadow: 0 0 0 3px rgba(255,58,92,0.1) !important;
+    outline: none !important;
+}
+
+input::placeholder, textarea::placeholder { color: #4a5568 !important; }
+
+/* ── LABELS ── */
+label span, .gr-input-label, .block-title {
+    font-family: 'Syne', sans-serif !important;
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.1em !important;
+    text-transform: uppercase !important;
+    color: #4a5568 !important;
+}
+
+/* ── BUTTONS ── */
+.gr-button {
+    font-family: 'Syne', sans-serif !important;
+    font-weight: 700 !important;
+    font-size: 13px !important;
+    border-radius: 10px !important;
+    letter-spacing: 0.02em !important;
+    transition: all 0.2s !important;
+    border: none !important;
+    cursor: pointer !important;
+}
+
+.gr-button-primary {
+    background: #ff3a5c !important;
+    color: #fff !important;
+    box-shadow: 0 0 20px rgba(255,58,92,0.2) !important;
+}
+
+.gr-button-primary:hover {
+    background: #ff5575 !important;
+    box-shadow: 0 0 32px rgba(255,58,92,0.35) !important;
+    transform: translateY(-1px) !important;
+}
+
+.gr-button-secondary {
+    background: rgba(255,255,255,0.05) !important;
+    color: #8b95aa !important;
+    border: 1px solid rgba(255,255,255,0.08) !important;
+}
+
+.gr-button-secondary:hover {
+    background: rgba(255,255,255,0.09) !important;
+    color: #f0f2f8 !important;
+    border-color: rgba(255,255,255,0.15) !important;
+}
+
+/* ── MARKDOWN ── */
+.gr-markdown, .md, .prose {
+    color: #8b95aa !important;
+    font-family: 'Syne', sans-serif !important;
     background: transparent !important;
 }
 
-.gradio-tabs .tabitem > button::before {
-    content: '';
-    position: absolute;
-    bottom: -1px;
-    left: 0;
-    width: 100%;
-    height: 3px;
-    background: linear-gradient(90deg, var(--primary), var(--accent), var(--accent-3));
-    transform: scaleX(0);
-    transition: transform 0.4s ease;
-}
-
-.gradio-tabs .tabitem > button:hover {
-    background: rgba(255, 45, 85, 0.08) !important;
-    color: var(--accent) !important;
-}
-
-.gradio-tabs .tabitem > button.selected {
-    color: var(--primary) !important;
-    box-shadow: inset 0 -3px 0 0 var(--primary) !important;
-    background: rgba(255, 45, 85, 0.12) !important;
-}
-
-/* SECTION TITLES - BOLD */
-.section-title {
-    font-weight: 900;
-    font-size: 0.85rem;
-    color: var(--text-primary);
-    margin: 32px 0 16px;
-    padding: 12px 16px;
-    background: linear-gradient(135deg, rgba(255, 45, 85, 0.2), rgba(0, 217, 255, 0.1));
-    border-radius: 8px;
-    border-left: 4px solid var(--primary);
-    text-transform: uppercase;
-    letter-spacing: 0.15em;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 20px rgba(255, 45, 85, 0.1);
-}
-
-.section-title:hover {
-    box-shadow: 0 8px 30px rgba(255, 45, 85, 0.2);
-    transform: translateX(4px);
-}
-
-/* CONTENT CARDS - GLASSMORPHIC */
-.content-card {
-    background: rgba(255, 255, 255, 0.08);
-    border-radius: 16px;
-    padding: 28px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    margin-bottom: 20px;
-    backdrop-filter: blur(20px);
-    position: relative;
-    overflow: hidden;
-}
-
-.content-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, rgba(255, 45, 85, 0.1), transparent);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    pointer-events: none;
-}
-
-.content-card:hover {
-    box-shadow: 0 20px 60px rgba(255, 45, 85, 0.2);
-    border-color: rgba(255, 45, 85, 0.3);
-    transform: translateY(-4px);
-    background: rgba(255, 255, 255, 0.12);
-}
-
-.content-card:hover::before {
-    opacity: 1;
-}
-
-/* BUTTONS - BOLD AND VIBRANT */
-.gradio-button {
-    border-radius: 10px !important;
-    font-weight: 700 !important;
-    font-size: 1rem !important;
-    padding: 14px 28px !important;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-    border: none !important;
-    position: relative;
-    overflow: hidden;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-}
-
-.gradio-button::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-    transition: left 0.5s ease;
-    z-index: 0;
-}
-
-.gradio-button:hover::before {
-    left: 100%;
-}
-
-.gradio-button.primary {
-    background: linear-gradient(135deg, #ff2d55 0%, #ff6b7a 100%) !important;
-    color: white !important;
-    box-shadow: 0 12px 40px rgba(255, 45, 85, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
-}
-
-.gradio-button.primary:hover {
-    box-shadow: 0 20px 60px rgba(255, 45, 85, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
-    transform: translateY(-3px) !important;
-    background: linear-gradient(135deg, #ff5073 0%, #ff8899 100%) !important;
-}
-
-.gradio-button.secondary {
-    background: rgba(255, 255, 255, 0.1) !important;
-    color: var(--text-primary) !important;
-    border: 1.5px solid rgba(255, 255, 255, 0.2) !important;
-    backdrop-filter: blur(10px) !important;
-}
-
-.gradio-button.secondary:hover {
-    background: rgba(255, 45, 85, 0.15) !important;
-    border-color: var(--primary) !important;
-    color: var(--primary) !important;
-    box-shadow: 0 12px 40px rgba(255, 45, 85, 0.2) !important;
-}
-
-/* TEXTBOXES & INPUTS - MODERN */
-.gradio-textbox input,
-.gradio-textbox textarea,
-.gradio-dropdown select,
-.gradio-dropdown > div,
-.gradio-number input {
-    border-radius: 10px !important;
-    border: 1.5px solid rgba(255, 255, 255, 0.1) !important;
-    padding: 12px 16px !important;
-    font-size: 1rem !important;
-    transition: all 0.3s ease !important;
-    font-family: 'Inter', sans-serif !important;
-    background: rgba(255, 255, 255, 0.05) !important;
-    color: var(--text-primary) !important;
-    backdrop-filter: blur(10px) !important;
-}
-
-.gradio-textbox input::placeholder,
-.gradio-textbox textarea::placeholder {
-    color: var(--text-tertiary) !important;
-}
-
-.gradio-textbox input:focus,
-.gradio-textbox textarea:focus,
-.gradio-dropdown select:focus,
-.gradio-number input:focus {
-    border-color: var(--primary) !important;
-    box-shadow: 0 0 0 4px rgba(255, 45, 85, 0.2), 0 8px 20px rgba(255, 45, 85, 0.15) !important;
-    outline: none !important;
-    background: rgba(255, 255, 255, 0.08) !important;
-}
-
-/* LABELS */
-.gradio-textbox label,
-.gradio-dropdown label,
-.gradio-number label {
-    font-weight: 700 !important;
-    color: var(--text-primary) !important;
-    margin-bottom: 8px !important;
-    font-size: 0.95rem !important;
-}
-
-/* PARAM HINTS - EMPHASIZED */
-.param-hint {
-    font-size: 0.85rem;
-    color: var(--text-secondary);
-    margin: 8px 0 12px;
-    padding: 12px 16px;
-    background: linear-gradient(135deg, rgba(255, 45, 85, 0.1), rgba(0, 217, 255, 0.05));
-    border-radius: 8px;
-    border-left: 3px solid var(--accent);
-    font-style: italic;
-    font-weight: 500;
-    backdrop-filter: blur(10px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-}
-
-/* ACCORDION */
-.gradio-accordion {
-    border-radius: 10px !important;
-    border: 1.5px solid rgba(255, 255, 255, 0.1) !important;
-    overflow: hidden !important;
-    background: rgba(255, 255, 255, 0.05) !important;
-    backdrop-filter: blur(10px) !important;
-}
-
-.gradio-accordion > button {
-    font-weight: 700 !important;
-    background: rgba(255, 255, 255, 0.05) !important;
-    transition: all 0.3s ease !important;
-    padding: 16px 18px !important;
-    color: var(--text-primary) !important;
-}
-
-.gradio-accordion > button:hover {
-    background: linear-gradient(135deg, rgba(255, 45, 85, 0.15), rgba(0, 217, 255, 0.08)) !important;
-}
-
-.gradio-accordion > button[open] {
-    background: linear-gradient(135deg, rgba(255, 45, 85, 0.2), rgba(0, 217, 255, 0.1)) !important;
-    border-bottom: 2px solid var(--primary) !important;
-}
-
-/* MARKDOWN - ENHANCED */
-.gradio-markdown {
-    font-family: 'Inter', sans-serif !important;
-}
-
-.gradio-markdown h1,
-.gradio-markdown h2,
-.gradio-markdown h3 {
-    color: var(--text-primary) !important;
+.gr-markdown h1, .gr-markdown h2, .gr-markdown h3,
+.md h1, .md h2, .md h3 {
+    color: #f0f2f8 !important;
+    font-family: 'Syne', sans-serif !important;
     font-weight: 800 !important;
-    margin: 24px 0 12px !important;
 }
 
-.gradio-markdown h1 {
-    font-size: 2.5rem !important;
-    background: linear-gradient(135deg, #ff2d55, #00d9ff, #a78bfa);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    letter-spacing: -1px;
-}
+.gr-markdown h3, .md h3 { color: #00d4ff !important; }
 
-.gradio-markdown h2 {
-    font-size: 1.8rem !important;
-    background: linear-gradient(135deg, #ff2d55, #a78bfa);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-
-.gradio-markdown h3 {
-    font-size: 1.3rem !important;
-    color: var(--accent) !important;
-}
-
-.gradio-markdown p {
-    color: var(--text-secondary) !important;
-    line-height: 1.7 !important;
-    font-size: 1rem !important;
-}
-
-.gradio-markdown code {
-    background: rgba(255, 45, 85, 0.15) !important;
+.gr-markdown code, .md code {
+    background: rgba(255,58,92,0.12) !important;
     color: #ff6b7a !important;
-    padding: 3px 8px !important;
     border-radius: 5px !important;
-    font-family: 'Fira Code', monospace !important;
-    font-size: 0.95rem !important;
-    border: 1px solid rgba(255, 45, 85, 0.2) !important;
+    padding: 2px 6px !important;
+    font-family: 'JetBrains Mono', monospace !important;
+    font-size: 12px !important;
+    border: 1px solid rgba(255,58,92,0.2) !important;
 }
 
-.gradio-markdown pre {
-    background: rgba(0, 0, 0, 0.4) !important;
-    border: 1px solid rgba(255, 45, 85, 0.2) !important;
+.gr-markdown pre, .md pre {
+    background: #080b12 !important;
+    border: 1px solid rgba(255,255,255,0.07) !important;
     border-radius: 10px !important;
-    padding: 20px !important;
-    overflow-x: auto !important;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
+    padding: 16px !important;
 }
 
-.gradio-markdown pre code {
+.gr-markdown pre code, .md pre code {
     background: none !important;
+    border: none !important;
+    color: #00d4ff !important;
     padding: 0 !important;
-    color: #00d9ff !important;
 }
 
-.gradio-markdown table {
+.gr-markdown table, .md table {
     border-collapse: collapse !important;
     width: 100% !important;
-    margin: 20px 0 !important;
 }
 
-.gradio-markdown table th {
-    background: linear-gradient(135deg, rgba(255, 45, 85, 0.2), rgba(0, 217, 255, 0.1)) !important;
-    color: var(--text-primary) !important;
+.gr-markdown th, .md th {
+    background: rgba(255,58,92,0.1) !important;
+    color: #f0f2f8 !important;
     font-weight: 700 !important;
-    padding: 14px !important;
-    text-align: left !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    padding: 10px 12px !important;
+    border: 1px solid rgba(255,255,255,0.07) !important;
+    font-size: 12px !important;
 }
 
-.gradio-markdown table td {
-    padding: 12px 14px !important;
-    border: 1px solid rgba(255, 255, 255, 0.05) !important;
-    color: var(--text-secondary) !important;
+.gr-markdown td, .md td {
+    padding: 9px 12px !important;
+    border: 1px solid rgba(255,255,255,0.05) !important;
+    color: #8b95aa !important;
+    font-size: 13px !important;
 }
 
-.gradio-markdown table tr:hover {
-    background: rgba(255, 45, 85, 0.08) !important;
+.gr-markdown tr:hover td, .md tr:hover td {
+    background: rgba(255,58,92,0.04) !important;
 }
 
-.gradio-markdown a {
-    color: var(--accent) !important;
-    text-decoration: none !important;
-    font-weight: 600 !important;
-    transition: all 0.3s ease !important;
+.gr-markdown blockquote, .md blockquote {
+    border-left: 3px solid #00d4ff !important;
+    background: rgba(0,212,255,0.06) !important;
+    padding: 12px 16px !important;
+    border-radius: 0 8px 8px 0 !important;
+    color: #8b95aa !important;
+    margin: 12px 0 !important;
 }
 
-.gradio-markdown a:hover {
-    color: #00ffff !important;
-    text-decoration: underline !important;
+.gr-markdown a, .md a { color: #00d4ff !important; }
+.gr-markdown strong, .md strong { color: #f0f2f8 !important; }
+.gr-markdown li, .md li { color: #8b95aa !important; line-height: 1.7 !important; }
+
+/* ── DROPDOWN ── */
+.gr-dropdown ul {
+    background: #111620 !important;
+    border: 1px solid rgba(255,255,255,0.1) !important;
+    border-radius: 10px !important;
 }
 
-.gradio-markdown blockquote {
-    border-left: 4px solid var(--accent) !important;
-    background: linear-gradient(135deg, rgba(0, 217, 255, 0.1), rgba(0, 217, 255, 0.05)) !important;
-    padding: 16px 20px !important;
-    border-radius: 8px !important;
-    margin: 20px 0 !important;
-    color: var(--text-secondary) !important;
+.gr-dropdown li {
+    color: #8b95aa !important;
+    font-family: 'Syne', sans-serif !important;
 }
 
-/* LAYOUT */
-.gradio-row, .gradio-column {
-    gap: 20px !important;
+.gr-dropdown li:hover {
+    background: rgba(255,58,92,0.1) !important;
+    color: #f0f2f8 !important;
 }
 
-/* SMOOTH TRANSITIONS */
-* {
-    transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease !important;
+/* ── ACCORDION ── */
+.gr-accordion {
+    background: #111620 !important;
+    border: 1px solid rgba(255,255,255,0.07) !important;
+    border-radius: 10px !important;
 }
 
-/* FOCUS STATES */
-:focus-visible {
-    outline: 2px solid var(--primary) !important;
-    outline-offset: 3px !important;
+.gr-accordion > button {
+    font-family: 'Syne', sans-serif !important;
+    font-weight: 700 !important;
+    color: #8b95aa !important;
+    background: transparent !important;
+    font-size: 13px !important;
+    padding: 14px 16px !important;
 }
 
-/* ANIMATIONS */
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+.gr-accordion > button:hover { color: #f0f2f8 !important; }
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.15); }
+
+/* ── ROW / COLUMN GAPS ── */
+.gr-row { gap: 16px !important; }
+.gr-column { gap: 12px !important; }
+
+/* ── SECTION HEADER HTML ── */
+.sec-head {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #4a5568;
+    padding: 10px 0 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Syne', sans-serif;
+}
+.sec-head::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.06); }
+
+.panel-header-html {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #4a5568;
+    font-family: 'Syne', sans-serif;
+    margin-bottom: 4px;
 }
 
-@keyframes slideInRight {
-    from {
-        opacity: 0;
-        transform: translateX(-30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
+.panel-header-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #ff3a5c;
+    display: inline-block;
 }
 
-@keyframes shimmer {
-    0%, 100% { background-position: 200% center; }
-    50% { background-position: -200% center; }
+.diff-easy  { display:inline;background:rgba(0,229,160,0.1);color:#00e5a0;border:1px solid rgba(0,229,160,0.2);font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;padding:2px 8px;border-radius:5px;letter-spacing:0.06em; }
+.diff-med   { display:inline;background:rgba(255,176,32,0.1);color:#ffb020;border:1px solid rgba(255,176,32,0.2);font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;padding:2px 8px;border-radius:5px;letter-spacing:0.06em; }
+.diff-hard  { display:inline;background:rgba(255,58,92,0.1);color:#ff3a5c;border:1px solid rgba(255,58,92,0.2);font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;padding:2px 8px;border-radius:5px;letter-spacing:0.06em; }
+.diff-triage{ display:inline;background:rgba(0,212,255,0.1);color:#00d4ff;border:1px solid rgba(0,212,255,0.2);font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;padding:2px 8px;border-radius:5px;letter-spacing:0.06em; }
+
+.stat-mini {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-family: 'Syne', sans-serif;
+}
+.stat-mini .sl { font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#4a5568;margin-bottom:4px; }
+.stat-mini .sv { font-size:22px;font-weight:800;letter-spacing:-0.5px; }
+
+.reward-pos { color: #00e5a0 !important; }
+.reward-neg { color: #ff3a5c !important; }
+
+.chip { display:inline-flex;align-items:center;gap:4px;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:500;padding:3px 10px;border-radius:100px; }
+.chip-diag { background:rgba(0,212,255,0.1);color:#00d4ff; }
+.chip-fix  { background:rgba(0,229,160,0.1);color:#00e5a0; }
+.chip-decl { background:rgba(155,124,248,0.1);color:#9b7cf8; }
+
+.log-out {
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;
+    background:#080b12;
+    border:1px solid rgba(255,255,255,0.06);
+    border-radius:10px;
+    padding:14px 16px;
+    color:#8b95aa;
+    line-height:1.9;
+    max-height:220px;
+    overflow-y:auto;
+    white-space:pre-wrap;
+    word-break:break-word;
 }
 
-@keyframes glow-pulse {
-    0%, 100% { 
-        box-shadow: 0 0 20px rgba(255, 45, 85, 0.3);
-    }
-    50% { 
-        box-shadow: 0 0 40px rgba(255, 45, 85, 0.6);
-    }
+.alert-item {
+    display:flex;align-items:flex-start;gap:10px;
+    padding:12px 14px;border-radius:10px;border:1px solid;
+    margin-bottom:8px;font-family:'Syne',sans-serif;
 }
+.alert-crit { background:rgba(255,58,92,0.06);border-color:rgba(255,58,92,0.2); }
+.alert-med  { background:rgba(255,176,32,0.06);border-color:rgba(255,176,32,0.2); }
+.alert-low  { background:rgba(0,229,160,0.06);border-color:rgba(0,229,160,0.15); }
 
-.gradio-tabs .tabitem {
-    animation: fadeInUp 0.5s ease-out;
-}
+.abadge { font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;padding:2px 8px;border-radius:5px;flex-shrink:0;margin-top:1px; }
+.abadge-c { background:rgba(255,58,92,0.15);color:#ff3a5c;border:1px solid rgba(255,58,92,0.3); }
+.abadge-m { background:rgba(255,176,32,0.15);color:#ffb020;border:1px solid rgba(255,176,32,0.3); }
+.abadge-l { background:rgba(0,229,160,0.15);color:#00e5a0;border:1px solid rgba(0,229,160,0.2); }
 
-/* SCROLLBAR - MODERN */
-::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
-}
+.svc-tbl { width:100%;border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:12px; }
+.svc-tbl th { color:#4a5568;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;padding:0 10px 8px;text-align:left;border-bottom:1px solid rgba(255,255,255,0.06); }
+.svc-tbl td { padding:9px 10px;border-bottom:1px solid rgba(255,255,255,0.03);color:#8b95aa; }
+.svc-tbl tr:last-child td { border-bottom:none; }
 
-::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.05);
-}
+.hpill { display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;padding:3px 10px;border-radius:100px; }
+.hpill-ok  { background:rgba(0,229,160,0.1);color:#00e5a0; }
+.hpill-err { background:rgba(255,58,92,0.1);color:#ff3a5c; }
 
-::-webkit-scrollbar-thumb {
-    background: linear-gradient(180deg, #ff2d55, #a78bfa);
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(255, 45, 85, 0.2);
+.dim-card {
+    background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);
+    border-radius:10px;padding:12px 14px;font-family:'Syne',sans-serif;
 }
+.dim-name { font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#4a5568;margin-bottom:6px; }
+.dim-val  { font-size:22px;font-weight:800;letter-spacing:-0.5px;margin-bottom:6px; }
+.dim-bar-bg { height:3px;background:rgba(255,255,255,0.05);border-radius:100px;overflow:hidden; }
+.dim-bar { height:100%;border-radius:100px; }
+.dim-wt  { font-family:'JetBrains Mono',monospace;font-size:10px;color:#4a5568;margin-top:4px; }
 
-::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(180deg, #ff6b7a, #b89cff);
-    box-shadow: 0 0 20px rgba(255, 45, 85, 0.4);
-}
+.prog-outer { height:4px;background:rgba(255,255,255,0.05);border-radius:100px;overflow:hidden;margin:10px 0 4px; }
+.prog-inner { height:100%;border-radius:100px;background:linear-gradient(90deg,#ff3a5c,#00d4ff);transition:width 0.5s; }
 
-/* RESPONSIVE */
-@media (max-width: 768px) {
-    .env-header {
-        flex-direction: column;
-        padding: 24px 20px;
-        text-align: center;
-        gap: 16px;
-    }
-    
-    .env-header-left {
-        font-size: 1.6rem;
-    }
-    
-    .env-header-right {
-        width: 100%;
-    }
-    
-    .gradio-tabs .tabitem > button {
-        padding: 14px 12px !important;
-        font-size: 0.9rem !important;
-    }
-}
+.fail-banner { display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:10px;border:1px solid;margin-bottom:14px;font-family:'Syne',sans-serif; }
+.fb-green { background:rgba(0,229,160,0.06);border-color:rgba(0,229,160,0.2); }
+.fb-red   { background:rgba(255,58,92,0.06);border-color:rgba(255,58,92,0.2); }
+.fb-amber { background:rgba(255,176,32,0.06);border-color:rgba(255,176,32,0.2); }
 """
 
-FORCE_LIGHT_JS = """
-function() {
-    document.body.classList.remove('dark');
-    document.documentElement.classList.remove('dark');
-    document.documentElement.style.setProperty('color-scheme', 'light');
+# ── Helpers (keep your existing ones, add these) ──────────────────────────────
+
+_DIAG_ACTIONS = {"investigate_logs","check_metrics","read_config","check_service_health","run_diagnostic"}
+_FIX_ACTIONS  = {"restart_service","update_config","rollback_deployment","scale_service"}
+_FAILURE_TYPE_ICON = {
+    "Efficient Reasoner":        "🟢",
+    "Symptom Chaser":            "🟡",
+    "Lucky Guesser":             "🟠",
+    "Stuck in Observation Loop": "🔴",
+    "Late Corrector":            "🔵",
+    "Unknown":                   "⚪",
 }
+_DIFFICULTY_BADGE = {
+    "db_connection_failure":     "🟢 Easy",
+    "cascading_service_timeout": "🟡 Medium",
+    "ssl_certificate_expiry":    "🟡 Medium",
+    "multi_factor_outage":       "🔴 Hard",
+    "database_deadlock":         "🔴 Hard",
+    "alert_triage":              "🔵 Triage",
+}
+_action_history: List[Dict[str, Any]] = []
+
+
+def _render_alerts(alerts):
+    if not alerts:
+        return "<div style='text-align:center;padding:32px 16px;color:#4a5568;font-family:Syne,sans-serif;font-size:13px;'>🔕 No alerts — reset to begin</div>"
+    out = ""
+    for a in alerts:
+        sev = (a.get("severity","medium")).upper()
+        cls = "alert-crit" if sev in ("CRITICAL","HIGH") else ("alert-med" if sev=="MEDIUM" else "alert-low")
+        bcls = "abadge-c" if sev in ("CRITICAL","HIGH") else ("abadge-m" if sev=="MEDIUM" else "abadge-l")
+        out += f"""<div class="alert-item {cls}">
+  <span class="abadge {bcls}">{sev}</span>
+  <div>
+    <div style="font-size:13px;font-weight:700;color:#f0f2f8;margin-bottom:2px;">{a.get('service','')} <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#4a5568;font-weight:400;">{a.get('alert_id','')}</span></div>
+    <div style="font-size:12px;color:#8b95aa;line-height:1.5;">{a.get('message','')}</div>
+  </div>
+</div>"""
+    return out
+
+
+def _render_svc_table(statuses):
+    if not statuses:
+        return ""
+    rows = ""
+    for s in statuses:
+        ok = s.get("healthy", True)
+        hcls = "hpill-ok" if ok else "hpill-err"
+        htxt = "OK" if ok else "ERROR"
+        rt = f"{s['response_time_ms']:.0f}" if s.get("response_time_ms") is not None else "—"
+        er_raw = s.get("error_rate")
+        er = f"{er_raw*100:.1f}%" if er_raw is not None else "—"
+        er_color = "#ff3a5c" if not ok else "#4a5568"
+        rows += f"""<tr>
+  <td style="color:#f0f2f8;font-weight:600;">{s['name']}</td>
+  <td><span class="hpill {hcls}">● {htxt}</span></td>
+  <td>{rt}</td>
+  <td style="color:{er_color};">{er}</td>
+</tr>"""
+    return f"""<div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.12em;color:#4a5568;text-transform:uppercase;margin:16px 0 8px;">Service Health</div>
+<table class="svc-tbl">
+  <thead><tr><th>Service</th><th>Status</th><th>RT ms</th><th>Err%</th></tr></thead>
+  <tbody>{rows}</tbody>
+</table>"""
+
+
+def _render_log(text):
+    if not text:
+        return ""
+    import html as _html
+    escaped = _html.escape(str(text))
+    # basic coloring via inline spans
+    import re
+    escaped = re.sub(r'(ERROR|CRITICAL|FAILED|refused|Connection refused)', r'<span style="color:#ff3a5c;">\1</span>', escaped, flags=re.IGNORECASE)
+    escaped = re.sub(r'(SUCCESS|healthy|resolved|updated successfully)', r'<span style="color:#00e5a0;">\1</span>', escaped, flags=re.IGNORECASE)
+    escaped = re.sub(r'(\[\d{2}:\d{2}:\d{2}\]|\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2})', r'<span style="color:#4a5568;">\1</span>', escaped)
+    return f'<div style="font-family:\'JetBrains Mono\',monospace;font-size:10px;letter-spacing:0.12em;color:#4a5568;text-transform:uppercase;margin:16px 0 8px;">Last Action Output</div><div class="log-out">{escaped}</div>'
+
+
+def _render_obs(obs_dump, action_result):
+    task = obs_dump.get("task_name", "—")
+    diff = _DIFFICULTY_BADGE.get(task, "")
+    step = obs_dump.get("step_number", 0)
+    max_s = obs_dump.get("max_steps", 30)
+    alerts_html = _render_alerts(obs_dump.get("active_alerts", []))
+    svc_html = _render_svc_table(obs_dump.get("service_statuses", []))
+    log_html = _render_log(action_result) if action_result else ""
+    pct = int(step / max(max_s, 1) * 100)
+    return f"""
+<div style="font-family:'Syne',sans-serif;">
+  <div style="display:flex;align-items:center;gap:10px;padding:14px 0 16px;border-bottom:1px solid rgba(255,255,255,0.06);margin-bottom:16px;">
+    <span style="width:8px;height:8px;border-radius:50%;background:#ff3a5c;display:inline-block;animation:pulse 2s infinite;"></span>
+    <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#8b95aa;">{task}</span>
+    <span style="margin-left:4px;" class="diff-{('easy' if 'Easy' in diff else 'med' if 'Medium' in diff else 'hard' if 'Hard' in diff else 'triage')}">{diff}</span>
+    <span style="margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:11px;color:#4a5568;">{step}/{max_s}</span>
+  </div>
+  <div class="prog-outer"><div class="prog-inner" style="width:{pct}%;"></div></div>
+  <div style="display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:10px;color:#4a5568;margin-bottom:16px;">
+    <span>Step {step}/{max_s}</span><span>{pct}%</span>
+  </div>
+  <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.12em;color:#4a5568;text-transform:uppercase;margin-bottom:10px;">Active Alerts</div>
+  {alerts_html}
+  {svc_html}
+  {log_html}
+</div>
+<style>@keyframes pulse{{0%,100%{{opacity:1}}50%{{opacity:0.4}}}}</style>
 """
+
+
+def _render_history(history):
+    if not history:
+        return "<div style='text-align:center;padding:32px;color:#4a5568;font-family:Syne,sans-serif;font-size:13px;'>📋 No actions yet</div>"
+    rows = ""
+    for h in history:
+        act = h.get("action","")
+        is_diag = act in _DIAG_ACTIONS
+        is_fix  = act in _FIX_ACTIONS
+        chip_cls = "chip-diag" if is_diag else ("chip-fix" if is_fix else "chip-decl")
+        icon = "🔍" if is_diag else ("🔧" if is_fix else "📝")
+        r = h.get("reward", 0.0)
+        r_str = f"+{r:.3f}" if r >= 0 else f"{r:.3f}"
+        r_col = "#00e5a0" if r >= 0 else "#ff3a5c"
+        svc = h.get("service") or "—"
+        rows += f"""<tr>
+  <td style="color:#4a5568;">{h['step']}</td>
+  <td><span class="chip {chip_cls}">{icon}</span></td>
+  <td style="color:#f0f2f8;font-weight:600;">{act}</td>
+  <td style="color:#8b95aa;">{svc}</td>
+  <td style="color:{r_col};font-weight:700;">{r_str}</td>
+</tr>"""
+    return f"""<table style="width:100%;border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:12px;">
+  <thead><tr>
+    <th style="color:#4a5568;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;padding:0 10px 8px;text-align:left;border-bottom:1px solid rgba(255,255,255,0.06);">Step</th>
+    <th style="color:#4a5568;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;padding:0 10px 8px;text-align:left;border-bottom:1px solid rgba(255,255,255,0.06);">Type</th>
+    <th style="color:#4a5568;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;padding:0 10px 8px;text-align:left;border-bottom:1px solid rgba(255,255,255,0.06);">Action</th>
+    <th style="color:#4a5568;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;padding:0 10px 8px;text-align:left;border-bottom:1px solid rgba(255,255,255,0.06);">Service</th>
+    <th style="color:#4a5568;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;padding:0 10px 8px;text-align:left;border-bottom:1px solid rgba(255,255,255,0.06);">Reward</th>
+  </tr></thead>
+  <tbody>{rows}</tbody>
+</table>"""
+
+
+def _render_state_panel():
+    if env._task_name == "alert_triage":
+        step = env._step_number
+        cum = round(env._cumulative_reward, 4)
+        submitted = env._at_submitted_severity or "—"
+        pct = int(step / 3 * 100)
+        return f"""<div style="font-family:'Syne',sans-serif;">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
+    <div class="stat-mini"><div class="sl">Step</div><div class="sv" style="color:#00d4ff;">{step}/3</div></div>
+    <div class="stat-mini"><div class="sl">Cum. Reward</div><div class="sv" style="color:#00e5a0;">{'+' if cum>=0 else ''}{cum:.4f}</div></div>
+  </div>
+  <div class="stat-mini"><div class="sl">Submitted Severity</div><div class="sv" style="color:#9b7cf8;font-size:18px;">{submitted}</div></div>
+  <div class="prog-outer"><div class="prog-inner" style="width:{pct}%;"></div></div>
+</div>"""
+
+    if not env._scenario:
+        return "<div style='color:#4a5568;font-family:Syne,sans-serif;font-size:13px;padding:16px 0;'>⏳ Select task → Reset → Begin</div>"
+
+    task = env._task_name or "—"
+    diff = _DIFFICULTY_BADGE.get(task,"")
+    step = env._step_number
+    max_s = env._scenario.max_steps
+    resolved = env._incident_resolved
+    done = env._done
+    cum = round(env._cumulative_reward, 4)
+    pct = int(step / max(max_s,1) * 100)
+    status = "🏁 Resolved" if resolved else ("🏁 Done" if done else "⚡ Active")
+    streak = env._consecutive_diagnosis_count
+    collateral = len(env._collateral_degraded)
+    cum_col = "#00e5a0" if cum >= 0 else "#ff3a5c"
+    streak_col = "#ff3a5c" if streak >= 2 else "#ffb020"
+    return f"""<div style="font-family:'Syne',sans-serif;">
+  <div style="font-size:14px;font-weight:800;margin-bottom:12px;color:#f0f2f8;">{status}</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
+    <div class="stat-mini"><div class="sl">Step</div><div class="sv" style="color:#00d4ff;">{step}/{max_s}</div></div>
+    <div class="stat-mini"><div class="sl">Cum. Reward</div><div class="sv" style="color:{cum_col};">{'+' if cum>=0 else ''}{cum:.4f}</div></div>
+    <div class="stat-mini"><div class="sl">Diag Streak</div><div class="sv" style="color:{streak_col};">{streak}{'⚠' if streak>=2 else ''}</div></div>
+    <div class="stat-mini"><div class="sl">Collateral</div><div class="sv" style="color:#9b7cf8;">{collateral}</div></div>
+  </div>
+  <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:#8b95aa;">
+    Resolved: {'<span style="color:#00e5a0;font-weight:700;">Yes ✓</span>' if resolved else '<span style="color:#ff3a5c;">No ✗</span>'}
+  </div>
+  <div class="prog-outer"><div class="prog-inner" style="width:{pct}%;"></div></div>
+  <div style="display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:10px;color:#4a5568;">
+    <span>{step}/{max_s} steps</span><span>{pct}%</span>
+  </div>
+</div>"""
+
+
+def _render_score(breakdown):
+    if not breakdown:
+        return "*Click **📊 Grade** after executing actions.*"
+
+    final = breakdown.get("final", 0.0)
+    ft = breakdown.get("failure_type", "Unknown")
+    ft_icon = _FAILURE_TYPE_ICON.get(ft, "⚪")
+    obs_loop = breakdown.get("observation_loop", False)
+    score_col = "#00e5a0" if final >= 0.7 else ("#ffb020" if final >= 0.4 else "#ff3a5c")
+    fb_cls = "fb-green" if final >= 0.7 else ("fb-red" if ft == "Stuck in Observation Loop" else "fb-amber")
+
+    is_triage = ft == "Alert Triage" or "severity_match" in breakdown.get("breakdown", {})
+    if is_triage:
+        bd = breakdown.get("breakdown", {})
+        sub = bd.get("submitted_severity","—")
+        cor = bd.get("correct_severity","—")
+        sev_m = bd.get("severity_match", 0.0)
+        inv_b = bd.get("investigation_bonus", 0.0)
+        return f"""### {ft_icon} Alert Triage Score: **{final:.4f}** / 1.0
+
+| Component | Value |
+|---|---|
+| Submitted | `{sub}` |
+| Correct | `{cor}` |
+| Severity Score | `{sev_m:.2f}` |
+| Investigation Bonus | `+{inv_b:.2f}` |
+| **Total** | **`{final:.4f}`** |
+
+{('> ⚠ ' + breakdown.get('feedback','')) if breakdown.get('feedback') else ''}
+"""
+
+    dims = [
+        ("root_cause","Root Cause",0.30,"#ff3a5c"),
+        ("remediation","Remediation",0.25,"#00d4ff"),
+        ("investigation","Investigation",0.15,"#00e5a0"),
+        ("efficiency","Efficiency",0.10,"#ffb020"),
+        ("safety","Safety",0.10,"#9b7cf8"),
+        ("sequence","Sequence",0.10,"#00e5a0"),
+    ]
+    rows = "\n".join(
+        f"| {label} | {breakdown.get(key,0.0):.2f} | ×{wt:.2f} | {'▓'*int(breakdown.get(key,0)*10)}{'░'*(10-int(breakdown.get(key,0)*10))} |"
+        for key, label, wt, _ in dims
+    )
+    fb = breakdown.get("feedback","")
+    obs_note = f"\n> ⚠ Observation loop — score capped at {_OBSERVATION_LOOP_CAP}" if obs_loop else ""
+    return f"""### {ft_icon} Score: **{final:.4f}** / 1.0
+
+**Failure Type:** {ft}{obs_note}
+
+#### 6D Breakdown
+| Dimension | Score | Weight | Bar |
+|---|---:|---:|---|
+{rows}
+
+{('> ' + fb) if fb else ''}
+"""
+
+
+# ── Gradio callbacks ──────────────────────────────────────────────────────────
+
+def gr_reset(task_name, seed_str):
+    global _action_history
+    _action_history = []
+    try:
+        seed = int(seed_str) if seed_str.strip() else None
+        obs = env.reset(task_name=task_name, seed=seed)
+        obs_dump = obs.model_dump()
+        services = obs.available_services
+        return (
+            _render_obs(obs_dump, obs.action_result),
+            _render_history([]),
+            _render_state_panel(),
+            "*Execute an action then click Grade.*",
+            "*Start an episode first.*",
+            gr.Dropdown(choices=services, value=services[0] if services else None),
+        )
+    except Exception as e:
+        err = f"❌ **Error:** {e}"
+        return err, "", err, "", "", gr.Dropdown(choices=[])
+
+
+def gr_step(action_type, service_name, keyword, config_key, config_val, replicas_str, cause_text, severity_val):
+    global _action_history
+    try:
+        params: Dict[str, Any] = {}
+        at = action_type
+        if at == "investigate_logs" and keyword.strip():
+            params["keyword"] = keyword.strip()
+        elif at == "check_metrics":
+            params["metric_type"] = "all"
+        elif at == "update_config":
+            if config_key.strip(): params["key"] = config_key.strip()
+            if config_val.strip(): params["value"] = config_val.strip()
+        elif at == "scale_service" and replicas_str.strip():
+            try: params["replicas"] = int(replicas_str.strip())
+            except ValueError: pass
+        elif at == "declare_root_cause" and cause_text.strip():
+            params["cause"] = cause_text.strip()
+        elif at == "submit_severity" and severity_val.strip():
+            params["severity"] = severity_val.strip()
+
+        svc = service_name if service_name and service_name.strip() else None
+        action = IncidentResponseAction(
+            action_type=ActionType(at),
+            service_name=svc,
+            parameters=params,
+        )
+        obs, reward, done, info = env.step(action)
+        obs_dump = obs.model_dump()
+
+        _action_history.append({"step": obs.step_number, "action": at, "service": svc, "reward": reward})
+
+        ft = info.get("failure_type","N/A")
+        ft_icon = _FAILURE_TYPE_ICON.get(ft,"⚪")
+        r_sign = "+" if reward >= 0 else ""
+        reward_md = f"""### Step reward: `{r_sign}{reward:.4f}`
+**Cumulative:** `{env._cumulative_reward:+.4f}`
+
+**Feedback:** {obs.feedback}
+
+{ft_icon} **{ft}** | Obs Loop: `{info.get('observation_loop', False)}` | Diag Streak: `{info.get('consecutive_diagnosis_count', 0)}`
+{chr(10) + '---' + chr(10) + '🏁 **Episode complete** — click **📊 Grade** for final score' if done else ''}
+"""
+        return (
+            _render_obs(obs_dump, obs.action_result),
+            _render_history(_action_history),
+            _render_state_panel(),
+            _render_score({}),
+            reward_md,
+        )
+    except Exception as e:
+        err = f"❌ **Error:** {e}"
+        return err, "", "", "", err
+
+
+def gr_grade():
+    try:
+        breakdown = env.get_score_breakdown()
+        return _render_score(breakdown)
+    except Exception as e:
+        return f"❌ {e}"
+
+
+def gr_state():
+    return _render_state_panel()
+
 
 # ── Build Gradio Blocks ───────────────────────────────────────────────────────
 
-# with gr.Blocks(
-#     title="Incident Response Environment v4.0",
-#     css=CUSTOM_CSS,
-#     js=FORCE_LIGHT_JS,
-#     theme=gr.themes.Soft(
-#         primary_hue="red",
-#         neutral_hue="slate",
-#         font=gr.themes.GoogleFont("Inter"),
-#     ),
-# ) as web_ui:
-
-#     gr.HTML("""
-#     <div class="env-header">
-#         <div class="env-header-left">
-#             <span class="env-header-dot"></span>
-#             <span>🚨 Incident Response Environment</span>
-#         </div>
-#         <span class="env-header-right">
-#             ⚡ v4.0 · 6D Scoring · Anti-Reward-Hacking
-#         </span>
-#     </div>
-#     <div style="height: 8px; background: linear-gradient(90deg, #f43f5e, #0ea5e9, #10b981); animation: shimmer 3s infinite;"></div>
-#     <style>
-#         @keyframes shimmer {
-#             0%, 100% { background-position: 200% center; }
-#             50% { background-position: -200% center; }
-#         }
-#     </style>
-#     """)
-
+HEADER_HTML = """
+<div style="background:linear-gradient(135deg,#ff3a5c 0%,#9b7cf8 50%,#00d4ff 100%);padding:28px 40px;display:flex;align-items:center;justify-content:space-between;position:relative;overflow:hidden;">
+  <div style="display:flex;align-items:center;gap:14px;position:relative;z-index:1;">
+    <div style="width:38px;height:38px;border-radius:10px;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:20px;backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.3);">🚨</div>
+    <div>
+      <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:900;color:#fff;letter-spacing:-0.5px;line-height:1.1;">Incident Response Environment</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(255,255,255,0.7);letter-spacing:0.1em;margin-top:2px;">SRE AI TRAINING PLATFORM · V4.0</div>
+    </div>
+  </div>
+  <div style="display:flex;gap:8px;position:relative;z-index:1;">
+    <span style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;padding:5px 12px;border-radius:100px;border:1px solid rgba(255,255,255,0.4);color:#fff;background:rgba(0,0,0,0.2);">6D SCORING</span>
+    <span style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;padding:5px 12px;border-radius:100px;border:1px solid rgba(255,255,255,0.4);color:#fff;background:rgba(0,0,0,0.2);">● LIVE</span>
+  </div>
+</div>
+<div style="height:3px;background:linear-gradient(90deg,#ff3a5c,#9b7cf8,#00d4ff);"></div>
+"""
 
-#     # ════════════════════════════════════════════════════════════════════════════
-#     # ONBOARDING & EDUCATION TABS
-#     # ════════════════════════════════════════════════════════════════════════════
+with gr.Blocks(
+    title="Incident Response Environment v4.0",
+    css=CUSTOM_CSS,
+    theme=gr.themes.Base(),
+) as web_ui:
+
+    gr.HTML(HEADER_HTML)
+
+    with gr.Tabs():
+
+        # ── TAB 1: WELCOME ───────────────────────────────────────────────────
+        with gr.TabItem("🎯 Overview"):
+            gr.Markdown("""
+# The Flight Simulator for SREs
+
+Diagnose real production incidents in a safe, scored environment.
+Teach AI agents to **investigate first, fix with precision**.
+
+---
 
-#     with gr.Tabs():
-#         # ─────────────────────────────────────────────────────────────────────────
-#         # TAB 1: WELCOME & ONBOARDING
-#         # ─────────────────────────────────────────────────────────────────────────
-#         with gr.TabItem("🎯 Welcome & What Is This?", id="welcome"):
-#             with gr.Column():
-#                 gr.Markdown("""
-# <div style="text-align: center; padding: 40px 20px; background: linear-gradient(135deg, rgba(244, 63, 94, 0.08), rgba(14, 165, 233, 0.08)); border-radius: 12px; margin-bottom: 30px;">
+## Core Concepts
 
-# # 🚨 Welcome to Incident Response Environment
+| Phase | Actions | Goal |
+|-------|---------|------|
+| 🔍 **Investigate** | check_service_health, investigate_logs, check_metrics, read_config | Gather evidence |
+| 🎯 **Diagnose** | declare_root_cause | Name the problem precisely |
+| 🔧 **Remediate** | update_config, restart_service, rollback_deployment, scale_service | Apply the targeted fix |
 
-# ### **The AI Flight Simulator for Site Reliability Engineers**
+---
 
-# Production incidents don't wait. Neither should your training.
-
-# </div>
+## 6D Scoring Model
 
-# ---
+| Dimension | Weight | What It Measures |
+|-----------|--------|-----------------|
+| Root Cause | **30%** | Did you identify the right problem? |
+| Remediation | **25%** | Did you apply the right fix? |
+| Investigation | **15%** | Did you check enough services? |
+| Efficiency | **10%** | Did you use steps wisely? |
+| Safety | **10%** | Did you avoid collateral damage? |
+| Sequence | **10%** | Did you diagnose before fixing? |
 
-# ## 🎯 What Is This System?
+> Scores are clamped to (0.01, 0.99). If an **observation loop** is detected (3+ diagnosis actions in a row with no fix), the score is **hard-capped at 0.45**.
 
-# This is an **advanced AI training environment** that teaches artificial intelligence systems operational excellence through **realistic production incident simulation**.
+---
 
-# Think of it as a **flight simulator for SREs** — but for AI agents. A safe space to learn incident diagnosis and remediation without real consequences.
+## Scenarios
 
-# ### 🔴 The Real-World Problem
+| Scenario | Difficulty | Root Causes | Notes |
+|----------|-----------|------------|-------|
+| db_connection_failure | 🟢 Easy | 1 | Best starting point |
+| cascading_service_timeout | 🟡 Medium | 2 | Multi-hop cascade |
+| ssl_certificate_expiry | 🟡 Medium | 1 | Diagnosis gate |
+| multi_factor_outage | 🔴 Hard | 3 | Red herrings + cascades |
+| database_deadlock | 🔴 Hard | 1 | Lock mechanics |
+| alert_triage | 🔵 Triage | — | Classify P1–P4 in 3 steps |
+            """)
 
-# Imagine this scenario:
-# - **Payment system returning errors** 
-# - **Users can't check out**
-# - **Losing $1,000s per minute**
-# - **You have 30 minutes to fix it**
+        # ── TAB 2: WALKTHROUGH ───────────────────────────────────────────────
+        with gr.TabItem("🎓 Walkthrough"):
+            gr.Markdown("""
+# Step-by-Step: DB Connection Failure
 
-# ### ✅ What You Do
+Follow along as we solve a real incident from alert to resolution.
 
-# | Step | Action | Goal |
-# |------|--------|------|
-# | 🔍 **Investigate** | Check logs, metrics, configs | Gather evidence |
-# | 🎯 **Diagnose** | Identify root cause | Understand the problem |
-# | 🔧 **Remediate** | Apply targeted fix | Resolve the incident |
-# | ✨ **Verify** | Confirm resolution | Ensure stability |
+**Task:** `db_connection_failure` · 🟢 Easy · 30 steps · 3 services
 
-# ---
+---
 
-# ## 🎓 Core Concepts
+## Phase 1 — The Alert (on Reset)
 
-# <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 24px 0;">
+```
+● CRITICAL  [ALT-001]  user-api  T=08:15:23
+  → user-api returning 503 errors
 
-# <div style="background: linear-gradient(135deg, rgba(244, 63, 94, 0.1), rgba(244, 63, 94, 0.02)); border-radius: 12px; padding: 16px; border-left: 4px solid #f43f5e;">
+✗ user-api          error_rate=85%   rt=450ms
+✓ postgres-primary  healthy
+✓ nginx-lb          healthy
+```
 
-# ### 🔍 **Investigation**
-# - Check service health
-# - Investigate logs
-# - Analyze metrics
-# - Read configs
-# - Identify patterns
+Two services are fine. One is broken. Start there.
 
-# </div>
+---
 
-# <div style="background: linear-gradient(135deg, rgba(14, 165, 233, 0.1), rgba(14, 165, 233, 0.02)); border-radius: 12px; padding: 16px; border-left: 4px solid #0ea5e9;">
+## Phase 2 — Investigation (Steps 1–3)
+
+**Step 1** — `check_service_health` → `user-api`
+```
+Reward: +0.04   (first-time investigation bonus)
+```
 
-# ### 🎯 **Diagnosis**
-# - Synthesize evidence
-# - Form hypothesis
-# - Validate assumptions
-# - Declare root cause
-# - Explain the failure
+**Step 2** — `investigate_logs` → `user-api` · keyword: `connection`
+```
+[08:15:12] ERROR: Connection refused for postgres-primary:5433
+[08:15:13] ERROR: Failed to connect to database
 
-# </div>
+→ Port 5433 is suspicious — default is 5432
+Reward: +0.08
+```
 
-# <div style="background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(34, 197, 94, 0.02)); border-radius: 12px; padding: 16px; border-left: 4px solid #22c55e;">
+**Step 3** — `read_config` → `user-api`
+```json
+{ "db_host": "postgres-primary", "db_port": 5433 }
+                                              ^^^^
+                                         Should be 5432!
+Reward: +0.06
+```
 
-# ### 🔧 **Remediation**
-# - Apply targeted fixes
-# - Update configs
-# - Restart services
-# - Rollback changes
-# - Scale resources
+---
+
+## Phase 3 — Diagnosis (Step 4)
 
-# </div>
+**`declare_root_cause`**
+```
+Cause: "user-api db_port misconfigured as 5433 instead of 5432"
 
-# <div style="background: linear-gradient(135deg, rgba(168, 85, 247, 0.1), rgba(168, 85, 247, 0.02)); border-radius: 12px; padding: 16px; border-left: 4px solid #a855f7;">
+✓ ROOT CAUSE MATCHED!
+Reward: +0.20  ← biggest reward, tests understanding not luck
+```
+
+> Always declare root cause **before** fixing. Sequence score depends on it.
+
+---
+
+## Phase 4 — Remediation (Step 5)
+
+**`update_config`** → `user-api` · key: `db_port` · value: `5432`
+```
+✓ Configuration updated
+✓ user-api healthy: error_rate=0%  rt=45ms
+
+🏁 INCIDENT RESOLVED
+Reward: +0.15
+```
+
+---
+
+## Final Score
+
+| Dimension | Score | Why |
+|-----------|-------|-----|
+| Root Cause | 1.00 | ✅ Exact match |
+| Remediation | 1.00 | ✅ Correct fix |
+| Investigation | 0.67 | ⚠ Didn't check postgres-primary |
+| Efficiency | 1.00 | ✅ Only 5 steps |
+| Safety | 1.00 | ✅ No collateral damage |
+| Sequence | 1.00 | ✅ Diagnosed before fixing |
+
+**Final: 0.89 / 1.00 — Efficient Reasoner 🟢**
+
+---
+
+## Key Rules
+
+- ✅ Investigate → Diagnose → Fix (in that order)
+- ✅ Declare root cause with specific service + failure mode
+- ❌ Don't restart services hoping luck fixes it
+- ❌ Don't do 3+ diagnosis actions in a row (observation loop penalty)
+- ⚠ Cascades spread every 4 steps if unresolved
+            """)
+
+        # ── TAB 3: FAQ ───────────────────────────────────────────────────────
+        with gr.TabItem("❓ FAQ"):
+            gr.Markdown("""
+# FAQ & Concepts
+
+### What is an observation loop?
+3+ diagnosis actions in a row with no fix action triggers the observation loop detector.
+Your score is **hard-capped at 0.45** and you receive a -0.08 penalty.
+Fix it by alternating investigation with fix actions.
+
+### What is collateral degradation?
+Every 4 steps, if the incident isn't resolved, dependent services degrade:
+error rates rise +10%, latency climbs +40%. Eventually the whole stack fails.
+This represents real incident dynamics — **time pressure is genuine**.
+
+### What is a diagnosis gate?
+Some scenarios (like `ssl_certificate_expiry`) require you to investigate a specific service
+**before** a fix will work. If you fix blind, you only receive 50% of remediation points.
+
+### How does Alert Triage work?
+Instead of fixing an incident, you classify severity in 3 steps:
+- **P1** — Critical: complete outage or >$1k/min revenue loss
+- **P2** — High: major degradation, most users affected
+- **P3** — Medium: partial/minor, graceful fallback active
+- **P4** — Low: informational, zero user impact
+
+Score = severity accuracy (1.0 exact, 0.5 adjacent, 0.25 two-off) + investigation bonus.
+
+### What does a seed do?
+Same seed = identical incident every run. Different seed = same structure, metric values shift ±12%.
+Leave blank for a random variation. Use `seed=42` for reproducible testing.
+
+### Why declare root cause separately from fixing?
+- Root cause tests **understanding** (can you diagnose?)
+- Fix tests **judgment** (do you know how to fix it?)
+
+This prevents lucky guessing from scoring well, and matches real SRE workflow.
+
+### How do I improve my score?
+1. Investigate multiple services (not just the broken one)
+2. Match root cause declaration to the exact expected phrasing
+3. Apply the fix that directly corresponds to your diagnosis
+4. Never do 3+ diagnosis actions without a fix in between
+5. Always declare root cause before applying any fix
+            """)
+
+        # ── TAB 4: SANDBOX ───────────────────────────────────────────────────
+        with gr.TabItem("⚙️ Sandbox"):
+            with gr.Row(equal_height=False):
+
+                # LEFT COLUMN
+                with gr.Column(scale=2, min_width=360):
+
+                    gr.HTML('<div class="sec-head">Episode Setup</div>')
+                    with gr.Group():
+                        with gr.Column():
+                            task_dd = gr.Dropdown(
+                                choices=[
+                                    ("🟢 Easy — DB Connection Failure",       "db_connection_failure"),
+                                    ("🟡 Medium — Cascading Timeout",         "cascading_service_timeout"),
+                                    ("🟡 Medium — SSL Certificate Expiry",    "ssl_certificate_expiry"),
+                                    ("🔴 Hard — Multi-Factor Outage",         "multi_factor_outage"),
+                                    ("🔴 Hard — Database Deadlock",           "database_deadlock"),
+                                    ("🔵 Triage — Alert Severity (P1–P4)",    "alert_triage"),
+                                ],
+                                value="db_connection_failure",
+                                label="Task",
+                            )
+                            seed_tb = gr.Textbox(label="Seed (optional)", placeholder="e.g. 42", value="")
+                            reset_btn = gr.Button("↺ Reset Environment", variant="secondary", size="lg")
+
+                    gr.HTML('<div class="sec-head">Episode State</div>')
+                    state_display = gr.HTML(_render_state_panel())
+
+                    gr.HTML('<div class="sec-head">Action Controls</div>')
+                    with gr.Group():
+                        with gr.Column():
+                            action_dd = gr.Dropdown(
+                                choices=[
+                                    ("🔍 investigate_logs",      "investigate_logs"),
+                                    ("🔍 check_metrics",         "check_metrics"),
+                                    ("🔍 read_config",           "read_config"),
+                                    ("🔍 check_service_health",  "check_service_health"),
+                                    ("🔍 run_diagnostic",        "run_diagnostic"),
+                                    ("🔧 restart_service",       "restart_service"),
+                                    ("🔧 update_config",         "update_config"),
+                                    ("🔧 rollback_deployment",   "rollback_deployment"),
+                                    ("🔧 scale_service",         "scale_service"),
+                                    ("📝 declare_root_cause",    "declare_root_cause"),
+                                    ("🔵 submit_severity",       "submit_severity"),
+                                ],
+                                value="investigate_logs",
+                                label="Action Type",
+                            )
+                            service_dd = gr.Dropdown(choices=[], label="Target Service", allow_custom_value=True)
+
+                    with gr.Accordion("📋 Action Parameters", open=True):
+                        keyword_tb  = gr.Textbox(label="Keyword (investigate_logs)", placeholder="e.g. error, timeout, connection", value="")
+                        config_key_tb = gr.Textbox(label="Config Key (update_config)", placeholder="e.g. db_port", value="")
+                        config_val_tb = gr.Textbox(label="Config Value (update_config)", placeholder="e.g. 5432", value="")
+                        replicas_tb = gr.Textbox(label="Replicas (scale_service)", placeholder="e.g. 3", value="")
+                        cause_tb    = gr.Textbox(label="Root Cause (declare_root_cause)", placeholder="e.g. user-api db_port misconfigured as 5433 instead of 5432", lines=3, value="")
+                        severity_dd = gr.Dropdown(
+                            choices=[
+                                ("— not submitting", ""),
+                                ("🔴 P1 — Critical outage / >$1k/min loss", "P1"),
+                                ("🟠 P2 — High: major degradation",         "P2"),
+                                ("🟡 P3 — Medium: partial, fallback active", "P3"),
+                                ("🟢 P4 — Low: informational",              "P4"),
+                            ],
+                            value="", label="Severity (submit_severity)",
+                        )
+
+                    step_btn = gr.Button("▶ Execute Action", variant="primary", size="lg")
+
+                    gr.HTML('<div class="sec-head">Scoring</div>')
+                    with gr.Row():
+                        grade_btn = gr.Button("📊 Grade (6D)", variant="secondary", size="sm")
+                        state_btn = gr.Button("📋 Refresh State", variant="secondary", size="sm")
+
+                # RIGHT COLUMN
+                with gr.Column(scale=3, min_width=480):
+
+                    gr.HTML('<div class="sec-head">Observation</div>')
+                    obs_display = gr.HTML(
+                        "<div style='text-align:center;padding:48px 16px;color:#4a5568;font-family:Syne,sans-serif;'>"
+                        "<div style='font-size:32px;margin-bottom:12px;opacity:0.3;'>🔕</div>"
+                        "<p style='font-size:13px;'>Select a task and click <strong style='color:#8b95aa;'>Reset Environment</strong> to begin.</p>"
+                        "</div>"
+                    )
+
+                    gr.HTML('<div class="sec-head">Action History</div>')
+                    history_display = gr.HTML(_render_history([]))
+
+                    gr.HTML('<div class="sec-head">Step Reward</div>')
+                    reward_display = gr.Markdown("*Start an episode first.*")
+
+                    gr.HTML('<div class="sec-head">6D Score</div>')
+                    score_display = gr.Markdown("*Click **📊 Grade** after executing actions.*")
+
+            # Wire events
+            reset_btn.click(
+                fn=gr_reset,
+                inputs=[task_dd, seed_tb],
+                outputs=[obs_display, history_display, state_display, score_display, reward_display, service_dd],
+            )
+            step_btn.click(
+                fn=gr_step,
+                inputs=[action_dd, service_dd, keyword_tb, config_key_tb, config_val_tb, replicas_tb, cause_tb, severity_dd],
+                outputs=[obs_display, history_display, state_display, score_display, reward_display],
+            )
+            grade_btn.click(fn=gr_grade, outputs=[score_display])
+            state_btn.click(fn=gr_state, outputs=[state_display])
 
-# ### 📊 **Scoring**
-# - Root Cause (30%)
-# - Remediation (25%)
-# - Investigation (15%)
-# - Efficiency (10%)
-# - Safety (10%)
-# - Sequence (10%)
 
-# </div>
-
-# </div>
-
-# ---
-
-# ## 🚀 Quick Start
-
-# ### **Step 1: Select a Scenario** 🎯
-# Start with **Easy** difficulty — single root cause, clear symptoms:
-# - 🟢 **DB Connection Failure** — Misconfigured port
-
-# ### **Step 2: Launch an Episode** ⚡
-# Click **🔄 Reset** to begin:
-# - See active alerts
-# - View service health
-# - Understand what's broken
-
-# ### **Step 3: Solve It** 💡
-# - Investigate clues
-# - Declare root cause
-# - Apply the fix
-# - Get your score
-
-# ---
-
-# ## 🎯 Why This Matters
-
-# Modern observability and SRE tooling gives you **infinite data** but **limited time**.
-
-# This system teaches AI agents to:
-# - ✅ Ask the **right questions** (not investigate everything)
-# - ✅ **Diagnose before fixing** (avoid making it worse)
-# - ✅ **Work under pressure** (cascading failures spread)
-# - ✅ **Measure impact** (6 dimensions of success)
-# - ✅ **Think like an SRE** (operational reasoning)
-
-# ---
-
-# ## 📚 Next Steps
-
-# 👉 **[🎓 Learn By Example]** — See a complete walkthrough of a real incident  
-# 👉 **[❓ FAQ & Concepts]** — Understand all the mechanics  
-# 👉 **[⚙️ Interactive Sandbox]** — Start playing and learning
-
-# ---
-
-# **Let's make AI reliable.** 🚀
-#                 """)
-
-#         # ─────────────────────────────────────────────────────────────────────────
-#         # TAB 2: LEARN BY EXAMPLE
-#         # ─────────────────────────────────────────────────────────────────────────
-#         with gr.TabItem("🎓 Learn By Example", id="tutorial"):
-#             with gr.Column():
-#                 gr.Markdown("""
-# <div style="text-align: center; padding: 30px 20px; background: linear-gradient(135deg, rgba(34, 197, 94, 0.08), rgba(14, 165, 233, 0.08)); border-radius: 12px; margin-bottom: 30px;">
-
-# # 🎓 Step-by-Step Interactive Walkthrough
-
-# ### Complete Example: Database Connection Failure
-
-# **Learn by doing — follow along as we solve a real incident.**
-
-# </div>
-
-# ---
-
-# ## 📋 Scenario Overview
-
-# | Property | Value |
-# |----------|-------|
-# | **Task** | `db_connection_failure` |
-# | **Difficulty** | 🟢 Easy |
-# | **Time Budget** | 30 steps |
-# | **Root Cause** | Database port misconfiguration |
-# | **Services** | 3 (user-api, postgres-primary, nginx-lb) |
-
-# ---
-
-# ## 🚨 Phase 1: The Alert
-
-# When you reset, the system presents the incident:
-
-# ```
-# Active Alerts:
-#   🔴 [ALT-001] CRITICAL — user-api at 2025-04-09 08:15:23
-#      Message: user-api returning 503 errors
-
-# Service Health:
-#   ❌ user-api       — 85% error rate, 450ms latency
-#   ✅ postgres-primary — Healthy
-#   ✅ nginx-lb       — Healthy
-# ```
-
-# **What does this tell us?**
-# - ❌ user-api is broken
-# - ✅ Two other services are fine
-# - 🔍 **Next**: Investigate user-api!
-
-# ---
-
-# ## 🔍 Phase 2: Investigation (4 Steps)
-
-# ### **Step 1: Check Service Health**
-
-# ```
-# Action:  check_service_health
-# Service: user-api
-
-# Result:  ✅ Investigated user-api for first time
-# Reward:  +0.04 ⭐
-# ```
-
-# **Why?** Confirms the problem is specific to user-api.
-
-# ---
-
-# ### **Step 2: Investigate Logs** 🎯
-
-# ```
-# Action:   investigate_logs
-# Service:  user-api
-# Keyword:  connection
-
-# Result:   Found in logs:
-#           [08:15:12] ERROR: Connection refused for postgres-primary:5433
-#           [08:15:13] ERROR: Failed to connect to database
-#           [08:15:14] ERROR: Connection refused for postgres-primary:5433
-
-# Reward:   +0.08 ⭐⭐
-# ```
-
-# **Key insight:** 🚩 Port 5433 looks wrong! (normally 5432)
-
-# ---
-
-# ### **Step 3: Check Metrics**
-
-# ```
-# Action:  check_metrics
-# Service: user-api
-
-# Result:  Memory: 256 MB / 512 MB
-#          CPU: 12%
-#          Response Time: 450ms (huge!)
-#          Error Rate: 85%
-
-# Reward:  +0.02 ⭐
-# ```
-
-# ---
-
-# ### **Step 4: Read Config** 💡
-
-# ```
-# Action:  read_config
-# Service: user-api
-
-# Result:  {
-#            "db_host": "postgres-primary",
-#            "db_port": 5433,           ← ⚠️ WRONG! Should be 5432
-#            "db_user": "app",
-#            "max_connections": 100
-#          }
-
-# Reward:  +0.06 ⭐
-# ```
-
-# **Eureka!** We found it — port should be **5432**, not **5433** 🎉
-
-# ---
-
-# ## 🎯 Phase 3: Diagnosis
-
-# ### **Step 5: Declare Root Cause**
-
-# ```
-# Action: declare_root_cause
-# Cause:  "user-api db_port misconfigured as 5433 instead of 5432"
-
-# Result: ✅ ROOT CAUSE: Matches known cause!
-# Reward: +0.20 ⭐⭐⭐⭐⭐ (BIG REWARD!)
-
-# Feedback: "Correct root cause identified! Now apply a fix."
-# ```
-
-# **Important:** This step tests understanding. You must diagnose BEFORE fixing.
-
-# ---
-
-# ## 🔧 Phase 4: Remediation
-
-# ### **Step 6: Update Configuration**
-
-# ```
-# Action:      update_config
-# Service:     user-api
-# Config Key:  db_port
-# Config Val:  5432
-
-# Result:      ✅ Configuration updated successfully
-#              user-api is now healthy: 0% errors, 45ms latency
-             
-# Reward:      +0.15 ⭐⭐⭐
-
-# 🏁 INCIDENT RESOLVED!
-# ```
-
-# ---
-
-# ## 🏆 Final Score
-
-# <div style="background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(34, 197, 94, 0.02)); border-radius: 12px; padding: 20px; margin: 20px 0; border-left: 4px solid #22c55e;">
-
-# ### **Final Score: 0.89 / 1.00**
-
-# | Dimension | Score | Status |
-# |-----------|-------|--------|
-# | Root Cause | 1.00 | ✅ Identified correctly |
-# | Remediation | 1.00 | ✅ Applied correct fix |
-# | Investigation | 0.67 | ⚠️ Didn't check postgres-primary |
-# | Efficiency | 1.00 | ✅ Used steps efficiently |
-# | Safety | 1.00 | ✅ No collateral damage |
-# | Sequence | 1.00 | ✅ Diagnosed before fixing |
-
-# </div>
-
-# ---
-
-# ## 🎓 Key Lessons
-
-# ✅ **Best Practices:**
-# 1. Investigate all services to build a complete picture
-# 2. Look for patterns in logs (errors, timeouts, rejections)
-# 3. Always declare root cause BEFORE applying fixes
-# 4. Apply targeted, precise fixes
-
-# ❌ **Anti-Patterns:**
-# 1. Restarting services randomly hoping luck fixes it
-# 2. Fixing something before understanding why it broke
-# 3. Investigating the same service repeatedly
-# 4. Ignoring diagnostic feedback
-
-# ---
-
-# ## 🚀 Ready for More?
-
-# **🟢 Easy Scenarios:**
-# - db_connection_failure (what you just did!)
-# - alert_triage (classify alert severity)
-
-# **🟡 Medium Scenarios:**
-# - cascading_service_timeout (multi-hop cascades)
-# - ssl_certificate_expiry (non-obvious cert issues)
-
-# **🔴 Hard Scenarios:**
-# - multi_factor_outage (3 simultaneous root causes!)
-# - database_deadlock (lock mechanism knowledge)
-
-# 👉 Go to **"⚙️ Interactive Sandbox"** now and try it yourself!
-#                 """)
-
-#         # ─────────────────────────────────────────────────────────────────────────
-#         # TAB 3: FAQ & CONCEPTS
-#         # ─────────────────────────────────────────────────────────────────────────
-#         with gr.TabItem("❓ FAQ & Concepts", id="faq"):
-#             with gr.Column():
-#                 gr.Markdown("""
-# # ❓ FAQ & Concepts
-
-# ## Scoring & Evaluation
-
-# ### Q: How is my score calculated?
-
-# **A:** Your score has **6 dimensions**, each weighted:
-
-# | Dimension       | Weight | Explanation |
-# |-----------------|--------|-------------|
-# | Root Cause      | 30%    | Did you identify the RIGHT problem? |
-# | Remediation     | 25%    | Did you apply the RIGHT fix? |
-# | Investigation   | 15%    | Did you check enough services? |
-# | Efficiency      | 10%    | Did you use steps wisely? |
-# | Safety          | 10%    | Did you avoid making it worse? |
-# | Sequence        | 10%    | Did you diagnose BEFORE fixing? |
-
-# **Example**: If you get 100% on Root Cause (0.30) + 100% on Remediation (0.25) but only 50% on Investigation (0.075), your total would be 0.625 / 1.0.
-
-# ---
-
-# ### Q: What does "Observation Loop" mean?
-
-# **A:** If you do **3+ diagnosis actions in a row WITHOUT any fix**, the system penalizes you:
-# - You get a **-0.08 penalty**
-# - Your score is **hard-capped at 0.45** even if perfect on everything else
-
-# **Why?** In real incidents, endless investigation wastes time. You must eventually commit to a hypothesis and try a fix.
-
-# **Fix**: Do an investigation, then declare a root cause, then apply a fix. Mix it up!
-
-# ---
-
-# ### Q: Why did my score get worse after I applied a fix?
-
-# **A:** Possibilities:
-
-# 1. **Wrong diagnosis**: You fixed the wrong thing → Remediation score drops
-# 2. **Collateral damage**: Your fix broke another service → Safety score drops
-# 3. **Too late**: You took too many steps → Efficiency score drops
-
-# **Solution**: Review the feedback message — it will tell you what happened!
-
-# ---
-
-# ### Q: What's "Diagnosis Gate"?
-
-# **A:** Some scenarios have a "diagnosis gate" — you must investigate a service BEFORE you can fix it successfully.
-
-# **Example**: In `ssl_certificate_expiry`, you must investigate the `api-gateway` logs FIRST. If you try to fix it blind, you only get 50% of the remediation points.
-
-# **Why?** In real SRE work, you don't blindly restart systems — you investigate, diagnose, then fix.
-
-# ---
-
-# ### Q: What's "Collateral Degradation"?
-
-# **A:** Every 4 steps, if the incident isn't resolved:
-# - Unresolved upstream failures cascade
-# - Dependent services get worse (↑10% error rate, ↑40% latency)
-# - Eventually services fail completely
-
-# **Example**:
-# - Step 0-3: user-api down, others OK
-# - Step 4: payment-service starts getting errors (depends on user-api)
-# - Step 8: If still not fixed, order-service gets errors too
-# - Step 12: Entire stack might fail if unresolved
-
-# **Why?** Real incidents don't stay contained — they spread. Time pressure is real.
-
-# ---
-
-# ## Scenarios
-
-# ### Q: Which scenario should I start with?
-
-# **A:** Start with 🟢 **db_connection_failure** — it has:
-# - Only 1 root cause
-# - Very clear symptoms
-# - No confusing red herrings
-# - Straightforward fix
-
-# After that, try 🔵 **alert_triage** — different task type (classify severity, not fix).
-
-# ---
-
-# ### Q: What's the difference between "easy" and "hard" scenarios?
-
-# **A:**
-
-# | Aspect | Easy | Hard |
-# |--------|------|------|
-# | # Services | 3 | 6 |
-# | # Root Causes | 1 | 2-3 simultaneously |
-# | Red Herrings | None | Many misleading clues |
-# | Cascades | No | Yes, spreading failures |
-# | Diagnosis Gates | No | Yes, catch blind fixes |
-# | Investigation Hints | Clear | Ambiguous |
-
-# ---
-
-# ### Q: What's "Alert Triage"?
-
-# **A:** **Different task type** — instead of fixing an incident, you **classify its severity**:
-
-# - **P1 (Critical)**: Complete outage or >$1k/min revenue loss
-# - **P2 (High)**: Major degradation, most users affected
-# - **P3 (Medium)**: Partial/minor, graceful fallback active
-# - **P4 (Low)**: Informational, zero user impact
-
-# **Goal**: Investigate the incident, then submit severity with `submit_severity` action.
-
-# **Budget**: Only 3 steps — must decide quickly!
-
-# ---
-
-# ## Actions & Mechanics
-
-# ### Q: What's the difference between `investigate_logs` and `check_service_health`?
-
-# **A:**
-
-# | Action | Returns | Use When |
-# |--------|---------|----------|
-# | `check_service_health` | Health status, error rate, latency | Quick overview of service state |
-# | `investigate_logs` | Raw log excerpts | Need detailed error messages |
-# | `check_metrics` | CPU, memory, throughput | Understanding scale/capacity issues |
-# | `read_config` | Service configuration | Checking settings |
-# | `run_diagnostic` | Deep diagnostic for a service | Need advanced info |
-
-# **Pattern**: Use `check_service_health` first to get overview, then `investigate_logs` on suspicious services.
-
-# ---
-
-# ### Q: What actions fix things?
-
-# **A:**
-
-# | Action | When to Use |
-# |--------|------------|
-# | `update_config` | Configuration wrong (ports, limits, etc.) |
-# | `restart_service` | Service crashed or in bad state |
-# | `rollback_deployment` | Recent deployment broke things |
-# | `scale_service` | Service overloaded, needs more replicas |
-
-# ---
-
-# ### Q: Can I see what actions are available in a specific scenario?
-
-# **A:** After you click 🔄 **Reset**, the "📋 Action Controls" section shows all available actions for this scenario.
-
-# ---
-
-# ## Seeds & Reproducibility
-
-# ### Q: What's a "Seed"?
-
-# **A:** A seed makes scenarios reproducible:
-# - **Same seed** = same incident every time
-# - **Different seed** = variation of the scenario (metric values shift ±12%)
-
-# **Use**: 
-# - Testing: Use seed=42 to get consistent results
-# - Training: Use different seeds to generate variety
-
-# **Leave blank** to get a random variation.
-
-# ---
-
-# ### Q: Can I see the same incident multiple times?
-
-# **A:** Yes! Use the same seed. This helps if you want to try a different investigation strategy on the exact same scenario.
-
-# ---
-
-# ## Troubleshooting
-
-# ### Q: My episode ended but I don't think I fixed it?
-
-# **A:** Click 📊 **Grade (6D)** to see the full breakdown. The feedback will explain:
-# - What you diagnosed correctly/incorrectly
-# - What you fixed correctly/incorrectly
-# - Why your score is what it is
-
-# ---
-
-# ### Q: Why is my score showing 0.45 even though I diagnosed correctly?
-
-# **A:** Likely "Observation Loop" — you did 3+ diagnosis steps in a row without any fix action. Score is hard-capped at 0.45 in this case.
-
-# ---
-
-# ### Q: The system says "Diagnosis Gate" — what do I do?
-
-# **A:** You tried to fix a service without investigating it first. Some scenarios require you to:
-# 1. Investigate the service
-# 2. Declare the root cause
-# 3. THEN apply the fix
-
-# Try replacing your fix action with `investigate_logs` or `read_config` first.
-
-# ---
-
-# ### Q: Can I try the same task again?
-
-# **A:** Yes! Click 🔄 **Reset** with the same task name (and optionally same seed) to run again.
-
-# ---
-
-# ## Advanced
-
-# ### Q: Why do I need to declare root cause separately from fixing?
-
-# **A:** 
-# - **Root cause declaration** tests understanding (can you diagnose?)
-# - **Fix application** tests judgment (do you know HOW to fix it?)
-
-# Separating them:
-# - Forces diagnosis before action (safer)
-# - Tests reasoning (not just luck)
-# - Matches real SRE workflow
-
-# ---
-
-# ### Q: What if there are multiple root causes?
-
-# **A:** In hard scenarios like `multi_factor_outage`:
-# - 3 separate issues exist simultaneously
-# - You must identify ALL 3 to get full score
-# - You'll call `declare_root_cause` multiple times with different causes
-
-# ---
-
-# ### Q: How do I improve my score?
-
-# **A:** 
-# 1. Investigate thoroughly (don't skip services)
-# 2. Match your diagnosis to the root cause exactly
-# 3. Apply the correct fix corresponding to your diagnosis
-# 4. Don't do 3+ diagnosis actions in a row
-# 5. Declare root cause BEFORE applying fixes
-# 6. In alert triage, classify severity accurately
-
-# ---
-
-# ## Still Confused?
-
-# 👉 Go to **"⚙️ Interactive Sandbox"** and just start playing! You'll learn fastest by doing.
-
-# The system will give you feedback after every action. Read the feedback — it will guide you.
-#                 """)
-
-#         # ─────────────────────────────────────────────────────────────────────────
-#         # TAB 4: INTERACTIVE SANDBOX (THE ACTUAL INTERFACE)
-#         # ─────────────────────────────────────────────────────────────────────────
-#         with gr.TabItem("⚙️ Interactive Sandbox", id="sandbox"):
-
-#             with gr.Row(equal_height=False):
-
-#                 # ── Left column: controls ─────────────────────────────────────────────
-#                 with gr.Column(scale=2, min_width=380):
-
-#                     gr.HTML('<div class="section-title">🎯 Episode Setup</div>')
-#                     with gr.Row():
-#                         task_dd = gr.Dropdown(
-#                             choices=[
-#                                 ("🟢 Easy — DB Connection Failure",      "db_connection_failure"),
-#                                 ("🟡 Medium — Cascading Timeout",        "cascading_service_timeout"),
-#                                 ("🟡 Medium — SSL Certificate Expiry",   "ssl_certificate_expiry"),
-#                                 ("🔴 Hard — Multi-Factor Outage",        "multi_factor_outage"),
-#                                 ("🔴 Hard — Database Deadlock",          "database_deadlock"),
-#                                 ("🔵 Easy — Alert Triage (P1/P2/P3/P4)", "alert_triage"),
-#                             ],
-#                             value="db_connection_failure",
-#                             label="Task",
-#                             scale=2,
-#                         )
-#                         seed_tb = gr.Textbox(
-#                             label="Seed (optional)",
-#                             placeholder="e.g. 42",
-#                             value="",
-#                             scale=1,
-#                         )
-#                     reset_btn = gr.Button("🔄 Reset Environment", variant="secondary", size="lg")
-
-#                     gr.HTML('<div class="section-title">🎮 Action Controls</div>')
-#                     action_dd = gr.Dropdown(
-#                         choices=[
-#                             ("🔍 investigate_logs",     "investigate_logs"),
-#                             ("🔍 check_metrics",        "check_metrics"),
-#                             ("🔍 read_config",          "read_config"),
-#                             ("🔍 check_service_health", "check_service_health"),
-#                             ("🔍 run_diagnostic",       "run_diagnostic"),
-#                             ("🔧 restart_service",      "restart_service"),
-#                             ("🔧 update_config",        "update_config"),
-#                             ("🔧 rollback_deployment",  "rollback_deployment"),
-#                             ("🔧 scale_service",        "scale_service"),
-#                             ("📝 declare_root_cause",   "declare_root_cause"),
-#                             ("🔵 submit_severity",      "submit_severity"),
-#                         ],
-#                         value="investigate_logs",
-#                         label="Action Type",
-#                     )
-#                     service_dd = gr.Dropdown(
-#                         choices=[],
-#                         label="Target Service",
-#                         allow_custom_value=True,
-#                         info="Populated after Reset",
-#                     )
-
-#                     with gr.Accordion("📋 Action Parameters", open=True):
-#                         gr.HTML('<div class="param-hint">investigate_logs — optional keyword filter</div>')
-#                         keyword_tb = gr.Textbox(
-#                             label="Keyword (investigate_logs)",
-#                             placeholder="e.g. error, timeout, OOM, connection",
-#                             value="",
-#                         )
-
-#                         gr.HTML('<div class="param-hint">update_config — config key + new value</div>')
-#                         with gr.Row():
-#                             config_key_tb = gr.Textbox(
-#                                 label="Config Key",
-#                                 placeholder="e.g. max_connections",
-#                                 scale=1,
-#                             )
-#                             config_val_tb = gr.Textbox(
-#                                 label="Config Value",
-#                                 placeholder="e.g. 100",
-#                                 scale=1,
-#                             )
-
-#                         gr.HTML('<div class="param-hint">scale_service — desired replica count</div>')
-#                         replicas_tb = gr.Textbox(
-#                             label="Replicas (scale_service)",
-#                             placeholder="e.g. 3",
-#                             value="",
-#                         )
-
-#                         gr.HTML('<div class="param-hint">declare_root_cause — describe root cause in detail (service + failure mode)</div>')
-#                         cause_tb = gr.Textbox(
-#                             label="Root Cause Description",
-#                             placeholder="e.g. postgres-primary connection pool exhausted due to slow analytics query",
-#                             lines=3,
-#                             value="",
-#                         )
-
-#                         gr.HTML('<div class="param-hint">submit_severity (alert_triage only) — classify incident P1–P4</div>')
-#                         severity_dd = gr.Dropdown(
-#                             choices=[
-#                                 ("— not submitting", ""),
-#                                 ("🔴 P1 — Critical: complete outage or >$1k/min revenue loss", "P1"),
-#                                 ("🟠 P2 — High: major degradation, most users affected", "P2"),
-#                                 ("🟡 P3 — Medium: partial/minor, graceful fallback active", "P3"),
-#                                 ("🟢 P4 — Low: informational, zero user impact", "P4"),
-#                             ],
-#                             value="",
-#                             label="Severity (submit_severity)",
-#                         )
-
-#                     step_btn = gr.Button("▶️ Execute Action", variant="primary", size="lg")
-
-#                     gr.HTML('<div class="section-title">📊 Scoring</div>')
-#                     with gr.Row():
-#                         grade_btn = gr.Button("📊 Grade (6D)", variant="secondary", size="sm")
-#                         state_btn = gr.Button("📋 State",      variant="secondary", size="sm")
-
-#                     gr.HTML('<div class="section-title">📌 Episode State</div>')
-#                     state_display = gr.Markdown("### ⏳ Ready\n\nSelect task → Reset → Begin")
-
-#                     # ── Right column: output panels ───────────────────────────────────────
-#                 with gr.Column(scale=3, min_width=480):
-
-#                     gr.HTML('<div class="section-title">👁️ Observation</div>')
-#                     obs_display = gr.Markdown(
-#                         "### 👋 Welcome\n\nSelect a task and click **🔄 Reset** to begin."
-#                     )
-
-#                     gr.HTML('<div class="section-title">📜 Action History</div>')
-#                     history_display = gr.Markdown("*No actions yet.*")
-
-#                     gr.HTML('<div class="section-title">💰 Step Reward</div>')
-#                     reward_display = gr.Markdown("*Start an episode first.*")
-
-#                     gr.HTML('<div class="section-title">🏆 6D Score Breakdown</div>')
-#                     score_display = gr.Markdown(
-#                         "*Click **📊 Grade (6D)** after executing actions.*"
-#                     )
-
-#                 # ── Wire up events ────────────────────────────────────────────────────────
-#                 reset_btn.click(
-#                     fn=gr_reset,
-#                     inputs=[task_dd, seed_tb],
-#                     outputs=[obs_display, history_display, state_display, reward_display, score_display, service_dd],
-#                 )
-#                 step_btn.click(
-#                     fn=gr_step,
-#                     inputs=[action_dd, service_dd, keyword_tb, config_key_tb, config_val_tb, replicas_tb, cause_tb, severity_dd],
-#                     outputs=[obs_display, history_display, state_display, reward_display],
-#                 )
-#                 grade_btn.click(fn=gr_grade, outputs=[score_display])
-#                 state_btn.click(fn=gr_state, outputs=[state_display])
-
-
-
-with open(os.path.join(os.path.dirname(__file__), "incident_response_ui.html"), "r") as f:
-    custom_html = f.read()
-
-with gr.Blocks() as web_ui:
-    gr.HTML(custom_html)
-
-
-
-
-
-
-
-
-
-
-
-
-from fastapi.responses import HTMLResponse
-
-with open(os.path.join(os.path.dirname(__file__), "incident_response_ui.html"), "r") as f:
-    custom_html = f.read()
-
-@app.get("/", response_class=HTMLResponse)
-def serve_root():
-    return custom_html
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
 app = gr.mount_gradio_app(app, web_ui, path="/web")
 
 
