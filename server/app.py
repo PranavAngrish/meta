@@ -31,6 +31,7 @@ from typing import Any, Dict, List, Optional
 import gradio as gr
 from fastapi import Body, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
 from pydantic import BaseModel
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -52,6 +53,7 @@ except ImportError:
 
 app = FastAPI(title="Incident Response Environment", version="4.0.0")
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
+app.add_middleware(ProxyHeadersMiddleware, trusted_hosts="*")
 
 env = IncidentResponseEnv()
 _baseline_env = IncidentResponseEnv()
@@ -968,7 +970,7 @@ app = gr.mount_gradio_app(app, web_ui, path="/web")
 def main():
     import uvicorn
     port = int(os.environ.get("PORT", 7860))
-    uvicorn.run(app, host="0.0.0.0", port=port)
+    uvicorn.run(app, host="0.0.0.0", port=port, proxy_headers=True, forwarded_allow_ips="*")
 
 
 if __name__ == "__main__":
