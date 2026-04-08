@@ -1289,804 +1289,811 @@ function() {
 
 # ── Build Gradio Blocks ───────────────────────────────────────────────────────
 
-with gr.Blocks(
-    title="Incident Response Environment v4.0",
-    css=CUSTOM_CSS,
-    js=FORCE_LIGHT_JS,
-    theme=gr.themes.Soft(
-        primary_hue="red",
-        neutral_hue="slate",
-        font=gr.themes.GoogleFont("Inter"),
-    ),
-) as web_ui:
-
-    gr.HTML("""
-    <div class="env-header">
-        <div class="env-header-left">
-            <span class="env-header-dot"></span>
-            <span>🚨 Incident Response Environment</span>
-        </div>
-        <span class="env-header-right">
-            ⚡ v4.0 · 6D Scoring · Anti-Reward-Hacking
-        </span>
-    </div>
-    <div style="height: 8px; background: linear-gradient(90deg, #f43f5e, #0ea5e9, #10b981); animation: shimmer 3s infinite;"></div>
-    <style>
-        @keyframes shimmer {
-            0%, 100% { background-position: 200% center; }
-            50% { background-position: -200% center; }
-        }
-    </style>
-    """)
-
+# with gr.Blocks(
+#     title="Incident Response Environment v4.0",
+#     css=CUSTOM_CSS,
+#     js=FORCE_LIGHT_JS,
+#     theme=gr.themes.Soft(
+#         primary_hue="red",
+#         neutral_hue="slate",
+#         font=gr.themes.GoogleFont("Inter"),
+#     ),
+# ) as web_ui:
+
+#     gr.HTML("""
+#     <div class="env-header">
+#         <div class="env-header-left">
+#             <span class="env-header-dot"></span>
+#             <span>🚨 Incident Response Environment</span>
+#         </div>
+#         <span class="env-header-right">
+#             ⚡ v4.0 · 6D Scoring · Anti-Reward-Hacking
+#         </span>
+#     </div>
+#     <div style="height: 8px; background: linear-gradient(90deg, #f43f5e, #0ea5e9, #10b981); animation: shimmer 3s infinite;"></div>
+#     <style>
+#         @keyframes shimmer {
+#             0%, 100% { background-position: 200% center; }
+#             50% { background-position: -200% center; }
+#         }
+#     </style>
+#     """)
+
 
-    # ════════════════════════════════════════════════════════════════════════════
-    # ONBOARDING & EDUCATION TABS
-    # ════════════════════════════════════════════════════════════════════════════
+#     # ════════════════════════════════════════════════════════════════════════════
+#     # ONBOARDING & EDUCATION TABS
+#     # ════════════════════════════════════════════════════════════════════════════
 
-    with gr.Tabs():
-        # ─────────────────────────────────────────────────────────────────────────
-        # TAB 1: WELCOME & ONBOARDING
-        # ─────────────────────────────────────────────────────────────────────────
-        with gr.TabItem("🎯 Welcome & What Is This?", id="welcome"):
-            with gr.Column():
-                gr.Markdown("""
-<div style="text-align: center; padding: 40px 20px; background: linear-gradient(135deg, rgba(244, 63, 94, 0.08), rgba(14, 165, 233, 0.08)); border-radius: 12px; margin-bottom: 30px;">
+#     with gr.Tabs():
+#         # ─────────────────────────────────────────────────────────────────────────
+#         # TAB 1: WELCOME & ONBOARDING
+#         # ─────────────────────────────────────────────────────────────────────────
+#         with gr.TabItem("🎯 Welcome & What Is This?", id="welcome"):
+#             with gr.Column():
+#                 gr.Markdown("""
+# <div style="text-align: center; padding: 40px 20px; background: linear-gradient(135deg, rgba(244, 63, 94, 0.08), rgba(14, 165, 233, 0.08)); border-radius: 12px; margin-bottom: 30px;">
 
-# 🚨 Welcome to Incident Response Environment
+# # 🚨 Welcome to Incident Response Environment
 
-### **The AI Flight Simulator for Site Reliability Engineers**
+# ### **The AI Flight Simulator for Site Reliability Engineers**
 
-Production incidents don't wait. Neither should your training.
-
-</div>
+# Production incidents don't wait. Neither should your training.
+
+# </div>
 
----
+# ---
 
-## 🎯 What Is This System?
+# ## 🎯 What Is This System?
 
-This is an **advanced AI training environment** that teaches artificial intelligence systems operational excellence through **realistic production incident simulation**.
+# This is an **advanced AI training environment** that teaches artificial intelligence systems operational excellence through **realistic production incident simulation**.
 
-Think of it as a **flight simulator for SREs** — but for AI agents. A safe space to learn incident diagnosis and remediation without real consequences.
+# Think of it as a **flight simulator for SREs** — but for AI agents. A safe space to learn incident diagnosis and remediation without real consequences.
 
-### 🔴 The Real-World Problem
+# ### 🔴 The Real-World Problem
 
-Imagine this scenario:
-- **Payment system returning errors** 
-- **Users can't check out**
-- **Losing $1,000s per minute**
-- **You have 30 minutes to fix it**
+# Imagine this scenario:
+# - **Payment system returning errors** 
+# - **Users can't check out**
+# - **Losing $1,000s per minute**
+# - **You have 30 minutes to fix it**
 
-### ✅ What You Do
+# ### ✅ What You Do
 
-| Step | Action | Goal |
-|------|--------|------|
-| 🔍 **Investigate** | Check logs, metrics, configs | Gather evidence |
-| 🎯 **Diagnose** | Identify root cause | Understand the problem |
-| 🔧 **Remediate** | Apply targeted fix | Resolve the incident |
-| ✨ **Verify** | Confirm resolution | Ensure stability |
+# | Step | Action | Goal |
+# |------|--------|------|
+# | 🔍 **Investigate** | Check logs, metrics, configs | Gather evidence |
+# | 🎯 **Diagnose** | Identify root cause | Understand the problem |
+# | 🔧 **Remediate** | Apply targeted fix | Resolve the incident |
+# | ✨ **Verify** | Confirm resolution | Ensure stability |
 
----
+# ---
 
-## 🎓 Core Concepts
+# ## 🎓 Core Concepts
 
-<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 24px 0;">
+# <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 24px 0;">
 
-<div style="background: linear-gradient(135deg, rgba(244, 63, 94, 0.1), rgba(244, 63, 94, 0.02)); border-radius: 12px; padding: 16px; border-left: 4px solid #f43f5e;">
+# <div style="background: linear-gradient(135deg, rgba(244, 63, 94, 0.1), rgba(244, 63, 94, 0.02)); border-radius: 12px; padding: 16px; border-left: 4px solid #f43f5e;">
 
-### 🔍 **Investigation**
-- Check service health
-- Investigate logs
-- Analyze metrics
-- Read configs
-- Identify patterns
+# ### 🔍 **Investigation**
+# - Check service health
+# - Investigate logs
+# - Analyze metrics
+# - Read configs
+# - Identify patterns
 
-</div>
+# </div>
 
-<div style="background: linear-gradient(135deg, rgba(14, 165, 233, 0.1), rgba(14, 165, 233, 0.02)); border-radius: 12px; padding: 16px; border-left: 4px solid #0ea5e9;">
+# <div style="background: linear-gradient(135deg, rgba(14, 165, 233, 0.1), rgba(14, 165, 233, 0.02)); border-radius: 12px; padding: 16px; border-left: 4px solid #0ea5e9;">
 
-### 🎯 **Diagnosis**
-- Synthesize evidence
-- Form hypothesis
-- Validate assumptions
-- Declare root cause
-- Explain the failure
+# ### 🎯 **Diagnosis**
+# - Synthesize evidence
+# - Form hypothesis
+# - Validate assumptions
+# - Declare root cause
+# - Explain the failure
 
-</div>
+# </div>
 
-<div style="background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(34, 197, 94, 0.02)); border-radius: 12px; padding: 16px; border-left: 4px solid #22c55e;">
+# <div style="background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(34, 197, 94, 0.02)); border-radius: 12px; padding: 16px; border-left: 4px solid #22c55e;">
 
-### 🔧 **Remediation**
-- Apply targeted fixes
-- Update configs
-- Restart services
-- Rollback changes
-- Scale resources
+# ### 🔧 **Remediation**
+# - Apply targeted fixes
+# - Update configs
+# - Restart services
+# - Rollback changes
+# - Scale resources
 
-</div>
+# </div>
 
-<div style="background: linear-gradient(135deg, rgba(168, 85, 247, 0.1), rgba(168, 85, 247, 0.02)); border-radius: 12px; padding: 16px; border-left: 4px solid #a855f7;">
+# <div style="background: linear-gradient(135deg, rgba(168, 85, 247, 0.1), rgba(168, 85, 247, 0.02)); border-radius: 12px; padding: 16px; border-left: 4px solid #a855f7;">
 
-### 📊 **Scoring**
-- Root Cause (30%)
-- Remediation (25%)
-- Investigation (15%)
-- Efficiency (10%)
-- Safety (10%)
-- Sequence (10%)
+# ### 📊 **Scoring**
+# - Root Cause (30%)
+# - Remediation (25%)
+# - Investigation (15%)
+# - Efficiency (10%)
+# - Safety (10%)
+# - Sequence (10%)
 
-</div>
+# </div>
 
-</div>
+# </div>
 
----
+# ---
 
-## 🚀 Quick Start
+# ## 🚀 Quick Start
 
-### **Step 1: Select a Scenario** 🎯
-Start with **Easy** difficulty — single root cause, clear symptoms:
-- 🟢 **DB Connection Failure** — Misconfigured port
+# ### **Step 1: Select a Scenario** 🎯
+# Start with **Easy** difficulty — single root cause, clear symptoms:
+# - 🟢 **DB Connection Failure** — Misconfigured port
 
-### **Step 2: Launch an Episode** ⚡
-Click **🔄 Reset** to begin:
-- See active alerts
-- View service health
-- Understand what's broken
+# ### **Step 2: Launch an Episode** ⚡
+# Click **🔄 Reset** to begin:
+# - See active alerts
+# - View service health
+# - Understand what's broken
 
-### **Step 3: Solve It** 💡
-- Investigate clues
-- Declare root cause
-- Apply the fix
-- Get your score
+# ### **Step 3: Solve It** 💡
+# - Investigate clues
+# - Declare root cause
+# - Apply the fix
+# - Get your score
 
----
+# ---
 
-## 🎯 Why This Matters
+# ## 🎯 Why This Matters
 
-Modern observability and SRE tooling gives you **infinite data** but **limited time**.
+# Modern observability and SRE tooling gives you **infinite data** but **limited time**.
 
-This system teaches AI agents to:
-- ✅ Ask the **right questions** (not investigate everything)
-- ✅ **Diagnose before fixing** (avoid making it worse)
-- ✅ **Work under pressure** (cascading failures spread)
-- ✅ **Measure impact** (6 dimensions of success)
-- ✅ **Think like an SRE** (operational reasoning)
+# This system teaches AI agents to:
+# - ✅ Ask the **right questions** (not investigate everything)
+# - ✅ **Diagnose before fixing** (avoid making it worse)
+# - ✅ **Work under pressure** (cascading failures spread)
+# - ✅ **Measure impact** (6 dimensions of success)
+# - ✅ **Think like an SRE** (operational reasoning)
 
----
+# ---
 
-## 📚 Next Steps
+# ## 📚 Next Steps
 
-👉 **[🎓 Learn By Example]** — See a complete walkthrough of a real incident  
-👉 **[❓ FAQ & Concepts]** — Understand all the mechanics  
-👉 **[⚙️ Interactive Sandbox]** — Start playing and learning
+# 👉 **[🎓 Learn By Example]** — See a complete walkthrough of a real incident  
+# 👉 **[❓ FAQ & Concepts]** — Understand all the mechanics  
+# 👉 **[⚙️ Interactive Sandbox]** — Start playing and learning
 
----
+# ---
 
-**Let's make AI reliable.** 🚀
-                """)
+# **Let's make AI reliable.** 🚀
+#                 """)
 
-        # ─────────────────────────────────────────────────────────────────────────
-        # TAB 2: LEARN BY EXAMPLE
-        # ─────────────────────────────────────────────────────────────────────────
-        with gr.TabItem("🎓 Learn By Example", id="tutorial"):
-            with gr.Column():
-                gr.Markdown("""
-<div style="text-align: center; padding: 30px 20px; background: linear-gradient(135deg, rgba(34, 197, 94, 0.08), rgba(14, 165, 233, 0.08)); border-radius: 12px; margin-bottom: 30px;">
+#         # ─────────────────────────────────────────────────────────────────────────
+#         # TAB 2: LEARN BY EXAMPLE
+#         # ─────────────────────────────────────────────────────────────────────────
+#         with gr.TabItem("🎓 Learn By Example", id="tutorial"):
+#             with gr.Column():
+#                 gr.Markdown("""
+# <div style="text-align: center; padding: 30px 20px; background: linear-gradient(135deg, rgba(34, 197, 94, 0.08), rgba(14, 165, 233, 0.08)); border-radius: 12px; margin-bottom: 30px;">
 
-# 🎓 Step-by-Step Interactive Walkthrough
+# # 🎓 Step-by-Step Interactive Walkthrough
 
-### Complete Example: Database Connection Failure
+# ### Complete Example: Database Connection Failure
 
-**Learn by doing — follow along as we solve a real incident.**
+# **Learn by doing — follow along as we solve a real incident.**
 
-</div>
+# </div>
 
----
+# ---
 
-## 📋 Scenario Overview
+# ## 📋 Scenario Overview
 
-| Property | Value |
-|----------|-------|
-| **Task** | `db_connection_failure` |
-| **Difficulty** | 🟢 Easy |
-| **Time Budget** | 30 steps |
-| **Root Cause** | Database port misconfiguration |
-| **Services** | 3 (user-api, postgres-primary, nginx-lb) |
+# | Property | Value |
+# |----------|-------|
+# | **Task** | `db_connection_failure` |
+# | **Difficulty** | 🟢 Easy |
+# | **Time Budget** | 30 steps |
+# | **Root Cause** | Database port misconfiguration |
+# | **Services** | 3 (user-api, postgres-primary, nginx-lb) |
 
----
+# ---
 
-## 🚨 Phase 1: The Alert
+# ## 🚨 Phase 1: The Alert
 
-When you reset, the system presents the incident:
+# When you reset, the system presents the incident:
 
-```
-Active Alerts:
-  🔴 [ALT-001] CRITICAL — user-api at 2025-04-09 08:15:23
-     Message: user-api returning 503 errors
+# ```
+# Active Alerts:
+#   🔴 [ALT-001] CRITICAL — user-api at 2025-04-09 08:15:23
+#      Message: user-api returning 503 errors
 
-Service Health:
-  ❌ user-api       — 85% error rate, 450ms latency
-  ✅ postgres-primary — Healthy
-  ✅ nginx-lb       — Healthy
-```
+# Service Health:
+#   ❌ user-api       — 85% error rate, 450ms latency
+#   ✅ postgres-primary — Healthy
+#   ✅ nginx-lb       — Healthy
+# ```
 
-**What does this tell us?**
-- ❌ user-api is broken
-- ✅ Two other services are fine
-- 🔍 **Next**: Investigate user-api!
+# **What does this tell us?**
+# - ❌ user-api is broken
+# - ✅ Two other services are fine
+# - 🔍 **Next**: Investigate user-api!
 
----
+# ---
 
-## 🔍 Phase 2: Investigation (4 Steps)
+# ## 🔍 Phase 2: Investigation (4 Steps)
 
-### **Step 1: Check Service Health**
+# ### **Step 1: Check Service Health**
 
-```
-Action:  check_service_health
-Service: user-api
+# ```
+# Action:  check_service_health
+# Service: user-api
 
-Result:  ✅ Investigated user-api for first time
-Reward:  +0.04 ⭐
-```
+# Result:  ✅ Investigated user-api for first time
+# Reward:  +0.04 ⭐
+# ```
 
-**Why?** Confirms the problem is specific to user-api.
+# **Why?** Confirms the problem is specific to user-api.
 
----
+# ---
 
-### **Step 2: Investigate Logs** 🎯
+# ### **Step 2: Investigate Logs** 🎯
 
-```
-Action:   investigate_logs
-Service:  user-api
-Keyword:  connection
+# ```
+# Action:   investigate_logs
+# Service:  user-api
+# Keyword:  connection
 
-Result:   Found in logs:
-          [08:15:12] ERROR: Connection refused for postgres-primary:5433
-          [08:15:13] ERROR: Failed to connect to database
-          [08:15:14] ERROR: Connection refused for postgres-primary:5433
+# Result:   Found in logs:
+#           [08:15:12] ERROR: Connection refused for postgres-primary:5433
+#           [08:15:13] ERROR: Failed to connect to database
+#           [08:15:14] ERROR: Connection refused for postgres-primary:5433
 
-Reward:   +0.08 ⭐⭐
-```
+# Reward:   +0.08 ⭐⭐
+# ```
 
-**Key insight:** 🚩 Port 5433 looks wrong! (normally 5432)
+# **Key insight:** 🚩 Port 5433 looks wrong! (normally 5432)
 
----
+# ---
 
-### **Step 3: Check Metrics**
+# ### **Step 3: Check Metrics**
 
-```
-Action:  check_metrics
-Service: user-api
+# ```
+# Action:  check_metrics
+# Service: user-api
 
-Result:  Memory: 256 MB / 512 MB
-         CPU: 12%
-         Response Time: 450ms (huge!)
-         Error Rate: 85%
+# Result:  Memory: 256 MB / 512 MB
+#          CPU: 12%
+#          Response Time: 450ms (huge!)
+#          Error Rate: 85%
 
-Reward:  +0.02 ⭐
-```
+# Reward:  +0.02 ⭐
+# ```
 
----
+# ---
 
-### **Step 4: Read Config** 💡
+# ### **Step 4: Read Config** 💡
 
-```
-Action:  read_config
-Service: user-api
+# ```
+# Action:  read_config
+# Service: user-api
 
-Result:  {
-           "db_host": "postgres-primary",
-           "db_port": 5433,           ← ⚠️ WRONG! Should be 5432
-           "db_user": "app",
-           "max_connections": 100
-         }
+# Result:  {
+#            "db_host": "postgres-primary",
+#            "db_port": 5433,           ← ⚠️ WRONG! Should be 5432
+#            "db_user": "app",
+#            "max_connections": 100
+#          }
 
-Reward:  +0.06 ⭐
-```
+# Reward:  +0.06 ⭐
+# ```
 
-**Eureka!** We found it — port should be **5432**, not **5433** 🎉
+# **Eureka!** We found it — port should be **5432**, not **5433** 🎉
 
----
+# ---
 
-## 🎯 Phase 3: Diagnosis
+# ## 🎯 Phase 3: Diagnosis
 
-### **Step 5: Declare Root Cause**
+# ### **Step 5: Declare Root Cause**
 
-```
-Action: declare_root_cause
-Cause:  "user-api db_port misconfigured as 5433 instead of 5432"
+# ```
+# Action: declare_root_cause
+# Cause:  "user-api db_port misconfigured as 5433 instead of 5432"
 
-Result: ✅ ROOT CAUSE: Matches known cause!
-Reward: +0.20 ⭐⭐⭐⭐⭐ (BIG REWARD!)
+# Result: ✅ ROOT CAUSE: Matches known cause!
+# Reward: +0.20 ⭐⭐⭐⭐⭐ (BIG REWARD!)
 
-Feedback: "Correct root cause identified! Now apply a fix."
-```
+# Feedback: "Correct root cause identified! Now apply a fix."
+# ```
 
-**Important:** This step tests understanding. You must diagnose BEFORE fixing.
+# **Important:** This step tests understanding. You must diagnose BEFORE fixing.
 
----
+# ---
 
-## 🔧 Phase 4: Remediation
+# ## 🔧 Phase 4: Remediation
 
-### **Step 6: Update Configuration**
+# ### **Step 6: Update Configuration**
 
-```
-Action:      update_config
-Service:     user-api
-Config Key:  db_port
-Config Val:  5432
+# ```
+# Action:      update_config
+# Service:     user-api
+# Config Key:  db_port
+# Config Val:  5432
 
-Result:      ✅ Configuration updated successfully
-             user-api is now healthy: 0% errors, 45ms latency
+# Result:      ✅ Configuration updated successfully
+#              user-api is now healthy: 0% errors, 45ms latency
              
-Reward:      +0.15 ⭐⭐⭐
+# Reward:      +0.15 ⭐⭐⭐
 
-🏁 INCIDENT RESOLVED!
-```
+# 🏁 INCIDENT RESOLVED!
+# ```
 
----
+# ---
 
-## 🏆 Final Score
+# ## 🏆 Final Score
 
-<div style="background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(34, 197, 94, 0.02)); border-radius: 12px; padding: 20px; margin: 20px 0; border-left: 4px solid #22c55e;">
+# <div style="background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(34, 197, 94, 0.02)); border-radius: 12px; padding: 20px; margin: 20px 0; border-left: 4px solid #22c55e;">
 
-### **Final Score: 0.89 / 1.00**
+# ### **Final Score: 0.89 / 1.00**
 
-| Dimension | Score | Status |
-|-----------|-------|--------|
-| Root Cause | 1.00 | ✅ Identified correctly |
-| Remediation | 1.00 | ✅ Applied correct fix |
-| Investigation | 0.67 | ⚠️ Didn't check postgres-primary |
-| Efficiency | 1.00 | ✅ Used steps efficiently |
-| Safety | 1.00 | ✅ No collateral damage |
-| Sequence | 1.00 | ✅ Diagnosed before fixing |
+# | Dimension | Score | Status |
+# |-----------|-------|--------|
+# | Root Cause | 1.00 | ✅ Identified correctly |
+# | Remediation | 1.00 | ✅ Applied correct fix |
+# | Investigation | 0.67 | ⚠️ Didn't check postgres-primary |
+# | Efficiency | 1.00 | ✅ Used steps efficiently |
+# | Safety | 1.00 | ✅ No collateral damage |
+# | Sequence | 1.00 | ✅ Diagnosed before fixing |
 
-</div>
+# </div>
 
----
+# ---
 
-## 🎓 Key Lessons
+# ## 🎓 Key Lessons
 
-✅ **Best Practices:**
-1. Investigate all services to build a complete picture
-2. Look for patterns in logs (errors, timeouts, rejections)
-3. Always declare root cause BEFORE applying fixes
-4. Apply targeted, precise fixes
+# ✅ **Best Practices:**
+# 1. Investigate all services to build a complete picture
+# 2. Look for patterns in logs (errors, timeouts, rejections)
+# 3. Always declare root cause BEFORE applying fixes
+# 4. Apply targeted, precise fixes
 
-❌ **Anti-Patterns:**
-1. Restarting services randomly hoping luck fixes it
-2. Fixing something before understanding why it broke
-3. Investigating the same service repeatedly
-4. Ignoring diagnostic feedback
+# ❌ **Anti-Patterns:**
+# 1. Restarting services randomly hoping luck fixes it
+# 2. Fixing something before understanding why it broke
+# 3. Investigating the same service repeatedly
+# 4. Ignoring diagnostic feedback
 
----
+# ---
 
-## 🚀 Ready for More?
+# ## 🚀 Ready for More?
 
-**🟢 Easy Scenarios:**
-- db_connection_failure (what you just did!)
-- alert_triage (classify alert severity)
+# **🟢 Easy Scenarios:**
+# - db_connection_failure (what you just did!)
+# - alert_triage (classify alert severity)
 
-**🟡 Medium Scenarios:**
-- cascading_service_timeout (multi-hop cascades)
-- ssl_certificate_expiry (non-obvious cert issues)
+# **🟡 Medium Scenarios:**
+# - cascading_service_timeout (multi-hop cascades)
+# - ssl_certificate_expiry (non-obvious cert issues)
 
-**🔴 Hard Scenarios:**
-- multi_factor_outage (3 simultaneous root causes!)
-- database_deadlock (lock mechanism knowledge)
+# **🔴 Hard Scenarios:**
+# - multi_factor_outage (3 simultaneous root causes!)
+# - database_deadlock (lock mechanism knowledge)
 
-👉 Go to **"⚙️ Interactive Sandbox"** now and try it yourself!
-                """)
+# 👉 Go to **"⚙️ Interactive Sandbox"** now and try it yourself!
+#                 """)
 
-        # ─────────────────────────────────────────────────────────────────────────
-        # TAB 3: FAQ & CONCEPTS
-        # ─────────────────────────────────────────────────────────────────────────
-        with gr.TabItem("❓ FAQ & Concepts", id="faq"):
-            with gr.Column():
-                gr.Markdown("""
-# ❓ FAQ & Concepts
+#         # ─────────────────────────────────────────────────────────────────────────
+#         # TAB 3: FAQ & CONCEPTS
+#         # ─────────────────────────────────────────────────────────────────────────
+#         with gr.TabItem("❓ FAQ & Concepts", id="faq"):
+#             with gr.Column():
+#                 gr.Markdown("""
+# # ❓ FAQ & Concepts
 
-## Scoring & Evaluation
+# ## Scoring & Evaluation
 
-### Q: How is my score calculated?
+# ### Q: How is my score calculated?
 
-**A:** Your score has **6 dimensions**, each weighted:
+# **A:** Your score has **6 dimensions**, each weighted:
 
-| Dimension       | Weight | Explanation |
-|-----------------|--------|-------------|
-| Root Cause      | 30%    | Did you identify the RIGHT problem? |
-| Remediation     | 25%    | Did you apply the RIGHT fix? |
-| Investigation   | 15%    | Did you check enough services? |
-| Efficiency      | 10%    | Did you use steps wisely? |
-| Safety          | 10%    | Did you avoid making it worse? |
-| Sequence        | 10%    | Did you diagnose BEFORE fixing? |
+# | Dimension       | Weight | Explanation |
+# |-----------------|--------|-------------|
+# | Root Cause      | 30%    | Did you identify the RIGHT problem? |
+# | Remediation     | 25%    | Did you apply the RIGHT fix? |
+# | Investigation   | 15%    | Did you check enough services? |
+# | Efficiency      | 10%    | Did you use steps wisely? |
+# | Safety          | 10%    | Did you avoid making it worse? |
+# | Sequence        | 10%    | Did you diagnose BEFORE fixing? |
 
-**Example**: If you get 100% on Root Cause (0.30) + 100% on Remediation (0.25) but only 50% on Investigation (0.075), your total would be 0.625 / 1.0.
+# **Example**: If you get 100% on Root Cause (0.30) + 100% on Remediation (0.25) but only 50% on Investigation (0.075), your total would be 0.625 / 1.0.
 
----
+# ---
 
-### Q: What does "Observation Loop" mean?
+# ### Q: What does "Observation Loop" mean?
 
-**A:** If you do **3+ diagnosis actions in a row WITHOUT any fix**, the system penalizes you:
-- You get a **-0.08 penalty**
-- Your score is **hard-capped at 0.45** even if perfect on everything else
+# **A:** If you do **3+ diagnosis actions in a row WITHOUT any fix**, the system penalizes you:
+# - You get a **-0.08 penalty**
+# - Your score is **hard-capped at 0.45** even if perfect on everything else
 
-**Why?** In real incidents, endless investigation wastes time. You must eventually commit to a hypothesis and try a fix.
+# **Why?** In real incidents, endless investigation wastes time. You must eventually commit to a hypothesis and try a fix.
 
-**Fix**: Do an investigation, then declare a root cause, then apply a fix. Mix it up!
+# **Fix**: Do an investigation, then declare a root cause, then apply a fix. Mix it up!
 
----
+# ---
 
-### Q: Why did my score get worse after I applied a fix?
+# ### Q: Why did my score get worse after I applied a fix?
 
-**A:** Possibilities:
+# **A:** Possibilities:
 
-1. **Wrong diagnosis**: You fixed the wrong thing → Remediation score drops
-2. **Collateral damage**: Your fix broke another service → Safety score drops
-3. **Too late**: You took too many steps → Efficiency score drops
+# 1. **Wrong diagnosis**: You fixed the wrong thing → Remediation score drops
+# 2. **Collateral damage**: Your fix broke another service → Safety score drops
+# 3. **Too late**: You took too many steps → Efficiency score drops
 
-**Solution**: Review the feedback message — it will tell you what happened!
+# **Solution**: Review the feedback message — it will tell you what happened!
 
----
+# ---
 
-### Q: What's "Diagnosis Gate"?
+# ### Q: What's "Diagnosis Gate"?
 
-**A:** Some scenarios have a "diagnosis gate" — you must investigate a service BEFORE you can fix it successfully.
+# **A:** Some scenarios have a "diagnosis gate" — you must investigate a service BEFORE you can fix it successfully.
 
-**Example**: In `ssl_certificate_expiry`, you must investigate the `api-gateway` logs FIRST. If you try to fix it blind, you only get 50% of the remediation points.
+# **Example**: In `ssl_certificate_expiry`, you must investigate the `api-gateway` logs FIRST. If you try to fix it blind, you only get 50% of the remediation points.
 
-**Why?** In real SRE work, you don't blindly restart systems — you investigate, diagnose, then fix.
+# **Why?** In real SRE work, you don't blindly restart systems — you investigate, diagnose, then fix.
 
----
+# ---
 
-### Q: What's "Collateral Degradation"?
+# ### Q: What's "Collateral Degradation"?
 
-**A:** Every 4 steps, if the incident isn't resolved:
-- Unresolved upstream failures cascade
-- Dependent services get worse (↑10% error rate, ↑40% latency)
-- Eventually services fail completely
+# **A:** Every 4 steps, if the incident isn't resolved:
+# - Unresolved upstream failures cascade
+# - Dependent services get worse (↑10% error rate, ↑40% latency)
+# - Eventually services fail completely
 
-**Example**:
-- Step 0-3: user-api down, others OK
-- Step 4: payment-service starts getting errors (depends on user-api)
-- Step 8: If still not fixed, order-service gets errors too
-- Step 12: Entire stack might fail if unresolved
+# **Example**:
+# - Step 0-3: user-api down, others OK
+# - Step 4: payment-service starts getting errors (depends on user-api)
+# - Step 8: If still not fixed, order-service gets errors too
+# - Step 12: Entire stack might fail if unresolved
 
-**Why?** Real incidents don't stay contained — they spread. Time pressure is real.
+# **Why?** Real incidents don't stay contained — they spread. Time pressure is real.
 
----
+# ---
 
-## Scenarios
+# ## Scenarios
 
-### Q: Which scenario should I start with?
+# ### Q: Which scenario should I start with?
 
-**A:** Start with 🟢 **db_connection_failure** — it has:
-- Only 1 root cause
-- Very clear symptoms
-- No confusing red herrings
-- Straightforward fix
+# **A:** Start with 🟢 **db_connection_failure** — it has:
+# - Only 1 root cause
+# - Very clear symptoms
+# - No confusing red herrings
+# - Straightforward fix
 
-After that, try 🔵 **alert_triage** — different task type (classify severity, not fix).
+# After that, try 🔵 **alert_triage** — different task type (classify severity, not fix).
 
----
+# ---
 
-### Q: What's the difference between "easy" and "hard" scenarios?
+# ### Q: What's the difference between "easy" and "hard" scenarios?
 
-**A:**
+# **A:**
 
-| Aspect | Easy | Hard |
-|--------|------|------|
-| # Services | 3 | 6 |
-| # Root Causes | 1 | 2-3 simultaneously |
-| Red Herrings | None | Many misleading clues |
-| Cascades | No | Yes, spreading failures |
-| Diagnosis Gates | No | Yes, catch blind fixes |
-| Investigation Hints | Clear | Ambiguous |
+# | Aspect | Easy | Hard |
+# |--------|------|------|
+# | # Services | 3 | 6 |
+# | # Root Causes | 1 | 2-3 simultaneously |
+# | Red Herrings | None | Many misleading clues |
+# | Cascades | No | Yes, spreading failures |
+# | Diagnosis Gates | No | Yes, catch blind fixes |
+# | Investigation Hints | Clear | Ambiguous |
 
----
+# ---
 
-### Q: What's "Alert Triage"?
+# ### Q: What's "Alert Triage"?
 
-**A:** **Different task type** — instead of fixing an incident, you **classify its severity**:
+# **A:** **Different task type** — instead of fixing an incident, you **classify its severity**:
 
-- **P1 (Critical)**: Complete outage or >$1k/min revenue loss
-- **P2 (High)**: Major degradation, most users affected
-- **P3 (Medium)**: Partial/minor, graceful fallback active
-- **P4 (Low)**: Informational, zero user impact
+# - **P1 (Critical)**: Complete outage or >$1k/min revenue loss
+# - **P2 (High)**: Major degradation, most users affected
+# - **P3 (Medium)**: Partial/minor, graceful fallback active
+# - **P4 (Low)**: Informational, zero user impact
 
-**Goal**: Investigate the incident, then submit severity with `submit_severity` action.
+# **Goal**: Investigate the incident, then submit severity with `submit_severity` action.
 
-**Budget**: Only 3 steps — must decide quickly!
+# **Budget**: Only 3 steps — must decide quickly!
 
----
+# ---
 
-## Actions & Mechanics
+# ## Actions & Mechanics
 
-### Q: What's the difference between `investigate_logs` and `check_service_health`?
+# ### Q: What's the difference between `investigate_logs` and `check_service_health`?
 
-**A:**
+# **A:**
 
-| Action | Returns | Use When |
-|--------|---------|----------|
-| `check_service_health` | Health status, error rate, latency | Quick overview of service state |
-| `investigate_logs` | Raw log excerpts | Need detailed error messages |
-| `check_metrics` | CPU, memory, throughput | Understanding scale/capacity issues |
-| `read_config` | Service configuration | Checking settings |
-| `run_diagnostic` | Deep diagnostic for a service | Need advanced info |
+# | Action | Returns | Use When |
+# |--------|---------|----------|
+# | `check_service_health` | Health status, error rate, latency | Quick overview of service state |
+# | `investigate_logs` | Raw log excerpts | Need detailed error messages |
+# | `check_metrics` | CPU, memory, throughput | Understanding scale/capacity issues |
+# | `read_config` | Service configuration | Checking settings |
+# | `run_diagnostic` | Deep diagnostic for a service | Need advanced info |
 
-**Pattern**: Use `check_service_health` first to get overview, then `investigate_logs` on suspicious services.
+# **Pattern**: Use `check_service_health` first to get overview, then `investigate_logs` on suspicious services.
 
----
+# ---
 
-### Q: What actions fix things?
+# ### Q: What actions fix things?
 
-**A:**
+# **A:**
 
-| Action | When to Use |
-|--------|------------|
-| `update_config` | Configuration wrong (ports, limits, etc.) |
-| `restart_service` | Service crashed or in bad state |
-| `rollback_deployment` | Recent deployment broke things |
-| `scale_service` | Service overloaded, needs more replicas |
+# | Action | When to Use |
+# |--------|------------|
+# | `update_config` | Configuration wrong (ports, limits, etc.) |
+# | `restart_service` | Service crashed or in bad state |
+# | `rollback_deployment` | Recent deployment broke things |
+# | `scale_service` | Service overloaded, needs more replicas |
 
----
+# ---
 
-### Q: Can I see what actions are available in a specific scenario?
+# ### Q: Can I see what actions are available in a specific scenario?
 
-**A:** After you click 🔄 **Reset**, the "📋 Action Controls" section shows all available actions for this scenario.
+# **A:** After you click 🔄 **Reset**, the "📋 Action Controls" section shows all available actions for this scenario.
 
----
+# ---
 
-## Seeds & Reproducibility
+# ## Seeds & Reproducibility
 
-### Q: What's a "Seed"?
+# ### Q: What's a "Seed"?
 
-**A:** A seed makes scenarios reproducible:
-- **Same seed** = same incident every time
-- **Different seed** = variation of the scenario (metric values shift ±12%)
+# **A:** A seed makes scenarios reproducible:
+# - **Same seed** = same incident every time
+# - **Different seed** = variation of the scenario (metric values shift ±12%)
 
-**Use**: 
-- Testing: Use seed=42 to get consistent results
-- Training: Use different seeds to generate variety
+# **Use**: 
+# - Testing: Use seed=42 to get consistent results
+# - Training: Use different seeds to generate variety
 
-**Leave blank** to get a random variation.
+# **Leave blank** to get a random variation.
 
----
+# ---
 
-### Q: Can I see the same incident multiple times?
+# ### Q: Can I see the same incident multiple times?
 
-**A:** Yes! Use the same seed. This helps if you want to try a different investigation strategy on the exact same scenario.
+# **A:** Yes! Use the same seed. This helps if you want to try a different investigation strategy on the exact same scenario.
 
----
+# ---
 
-## Troubleshooting
+# ## Troubleshooting
 
-### Q: My episode ended but I don't think I fixed it?
+# ### Q: My episode ended but I don't think I fixed it?
 
-**A:** Click 📊 **Grade (6D)** to see the full breakdown. The feedback will explain:
-- What you diagnosed correctly/incorrectly
-- What you fixed correctly/incorrectly
-- Why your score is what it is
+# **A:** Click 📊 **Grade (6D)** to see the full breakdown. The feedback will explain:
+# - What you diagnosed correctly/incorrectly
+# - What you fixed correctly/incorrectly
+# - Why your score is what it is
 
----
+# ---
 
-### Q: Why is my score showing 0.45 even though I diagnosed correctly?
+# ### Q: Why is my score showing 0.45 even though I diagnosed correctly?
 
-**A:** Likely "Observation Loop" — you did 3+ diagnosis steps in a row without any fix action. Score is hard-capped at 0.45 in this case.
+# **A:** Likely "Observation Loop" — you did 3+ diagnosis steps in a row without any fix action. Score is hard-capped at 0.45 in this case.
 
----
+# ---
 
-### Q: The system says "Diagnosis Gate" — what do I do?
+# ### Q: The system says "Diagnosis Gate" — what do I do?
 
-**A:** You tried to fix a service without investigating it first. Some scenarios require you to:
-1. Investigate the service
-2. Declare the root cause
-3. THEN apply the fix
+# **A:** You tried to fix a service without investigating it first. Some scenarios require you to:
+# 1. Investigate the service
+# 2. Declare the root cause
+# 3. THEN apply the fix
 
-Try replacing your fix action with `investigate_logs` or `read_config` first.
+# Try replacing your fix action with `investigate_logs` or `read_config` first.
 
----
+# ---
 
-### Q: Can I try the same task again?
+# ### Q: Can I try the same task again?
 
-**A:** Yes! Click 🔄 **Reset** with the same task name (and optionally same seed) to run again.
+# **A:** Yes! Click 🔄 **Reset** with the same task name (and optionally same seed) to run again.
 
----
+# ---
 
-## Advanced
+# ## Advanced
 
-### Q: Why do I need to declare root cause separately from fixing?
+# ### Q: Why do I need to declare root cause separately from fixing?
 
-**A:** 
-- **Root cause declaration** tests understanding (can you diagnose?)
-- **Fix application** tests judgment (do you know HOW to fix it?)
+# **A:** 
+# - **Root cause declaration** tests understanding (can you diagnose?)
+# - **Fix application** tests judgment (do you know HOW to fix it?)
 
-Separating them:
-- Forces diagnosis before action (safer)
-- Tests reasoning (not just luck)
-- Matches real SRE workflow
+# Separating them:
+# - Forces diagnosis before action (safer)
+# - Tests reasoning (not just luck)
+# - Matches real SRE workflow
 
----
+# ---
 
-### Q: What if there are multiple root causes?
+# ### Q: What if there are multiple root causes?
 
-**A:** In hard scenarios like `multi_factor_outage`:
-- 3 separate issues exist simultaneously
-- You must identify ALL 3 to get full score
-- You'll call `declare_root_cause` multiple times with different causes
+# **A:** In hard scenarios like `multi_factor_outage`:
+# - 3 separate issues exist simultaneously
+# - You must identify ALL 3 to get full score
+# - You'll call `declare_root_cause` multiple times with different causes
 
----
+# ---
 
-### Q: How do I improve my score?
+# ### Q: How do I improve my score?
 
-**A:** 
-1. Investigate thoroughly (don't skip services)
-2. Match your diagnosis to the root cause exactly
-3. Apply the correct fix corresponding to your diagnosis
-4. Don't do 3+ diagnosis actions in a row
-5. Declare root cause BEFORE applying fixes
-6. In alert triage, classify severity accurately
+# **A:** 
+# 1. Investigate thoroughly (don't skip services)
+# 2. Match your diagnosis to the root cause exactly
+# 3. Apply the correct fix corresponding to your diagnosis
+# 4. Don't do 3+ diagnosis actions in a row
+# 5. Declare root cause BEFORE applying fixes
+# 6. In alert triage, classify severity accurately
 
----
+# ---
 
-## Still Confused?
+# ## Still Confused?
 
-👉 Go to **"⚙️ Interactive Sandbox"** and just start playing! You'll learn fastest by doing.
+# 👉 Go to **"⚙️ Interactive Sandbox"** and just start playing! You'll learn fastest by doing.
 
-The system will give you feedback after every action. Read the feedback — it will guide you.
-                """)
+# The system will give you feedback after every action. Read the feedback — it will guide you.
+#                 """)
 
-        # ─────────────────────────────────────────────────────────────────────────
-        # TAB 4: INTERACTIVE SANDBOX (THE ACTUAL INTERFACE)
-        # ─────────────────────────────────────────────────────────────────────────
-        with gr.TabItem("⚙️ Interactive Sandbox", id="sandbox"):
+#         # ─────────────────────────────────────────────────────────────────────────
+#         # TAB 4: INTERACTIVE SANDBOX (THE ACTUAL INTERFACE)
+#         # ─────────────────────────────────────────────────────────────────────────
+#         with gr.TabItem("⚙️ Interactive Sandbox", id="sandbox"):
 
-            with gr.Row(equal_height=False):
+#             with gr.Row(equal_height=False):
 
-                # ── Left column: controls ─────────────────────────────────────────────
-                with gr.Column(scale=2, min_width=380):
+#                 # ── Left column: controls ─────────────────────────────────────────────
+#                 with gr.Column(scale=2, min_width=380):
 
-                    gr.HTML('<div class="section-title">🎯 Episode Setup</div>')
-                    with gr.Row():
-                        task_dd = gr.Dropdown(
-                            choices=[
-                                ("🟢 Easy — DB Connection Failure",      "db_connection_failure"),
-                                ("🟡 Medium — Cascading Timeout",        "cascading_service_timeout"),
-                                ("🟡 Medium — SSL Certificate Expiry",   "ssl_certificate_expiry"),
-                                ("🔴 Hard — Multi-Factor Outage",        "multi_factor_outage"),
-                                ("🔴 Hard — Database Deadlock",          "database_deadlock"),
-                                ("🔵 Easy — Alert Triage (P1/P2/P3/P4)", "alert_triage"),
-                            ],
-                            value="db_connection_failure",
-                            label="Task",
-                            scale=2,
-                        )
-                        seed_tb = gr.Textbox(
-                            label="Seed (optional)",
-                            placeholder="e.g. 42",
-                            value="",
-                            scale=1,
-                        )
-                    reset_btn = gr.Button("🔄 Reset Environment", variant="secondary", size="lg")
+#                     gr.HTML('<div class="section-title">🎯 Episode Setup</div>')
+#                     with gr.Row():
+#                         task_dd = gr.Dropdown(
+#                             choices=[
+#                                 ("🟢 Easy — DB Connection Failure",      "db_connection_failure"),
+#                                 ("🟡 Medium — Cascading Timeout",        "cascading_service_timeout"),
+#                                 ("🟡 Medium — SSL Certificate Expiry",   "ssl_certificate_expiry"),
+#                                 ("🔴 Hard — Multi-Factor Outage",        "multi_factor_outage"),
+#                                 ("🔴 Hard — Database Deadlock",          "database_deadlock"),
+#                                 ("🔵 Easy — Alert Triage (P1/P2/P3/P4)", "alert_triage"),
+#                             ],
+#                             value="db_connection_failure",
+#                             label="Task",
+#                             scale=2,
+#                         )
+#                         seed_tb = gr.Textbox(
+#                             label="Seed (optional)",
+#                             placeholder="e.g. 42",
+#                             value="",
+#                             scale=1,
+#                         )
+#                     reset_btn = gr.Button("🔄 Reset Environment", variant="secondary", size="lg")
 
-                    gr.HTML('<div class="section-title">🎮 Action Controls</div>')
-                    action_dd = gr.Dropdown(
-                        choices=[
-                            ("🔍 investigate_logs",     "investigate_logs"),
-                            ("🔍 check_metrics",        "check_metrics"),
-                            ("🔍 read_config",          "read_config"),
-                            ("🔍 check_service_health", "check_service_health"),
-                            ("🔍 run_diagnostic",       "run_diagnostic"),
-                            ("🔧 restart_service",      "restart_service"),
-                            ("🔧 update_config",        "update_config"),
-                            ("🔧 rollback_deployment",  "rollback_deployment"),
-                            ("🔧 scale_service",        "scale_service"),
-                            ("📝 declare_root_cause",   "declare_root_cause"),
-                            ("🔵 submit_severity",      "submit_severity"),
-                        ],
-                        value="investigate_logs",
-                        label="Action Type",
-                    )
-                    service_dd = gr.Dropdown(
-                        choices=[],
-                        label="Target Service",
-                        allow_custom_value=True,
-                        info="Populated after Reset",
-                    )
+#                     gr.HTML('<div class="section-title">🎮 Action Controls</div>')
+#                     action_dd = gr.Dropdown(
+#                         choices=[
+#                             ("🔍 investigate_logs",     "investigate_logs"),
+#                             ("🔍 check_metrics",        "check_metrics"),
+#                             ("🔍 read_config",          "read_config"),
+#                             ("🔍 check_service_health", "check_service_health"),
+#                             ("🔍 run_diagnostic",       "run_diagnostic"),
+#                             ("🔧 restart_service",      "restart_service"),
+#                             ("🔧 update_config",        "update_config"),
+#                             ("🔧 rollback_deployment",  "rollback_deployment"),
+#                             ("🔧 scale_service",        "scale_service"),
+#                             ("📝 declare_root_cause",   "declare_root_cause"),
+#                             ("🔵 submit_severity",      "submit_severity"),
+#                         ],
+#                         value="investigate_logs",
+#                         label="Action Type",
+#                     )
+#                     service_dd = gr.Dropdown(
+#                         choices=[],
+#                         label="Target Service",
+#                         allow_custom_value=True,
+#                         info="Populated after Reset",
+#                     )
 
-                    with gr.Accordion("📋 Action Parameters", open=True):
-                        gr.HTML('<div class="param-hint">investigate_logs — optional keyword filter</div>')
-                        keyword_tb = gr.Textbox(
-                            label="Keyword (investigate_logs)",
-                            placeholder="e.g. error, timeout, OOM, connection",
-                            value="",
-                        )
+#                     with gr.Accordion("📋 Action Parameters", open=True):
+#                         gr.HTML('<div class="param-hint">investigate_logs — optional keyword filter</div>')
+#                         keyword_tb = gr.Textbox(
+#                             label="Keyword (investigate_logs)",
+#                             placeholder="e.g. error, timeout, OOM, connection",
+#                             value="",
+#                         )
 
-                        gr.HTML('<div class="param-hint">update_config — config key + new value</div>')
-                        with gr.Row():
-                            config_key_tb = gr.Textbox(
-                                label="Config Key",
-                                placeholder="e.g. max_connections",
-                                scale=1,
-                            )
-                            config_val_tb = gr.Textbox(
-                                label="Config Value",
-                                placeholder="e.g. 100",
-                                scale=1,
-                            )
+#                         gr.HTML('<div class="param-hint">update_config — config key + new value</div>')
+#                         with gr.Row():
+#                             config_key_tb = gr.Textbox(
+#                                 label="Config Key",
+#                                 placeholder="e.g. max_connections",
+#                                 scale=1,
+#                             )
+#                             config_val_tb = gr.Textbox(
+#                                 label="Config Value",
+#                                 placeholder="e.g. 100",
+#                                 scale=1,
+#                             )
 
-                        gr.HTML('<div class="param-hint">scale_service — desired replica count</div>')
-                        replicas_tb = gr.Textbox(
-                            label="Replicas (scale_service)",
-                            placeholder="e.g. 3",
-                            value="",
-                        )
+#                         gr.HTML('<div class="param-hint">scale_service — desired replica count</div>')
+#                         replicas_tb = gr.Textbox(
+#                             label="Replicas (scale_service)",
+#                             placeholder="e.g. 3",
+#                             value="",
+#                         )
 
-                        gr.HTML('<div class="param-hint">declare_root_cause — describe root cause in detail (service + failure mode)</div>')
-                        cause_tb = gr.Textbox(
-                            label="Root Cause Description",
-                            placeholder="e.g. postgres-primary connection pool exhausted due to slow analytics query",
-                            lines=3,
-                            value="",
-                        )
+#                         gr.HTML('<div class="param-hint">declare_root_cause — describe root cause in detail (service + failure mode)</div>')
+#                         cause_tb = gr.Textbox(
+#                             label="Root Cause Description",
+#                             placeholder="e.g. postgres-primary connection pool exhausted due to slow analytics query",
+#                             lines=3,
+#                             value="",
+#                         )
 
-                        gr.HTML('<div class="param-hint">submit_severity (alert_triage only) — classify incident P1–P4</div>')
-                        severity_dd = gr.Dropdown(
-                            choices=[
-                                ("— not submitting", ""),
-                                ("🔴 P1 — Critical: complete outage or >$1k/min revenue loss", "P1"),
-                                ("🟠 P2 — High: major degradation, most users affected", "P2"),
-                                ("🟡 P3 — Medium: partial/minor, graceful fallback active", "P3"),
-                                ("🟢 P4 — Low: informational, zero user impact", "P4"),
-                            ],
-                            value="",
-                            label="Severity (submit_severity)",
-                        )
+#                         gr.HTML('<div class="param-hint">submit_severity (alert_triage only) — classify incident P1–P4</div>')
+#                         severity_dd = gr.Dropdown(
+#                             choices=[
+#                                 ("— not submitting", ""),
+#                                 ("🔴 P1 — Critical: complete outage or >$1k/min revenue loss", "P1"),
+#                                 ("🟠 P2 — High: major degradation, most users affected", "P2"),
+#                                 ("🟡 P3 — Medium: partial/minor, graceful fallback active", "P3"),
+#                                 ("🟢 P4 — Low: informational, zero user impact", "P4"),
+#                             ],
+#                             value="",
+#                             label="Severity (submit_severity)",
+#                         )
 
-                    step_btn = gr.Button("▶️ Execute Action", variant="primary", size="lg")
+#                     step_btn = gr.Button("▶️ Execute Action", variant="primary", size="lg")
 
-                    gr.HTML('<div class="section-title">📊 Scoring</div>')
-                    with gr.Row():
-                        grade_btn = gr.Button("📊 Grade (6D)", variant="secondary", size="sm")
-                        state_btn = gr.Button("📋 State",      variant="secondary", size="sm")
+#                     gr.HTML('<div class="section-title">📊 Scoring</div>')
+#                     with gr.Row():
+#                         grade_btn = gr.Button("📊 Grade (6D)", variant="secondary", size="sm")
+#                         state_btn = gr.Button("📋 State",      variant="secondary", size="sm")
 
-                    gr.HTML('<div class="section-title">📌 Episode State</div>')
-                    state_display = gr.Markdown("### ⏳ Ready\n\nSelect task → Reset → Begin")
+#                     gr.HTML('<div class="section-title">📌 Episode State</div>')
+#                     state_display = gr.Markdown("### ⏳ Ready\n\nSelect task → Reset → Begin")
 
-                    # ── Right column: output panels ───────────────────────────────────────
-                with gr.Column(scale=3, min_width=480):
+#                     # ── Right column: output panels ───────────────────────────────────────
+#                 with gr.Column(scale=3, min_width=480):
 
-                    gr.HTML('<div class="section-title">👁️ Observation</div>')
-                    obs_display = gr.Markdown(
-                        "### 👋 Welcome\n\nSelect a task and click **🔄 Reset** to begin."
-                    )
+#                     gr.HTML('<div class="section-title">👁️ Observation</div>')
+#                     obs_display = gr.Markdown(
+#                         "### 👋 Welcome\n\nSelect a task and click **🔄 Reset** to begin."
+#                     )
 
-                    gr.HTML('<div class="section-title">📜 Action History</div>')
-                    history_display = gr.Markdown("*No actions yet.*")
+#                     gr.HTML('<div class="section-title">📜 Action History</div>')
+#                     history_display = gr.Markdown("*No actions yet.*")
 
-                    gr.HTML('<div class="section-title">💰 Step Reward</div>')
-                    reward_display = gr.Markdown("*Start an episode first.*")
+#                     gr.HTML('<div class="section-title">💰 Step Reward</div>')
+#                     reward_display = gr.Markdown("*Start an episode first.*")
 
-                    gr.HTML('<div class="section-title">🏆 6D Score Breakdown</div>')
-                    score_display = gr.Markdown(
-                        "*Click **📊 Grade (6D)** after executing actions.*"
-                    )
+#                     gr.HTML('<div class="section-title">🏆 6D Score Breakdown</div>')
+#                     score_display = gr.Markdown(
+#                         "*Click **📊 Grade (6D)** after executing actions.*"
+#                     )
 
-                # ── Wire up events ────────────────────────────────────────────────────────
-                reset_btn.click(
-                    fn=gr_reset,
-                    inputs=[task_dd, seed_tb],
-                    outputs=[obs_display, history_display, state_display, reward_display, score_display, service_dd],
-                )
-                step_btn.click(
-                    fn=gr_step,
-                    inputs=[action_dd, service_dd, keyword_tb, config_key_tb, config_val_tb, replicas_tb, cause_tb, severity_dd],
-                    outputs=[obs_display, history_display, state_display, reward_display],
-                )
-                grade_btn.click(fn=gr_grade, outputs=[score_display])
-                state_btn.click(fn=gr_state, outputs=[state_display])
+#                 # ── Wire up events ────────────────────────────────────────────────────────
+#                 reset_btn.click(
+#                     fn=gr_reset,
+#                     inputs=[task_dd, seed_tb],
+#                     outputs=[obs_display, history_display, state_display, reward_display, score_display, service_dd],
+#                 )
+#                 step_btn.click(
+#                     fn=gr_step,
+#                     inputs=[action_dd, service_dd, keyword_tb, config_key_tb, config_val_tb, replicas_tb, cause_tb, severity_dd],
+#                     outputs=[obs_display, history_display, state_display, reward_display],
+#                 )
+#                 grade_btn.click(fn=gr_grade, outputs=[score_display])
+#                 state_btn.click(fn=gr_state, outputs=[state_display])
 
 
+
+with open(os.path.join(os.path.dirname(__file__), "incident_response_ui.html"), "r") as f:
+    custom_html = f.read()
+
+with gr.Blocks() as web_ui:
+    gr.HTML(custom_html)
+    
 app = gr.mount_gradio_app(app, web_ui, path="/web")
 
 
