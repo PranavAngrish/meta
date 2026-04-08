@@ -1,3 +1,18 @@
+Metadata-Version: 2.4
+Name: incident-response-env
+Version: 1.0.0
+Summary: Production Incident Response & Root Cause Analysis OpenEnv Environment
+License: MIT
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+Requires-Dist: fastapi>=0.104.0
+Requires-Dist: uvicorn>=0.24.0
+Requires-Dist: pydantic>=2.0.0
+Requires-Dist: gradio>=4.0.0
+Requires-Dist: requests>=2.31.0
+Requires-Dist: openai>=1.0.0
+Requires-Dist: openenv-core>=0.2.0
+
 ---
 title: Incident Response Environment
 emoji: 🚨
