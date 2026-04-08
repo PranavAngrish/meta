@@ -681,75 +681,481 @@ def gr_state():
 # ── CSS & JS ──────────────────────────────────────────────────────────────────
 
 CUSTOM_CSS = """
-:root, html, body, .gradio-container { color-scheme: light !important; }
-body.dark, html.dark, .dark {
-    color-scheme: light !important;
-    --body-background-fill: #ffffff !important;
-    --background-fill-primary: #ffffff !important;
-    --background-fill-secondary: #f8fafc !important;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500;600&display=swap');
+
+* { box-sizing: border-box; }
+
+:root, html, body, .gradio-container { 
+    color-scheme: light !important; 
+    --primary: #f43f5e;
+    --primary-dark: #e11d48;
+    --primary-light: #fb7185;
+    --accent: #0ea5e9;
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8fafc;
+    --bg-tertiary: #f1f5f9;
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --text-tertiary: #94a3b8;
+    --border: #e2e8f0;
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
 }
+
+body, html, .gradio-container { 
+    background: #f9fafb !important;
+}
+
 .gradio-container {
-    background: #ffffff !important;
-    max-width: 1500px !important;
-    margin: 0 auto !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
 }
+
+/* HERO HEADER */
 .env-header {
+    background: linear-gradient(135deg, #f43f5e 0%, #e11d48 50%, #be123c 100%);
+    padding: 32px 40px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 18px 16px;
-    border-bottom: 2px solid #fecaca;
-    margin-bottom: 18px;
-    background: linear-gradient(135deg, #fff5f5, #ffffff);
-    border-radius: 12px 12px 0 0;
+    box-shadow: var(--shadow-xl);
+    position: relative;
+    overflow: hidden;
 }
+
+.env-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 500px;
+    height: 500px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    filter: blur(40px);
+}
+
+.env-header::after {
+    content: '';
+    position: absolute;
+    bottom: -50%;
+    left: -10%;
+    width: 400px;
+    height: 400px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 50%;
+    filter: blur(60px);
+}
+
 .env-header-left {
     display: flex;
     align-items: center;
-    gap: 12px;
-    font-size: 1.4rem;
+    gap: 16px;
+    font-size: 1.8rem;
     font-weight: 800;
-    color: #0f172a;
+    color: #ffffff;
+    position: relative;
+    z-index: 1;
 }
+
 .env-header-dot {
-    width: 13px;
-    height: 13px;
+    width: 14px;
+    height: 14px;
     border-radius: 50%;
-    background: #ef4444;
-    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.5);
-    animation: pulse-dot 2s ease-in-out infinite;
+    background: #ffffff;
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+    animation: pulse-dot 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
+
 @keyframes pulse-dot {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
-    50%       { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
+    0% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7); }
+    70% { box-shadow: 0 0 0 12px rgba(255, 255, 255, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
 }
+
 .env-header-right {
-    font-size: 0.82rem;
+    font-size: 0.75rem;
     font-weight: 600;
-    color: #94a3b8;
+    color: rgba(255, 255, 255, 0.9);
     text-transform: uppercase;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.12em;
+    position: relative;
+    z-index: 1;
+    background: rgba(255, 255, 255, 0.15);
+    padding: 8px 16px;
+    border-radius: 50px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
+
+/* TABS */
+.gradio-tabs {
+    gap: 0 !important;
+    border-bottom: 2px solid var(--border) !important;
+}
+
+.gradio-tabs .tabitem {
+    border: none !important;
+    padding: 0 !important;
+}
+
+.gradio-tabs .tabitem > button {
+    border-radius: 0 !important;
+    border: none !important;
+    border-bottom: 3px solid transparent !important;
+    font-weight: 600 !important;
+    color: var(--text-secondary) !important;
+    font-size: 0.95rem !important;
+    padding: 16px 24px !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    position: relative;
+}
+
+.gradio-tabs .tabitem > button:hover {
+    background: rgba(244, 63, 94, 0.05) !important;
+    color: var(--primary) !important;
+}
+
+.gradio-tabs .tabitem > button.selected {
+    color: var(--primary) !important;
+    box-shadow: inset 0 -3px 0 0 var(--primary) !important;
+    background: rgba(244, 63, 94, 0.03) !important;
+}
+
+/* SECTION TITLES */
 .section-title {
     font-weight: 700;
-    font-size: 0.82rem;
-    color: #1e293b;
-    margin: 14px 0 6px;
-    padding: 5px 10px;
-    background: #f1f5f9;
-    border-radius: 5px;
-    border-left: 3px solid #ef4444;
+    font-size: 0.8rem;
+    color: var(--text-primary);
+    margin: 24px 0 12px;
+    padding: 8px 12px;
+    background: linear-gradient(135deg, rgba(244, 63, 94, 0.08), rgba(14, 165, 233, 0.08));
+    border-radius: 6px;
+    border-left: 4px solid var(--primary);
     text-transform: uppercase;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.1em;
+    transition: all 0.3s ease;
 }
+
+/* CONTENT CARDS */
+.content-card {
+    background: var(--bg-primary);
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    margin-bottom: 16px;
+}
+
+.content-card:hover {
+    box-shadow: var(--shadow-lg);
+    border-color: rgba(244, 63, 94, 0.3);
+    transform: translateY(-2px);
+}
+
+/* BUTTONS */
+.gradio-button {
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+    font-size: 0.95rem !important;
+    padding: 12px 24px !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    border: none !important;
+    position: relative;
+    overflow: hidden;
+}
+
+.gradio-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.2);
+    transition: left 0.3s ease;
+    z-index: 0;
+}
+
+.gradio-button:hover::before {
+    left: 100%;
+}
+
+.gradio-button.primary {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%) !important;
+    color: white !important;
+    box-shadow: 0 8px 16px -4px rgba(244, 63, 94, 0.3) !important;
+}
+
+.gradio-button.primary:hover {
+    box-shadow: 0 12px 24px -4px rgba(244, 63, 94, 0.4) !important;
+    transform: translateY(-2px) !important;
+}
+
+.gradio-button.secondary {
+    background: var(--bg-tertiary) !important;
+    color: var(--text-primary) !important;
+    border: 1.5px solid var(--border) !important;
+}
+
+.gradio-button.secondary:hover {
+    background: var(--border) !important;
+    border-color: var(--primary) !important;
+    color: var(--primary) !important;
+}
+
+/* TEXTBOXES & INPUTS */
+.gradio-textbox input,
+.gradio-textbox textarea,
+.gradio-dropdown select,
+.gradio-dropdown > div {
+    border-radius: 8px !important;
+    border: 1.5px solid var(--border) !important;
+    padding: 10px 12px !important;
+    font-size: 0.95rem !important;
+    transition: all 0.3s ease !important;
+    font-family: 'Inter', sans-serif !important;
+}
+
+.gradio-textbox input:focus,
+.gradio-textbox textarea:focus,
+.gradio-dropdown select:focus {
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 3px rgba(244, 63, 94, 0.1) !important;
+    outline: none !important;
+}
+
+/* LABELS */
+.gradio-textbox label,
+.gradio-dropdown label,
+.gradio-number label {
+    font-weight: 600 !important;
+    color: var(--text-primary) !important;
+    margin-bottom: 6px !important;
+}
+
+/* PARAM HINTS */
 .param-hint {
-    font-size: 0.75rem;
-    color: #64748b;
-    margin: 3px 0 4px;
-    padding: 4px 8px;
-    background: #f8fafc;
+    font-size: 0.8rem;
+    color: var(--text-tertiary);
+    margin: 6px 0 8px;
+    padding: 8px 12px;
+    background: var(--bg-tertiary);
+    border-radius: 6px;
+    border-left: 3px solid var(--accent);
+    font-style: italic;
+}
+
+/* ACCORDION */
+.gradio-accordion {
+    border-radius: 8px !important;
+    border: 1.5px solid var(--border) !important;
+    overflow: hidden !important;
+}
+
+.gradio-accordion > button {
+    font-weight: 600 !important;
+    background: var(--bg-tertiary) !important;
+    transition: all 0.3s ease !important;
+    padding: 14px 16px !important;
+}
+
+.gradio-accordion > button:hover {
+    background: linear-gradient(135deg, rgba(244, 63, 94, 0.08), rgba(14, 165, 233, 0.08)) !important;
+}
+
+.gradio-accordion > button[open] {
+    background: linear-gradient(135deg, rgba(244, 63, 94, 0.1), rgba(14, 165, 233, 0.1)) !important;
+    border-bottom: 2px solid var(--primary) !important;
+}
+
+/* MARKDOWN */
+.gradio-markdown {
+    font-family: 'Inter', sans-serif !important;
+}
+
+.gradio-markdown h1,
+.gradio-markdown h2,
+.gradio-markdown h3 {
+    color: var(--text-primary) !important;
+    font-weight: 700 !important;
+    margin: 20px 0 10px !important;
+}
+
+.gradio-markdown h1 {
+    font-size: 2rem !important;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.gradio-markdown h2 {
+    font-size: 1.5rem !important;
+}
+
+.gradio-markdown h3 {
+    font-size: 1.2rem !important;
+}
+
+.gradio-markdown p {
+    color: var(--text-secondary) !important;
+    line-height: 1.6 !important;
+    font-size: 0.95rem !important;
+}
+
+.gradio-markdown code {
+    background: var(--bg-tertiary) !important;
+    color: var(--primary) !important;
+    padding: 2px 6px !important;
+    border-radius: 4px !important;
+    font-family: 'Fira Code', monospace !important;
+    font-size: 0.9rem !important;
+}
+
+.gradio-markdown pre {
+    background: var(--bg-tertiary) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 8px !important;
+    padding: 16px !important;
+    overflow-x: auto !important;
+    box-shadow: var(--shadow-md) !important;
+}
+
+.gradio-markdown pre code {
+    background: none !important;
+    padding: 0 !important;
+    color: #0f172a !important;
+}
+
+.gradio-markdown table {
+    border-collapse: collapse !important;
+    width: 100% !important;
+    margin: 16px 0 !important;
+}
+
+.gradio-markdown table th {
+    background: linear-gradient(135deg, rgba(244, 63, 94, 0.1), rgba(14, 165, 233, 0.1)) !important;
+    color: var(--text-primary) !important;
+    font-weight: 600 !important;
+    padding: 12px !important;
+    text-align: left !important;
+    border: 1px solid var(--border) !important;
+}
+
+.gradio-markdown table td {
+    padding: 10px 12px !important;
+    border: 1px solid var(--border) !important;
+    color: var(--text-secondary) !important;
+}
+
+.gradio-markdown table tr:hover {
+    background: var(--bg-secondary) !important;
+}
+
+.gradio-markdown a {
+    color: var(--primary) !important;
+    text-decoration: none !important;
+    font-weight: 500 !important;
+    transition: all 0.3s ease !important;
+}
+
+.gradio-markdown a:hover {
+    color: var(--primary-dark) !important;
+    text-decoration: underline !important;
+}
+
+.gradio-markdown blockquote {
+    border-left: 4px solid var(--accent) !important;
+    background: rgba(14, 165, 233, 0.05) !important;
+    padding: 12px 16px !important;
+    border-radius: 6px !important;
+    margin: 16px 0 !important;
+    color: var(--text-secondary) !important;
+}
+
+/* ROW & COLUMN */
+.gradio-row, .gradio-column {
+    gap: 16px !important;
+}
+
+/* OVERALL TRANSITIONS */
+* {
+    transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease !important;
+}
+
+/* FOCUS STATES */
+:focus-visible {
+    outline: 2px solid var(--primary) !important;
+    outline-offset: 2px !important;
+}
+
+/* ANIMATIONS */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.gradio-tabs .tabitem {
+    animation: fadeInUp 0.4s ease-out;
+}
+
+/* SCROLLBAR STYLING */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
     border-radius: 4px;
-    border-left: 2px solid #cbd5e1;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+    .env-header {
+        flex-direction: column;
+        padding: 20px;
+        text-align: center;
+        gap: 12px;
+    }
+    
+    .env-header-right {
+        width: 100%;
+    }
+    
+    .gradio-tabs .tabitem > button {
+        padding: 12px 16px !important;
+        font-size: 0.85rem !important;
+    }
 }
 """
 
@@ -778,10 +1184,19 @@ with gr.Blocks(
     <div class="env-header">
         <div class="env-header-left">
             <span class="env-header-dot"></span>
-            🚨 Incident Response Environment
+            <span>🚨 Incident Response Environment</span>
         </div>
-        <span class="env-header-right">OpenEnv · v4.0 · 6D Scoring · Anti-Reward-Hacking</span>
+        <span class="env-header-right">
+            ⚡ v4.0 · 6D Scoring · Anti-Reward-Hacking
+        </span>
     </div>
+    <div style="height: 8px; background: linear-gradient(90deg, #f43f5e, #0ea5e9, #10b981); animation: shimmer 3s infinite;"></div>
+    <style>
+        @keyframes shimmer {
+            0%, 100% { background-position: 200% center; }
+            50% { background-position: -200% center; }
+        }
+    </style>
     """)
 
 
@@ -796,92 +1211,138 @@ with gr.Blocks(
         with gr.TabItem("🎯 Welcome & What Is This?", id="welcome"):
             with gr.Column():
                 gr.Markdown("""
+<div style="text-align: center; padding: 40px 20px; background: linear-gradient(135deg, rgba(244, 63, 94, 0.08), rgba(14, 165, 233, 0.08)); border-radius: 12px; margin-bottom: 30px;">
+
 # 🚨 Welcome to Incident Response Environment
 
-## What Is This System?
+### **The AI Flight Simulator for Site Reliability Engineers**
 
-This is an **AI training environment** that teaches artificial intelligence systems how to respond to real-world **production incidents** — those 3 AM emergency calls when something breaks in a live service that millions of people rely on.
+Production incidents don't wait. Neither should your training.
 
-Think of it like a **flight simulator for SREs** (Site Reliability Engineers) — a safe place to practice diagnosing and fixing problems without consequences.
-
-### Real-World Scenario
-
-Imagine you're an on-call engineer and:
-- 🔴 **ALERT**: Your payment system is returning errors
-- 😰 Users can't check out
-- 💸 You're losing $1,000s per minute
-- ⏰ You have 30 minutes to fix it
-
-**What do you do?**
-
-1. **Investigate**: Check service logs, metrics, configurations
-2. **Diagnose**: Figure out what's actually broken (root cause)
-3. **Fix**: Apply the right remedy
-4. **Verify**: Confirm the issue is resolved
-
-This system simulates exactly that scenario.
+</div>
 
 ---
 
-## Key Concepts
+## 🎯 What Is This System?
 
-### 🔍 Investigation
-You investigate services to gather evidence:
-- **Check logs**: See what the service is reporting
-- **Check metrics**: Response time, error rates, CPU usage
-- **Read config**: Check if configurations are correct
-- **Check health**: Is this service up or down?
+This is an **advanced AI training environment** that teaches artificial intelligence systems operational excellence through **realistic production incident simulation**.
 
-### 🎯 Diagnosis
-Once you've gathered evidence, you declare what you think the root cause is:
-- The database port is misconfigured
-- A certificate expired
-- A recent deployment introduced a bug
-- A query is running in a loop
+Think of it as a **flight simulator for SREs** — but for AI agents. A safe space to learn incident diagnosis and remediation without real consequences.
 
-### 🔧 Remediation
-You apply a fix:
-- Update a configuration
-- Restart a service
-- Rollback a deployment
-- Scale up replicas
+### 🔴 The Real-World Problem
 
-### 📊 Scoring
-The system grades you on 6 dimensions:
-- **Root Cause Accuracy** (30%): Did you identify the right problem?
-- **Remediation** (25%): Did you apply the right fix?
-- **Investigation** (15%): Did you check all necessary services?
-- **Efficiency** (10%): Did you solve it quickly?
-- **Safety** (10%): Did you avoid making things worse?
-- **Sequence** (10%): Did you diagnose before fixing?
+Imagine this scenario:
+- **Payment system returning errors** 
+- **Users can't check out**
+- **Losing $1,000s per minute**
+- **You have 30 minutes to fix it**
+
+### ✅ What You Do
+
+| Step | Action | Goal |
+|------|--------|------|
+| 🔍 **Investigate** | Check logs, metrics, configs | Gather evidence |
+| 🎯 **Diagnose** | Identify root cause | Understand the problem |
+| 🔧 **Remediate** | Apply targeted fix | Resolve the incident |
+| ✨ **Verify** | Confirm resolution | Ensure stability |
 
 ---
 
-## 🚀 Quick Start in 3 Steps
+## 🎓 Core Concepts
 
-### Step 1️⃣: Pick a Scenario
-Start with an **Easy** scenario to learn the basics:
-- 🟢 **DB Connection Failure** — Single clear problem, straightforward fix
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 24px 0;">
 
-### Step 2️⃣: Start an Episode
-Click **🔄 Reset** to launch the scenario. You'll see:
-- Active alerts (what went wrong)
-- Service health (which services are broken)
-- Available services (what you can investigate)
+<div style="background: linear-gradient(135deg, rgba(244, 63, 94, 0.1), rgba(244, 63, 94, 0.02)); border-radius: 12px; padding: 16px; border-left: 4px solid #f43f5e;">
 
-### Step 3️⃣: Investigate → Diagnose → Fix
-Click **▶️ Execute Action** repeatedly:
-- Use 🔍 investigation actions to gather clues
-- Use 📝 `declare_root_cause` when you know what it is
-- Use 🔧 fix actions to apply the remedy
+### 🔍 **Investigation**
+- Check service health
+- Investigate logs
+- Analyze metrics
+- Read configs
+- Identify patterns
+
+</div>
+
+<div style="background: linear-gradient(135deg, rgba(14, 165, 233, 0.1), rgba(14, 165, 233, 0.02)); border-radius: 12px; padding: 16px; border-left: 4px solid #0ea5e9;">
+
+### 🎯 **Diagnosis**
+- Synthesize evidence
+- Form hypothesis
+- Validate assumptions
+- Declare root cause
+- Explain the failure
+
+</div>
+
+<div style="background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(34, 197, 94, 0.02)); border-radius: 12px; padding: 16px; border-left: 4px solid #22c55e;">
+
+### 🔧 **Remediation**
+- Apply targeted fixes
+- Update configs
+- Restart services
+- Rollback changes
+- Scale resources
+
+</div>
+
+<div style="background: linear-gradient(135deg, rgba(168, 85, 247, 0.1), rgba(168, 85, 247, 0.02)); border-radius: 12px; padding: 16px; border-left: 4px solid #a855f7;">
+
+### 📊 **Scoring**
+- Root Cause (30%)
+- Remediation (25%)
+- Investigation (15%)
+- Efficiency (10%)
+- Safety (10%)
+- Sequence (10%)
+
+</div>
+
+</div>
 
 ---
 
-## Ready to Learn?
+## 🚀 Quick Start
 
-👉 Head to the **"🎓 Learn By Example"** tab to see a complete walkthrough!
+### **Step 1: Select a Scenario** 🎯
+Start with **Easy** difficulty — single root cause, clear symptoms:
+- 🟢 **DB Connection Failure** — Misconfigured port
 
-Or jump straight to the sandbox in the **"⚙️ Interactive Sandbox"** tab to start playing.
+### **Step 2: Launch an Episode** ⚡
+Click **🔄 Reset** to begin:
+- See active alerts
+- View service health
+- Understand what's broken
+
+### **Step 3: Solve It** 💡
+- Investigate clues
+- Declare root cause
+- Apply the fix
+- Get your score
+
+---
+
+## 🎯 Why This Matters
+
+Modern observability and SRE tooling gives you **infinite data** but **limited time**.
+
+This system teaches AI agents to:
+- ✅ Ask the **right questions** (not investigate everything)
+- ✅ **Diagnose before fixing** (avoid making it worse)
+- ✅ **Work under pressure** (cascading failures spread)
+- ✅ **Measure impact** (6 dimensions of success)
+- ✅ **Think like an SRE** (operational reasoning)
+
+---
+
+## 📚 Next Steps
+
+👉 **[🎓 Learn By Example]** — See a complete walkthrough of a real incident  
+👉 **[❓ FAQ & Concepts]** — Understand all the mechanics  
+👉 **[⚙️ Interactive Sandbox]** — Start playing and learning
+
+---
+
+**Let's make AI reliable.** 🚀
                 """)
 
         # ─────────────────────────────────────────────────────────────────────────
@@ -890,19 +1351,34 @@ Or jump straight to the sandbox in the **"⚙️ Interactive Sandbox"** tab to s
         with gr.TabItem("🎓 Learn By Example", id="tutorial"):
             with gr.Column():
                 gr.Markdown("""
-# 🎓 Step-by-Step Example: Database Connection Failure
+<div style="text-align: center; padding: 30px 20px; background: linear-gradient(135deg, rgba(34, 197, 94, 0.08), rgba(14, 165, 233, 0.08)); border-radius: 12px; margin-bottom: 30px;">
 
-## Scenario Overview
-**Task**: `db_connection_failure`  
-**Difficulty**: 🟢 Easy  
-**Time Budget**: 30 steps  
-**Root Cause**: Database connection port is misconfigured
+# 🎓 Step-by-Step Interactive Walkthrough
+
+### Complete Example: Database Connection Failure
+
+**Learn by doing — follow along as we solve a real incident.**
+
+</div>
 
 ---
 
-## Phase 1: Initial Alert 🚨
+## 📋 Scenario Overview
 
-When you reset, you see:
+| Property | Value |
+|----------|-------|
+| **Task** | `db_connection_failure` |
+| **Difficulty** | 🟢 Easy |
+| **Time Budget** | 30 steps |
+| **Root Cause** | Database port misconfiguration |
+| **Services** | 3 (user-api, postgres-primary, nginx-lb) |
+
+---
+
+## 🚨 Phase 1: The Alert
+
+When you reset, the system presents the incident:
+
 ```
 Active Alerts:
   🔴 [ALT-001] CRITICAL — user-api at 2025-04-09 08:15:23
@@ -915,179 +1391,171 @@ Service Health:
 ```
 
 **What does this tell us?**
-- user-api is broken (85% errors)
-- Two other services are fine
-- **Next**: Investigate user-api!
+- ❌ user-api is broken
+- ✅ Two other services are fine
+- 🔍 **Next**: Investigate user-api!
 
 ---
 
-## Phase 2: Investigation 🔍
+## 🔍 Phase 2: Investigation (4 Steps)
 
-### Action 1: Check Service Health
+### **Step 1: Check Service Health**
+
 ```
-Input:
-  - Action Type: check_service_health
-  - Service: user-api
+Action:  check_service_health
+Service: user-api
 
-Output:
-  ✅ Investigated user-api for first time
-  Reward: +0.04
+Result:  ✅ Investigated user-api for first time
+Reward:  +0.04 ⭐
 ```
 
-**Why?** We confirmed the problem is real and specific to user-api.
+**Why?** Confirms the problem is specific to user-api.
 
 ---
 
-### Action 2: Investigate Logs
+### **Step 2: Investigate Logs** 🎯
+
 ```
-Input:
-  - Action Type: investigate_logs
-  - Service: user-api
-  - Keyword: connection
+Action:   investigate_logs
+Service:  user-api
+Keyword:  connection
 
-Output:
-  Found in logs:
-    [08:15:12] ERROR: Connection refused for postgres-primary:5433
-    [08:15:13] ERROR: Failed to connect to database
-    [08:15:14] ERROR: Connection refused for postgres-primary:5433
+Result:   Found in logs:
+          [08:15:12] ERROR: Connection refused for postgres-primary:5433
+          [08:15:13] ERROR: Failed to connect to database
+          [08:15:14] ERROR: Connection refused for postgres-primary:5433
 
-  Reward: +0.08
+Reward:   +0.08 ⭐⭐
 ```
 
-**What did we learn?**
-- user-api is trying to connect to postgres-primary:5433
-- But usually databases run on port 5432
-- **5433 looks wrong!** 🚩
+**Key insight:** 🚩 Port 5433 looks wrong! (normally 5432)
 
 ---
 
-### Action 3: Check Metrics
+### **Step 3: Check Metrics**
+
 ```
-Input:
-  - Action Type: check_metrics
-  - Service: user-api
+Action:  check_metrics
+Service: user-api
 
-Output:
-  Memory: 256 MB / 512 MB
-  CPU: 12%
-  Response Time: 450ms (huge!)
-  Error Rate: 85%
+Result:  Memory: 256 MB / 512 MB
+         CPU: 12%
+         Response Time: 450ms (huge!)
+         Error Rate: 85%
 
-  Reward: +0.02
+Reward:  +0.02 ⭐
 ```
 
 ---
 
-### Action 4: Read Config
+### **Step 4: Read Config** 💡
+
 ```
-Input:
-  - Action Type: read_config
-  - Service: user-api
+Action:  read_config
+Service: user-api
 
-Output:
-  Config for user-api:
-  {
-    "db_host": "postgres-primary",
-    "db_port": 5433,           ← ⚠️ WRONG! Should be 5432
-    "db_user": "app",
-    "db_password": "***",
-    "max_connections": 100
-  }
+Result:  {
+           "db_host": "postgres-primary",
+           "db_port": 5433,           ← ⚠️ WRONG! Should be 5432
+           "db_user": "app",
+           "max_connections": 100
+         }
 
-  Reward: +0.06
+Reward:  +0.06 ⭐
 ```
 
-**Eureka!** 💡 We found it — **port 5433 should be 5432**!
+**Eureka!** We found it — port should be **5432**, not **5433** 🎉
 
 ---
 
-## Phase 3: Diagnosis 🎯
+## 🎯 Phase 3: Diagnosis
 
-### Action 5: Declare Root Cause
+### **Step 5: Declare Root Cause**
+
 ```
-Input:
-  - Action Type: declare_root_cause
-  - Cause: "user-api db_port misconfigured as 5433 instead of 5432"
+Action: declare_root_cause
+Cause:  "user-api db_port misconfigured as 5433 instead of 5432"
 
-Output:
-  ✅ ROOT CAUSE: Matches known cause!
-  Reward: +0.20 (big reward!)
+Result: ✅ ROOT CAUSE: Matches known cause!
+Reward: +0.20 ⭐⭐⭐⭐⭐ (BIG REWARD!)
 
-  Feedback: "Correct root cause identified! Now apply a fix."
+Feedback: "Correct root cause identified! Now apply a fix."
 ```
 
-**This tells the AI**: "You understood the problem. Now fix it."
+**Important:** This step tests understanding. You must diagnose BEFORE fixing.
 
 ---
 
-## Phase 4: Remediation 🔧
+## 🔧 Phase 4: Remediation
 
-### Action 6: Update Config
+### **Step 6: Update Configuration**
+
 ```
-Input:
-  - Action Type: update_config
-  - Service: user-api
-  - Config Key: db_port
-  - Config Value: 5432
+Action:      update_config
+Service:     user-api
+Config Key:  db_port
+Config Val:  5432
 
-Output:
-  ✅ Configuration updated successfully
-  user-api is now healthy: 0% errors, 45ms latency
-  Reward: +0.15
+Result:      ✅ Configuration updated successfully
+             user-api is now healthy: 0% errors, 45ms latency
+             
+Reward:      +0.15 ⭐⭐⭐
 
-  🏁 EPISODE COMPLETE — Incident Resolved!
+🏁 INCIDENT RESOLVED!
 ```
 
 ---
 
-## Final Score
+## 🏆 Final Score
 
-```
-Final Score: 0.89 / 1.00
+<div style="background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(34, 197, 94, 0.02)); border-radius: 12px; padding: 20px; margin: 20px 0; border-left: 4px solid #22c55e;">
 
-6D Breakdown:
-  Root Cause:    1.00  (✅ Identified correctly)
-  Remediation:   1.00  (✅ Applied correct fix)
-  Investigation: 0.67  (⚠️ Didn't check postgres-primary)
-  Efficiency:    1.00  (✅ Used steps efficiently)
-  Safety:        1.00  (✅ No collateral damage)
-  Sequence:      1.00  (✅ Diagnosed before fixing)
-```
+### **Final Score: 0.89 / 1.00**
+
+| Dimension | Score | Status |
+|-----------|-------|--------|
+| Root Cause | 1.00 | ✅ Identified correctly |
+| Remediation | 1.00 | ✅ Applied correct fix |
+| Investigation | 0.67 | ⚠️ Didn't check postgres-primary |
+| Efficiency | 1.00 | ✅ Used steps efficiently |
+| Safety | 1.00 | ✅ No collateral damage |
+| Sequence | 1.00 | ✅ Diagnosed before fixing |
+
+</div>
 
 ---
 
-## Key Takeaways
+## 🎓 Key Lessons
 
-✅ **Do**:
+✅ **Best Practices:**
 1. Investigate all services to build a complete picture
 2. Look for patterns in logs (errors, timeouts, rejections)
-3. Compare configurations to known good values
-4. Declare root cause BEFORE trying fixes
-5. Apply targeted fixes to specific services
+3. Always declare root cause BEFORE applying fixes
+4. Apply targeted, precise fixes
 
-❌ **Don't**:
-1. Restart services randomly hoping luck fixes it
-2. Fix something before investigating why it broke
-3. Investigate the same service 5 times
-4. Ignore what the logs are telling you
+❌ **Anti-Patterns:**
+1. Restarting services randomly hoping luck fixes it
+2. Fixing something before understanding why it broke
+3. Investigating the same service repeatedly
+4. Ignoring diagnostic feedback
 
 ---
 
-## Ready for More?
+## 🚀 Ready for More?
 
-**Easy scenarios:**
-- 🟢 db_connection_failure (just did this!)
-- 🔵 alert_triage (classify alert severity)
+**🟢 Easy Scenarios:**
+- db_connection_failure (what you just did!)
+- alert_triage (classify alert severity)
 
-**Medium scenarios:**
-- 🟡 cascading_service_timeout (multiple services, cascading failures)
-- 🟡 ssl_certificate_expiry (non-obvious cert issue)
+**🟡 Medium Scenarios:**
+- cascading_service_timeout (multi-hop cascades)
+- ssl_certificate_expiry (non-obvious cert issues)
 
-**Hard scenarios:**
-- 🔴 multi_factor_outage (3 simultaneous root causes)
-- 🔴 database_deadlock (requires understanding of database locks)
+**🔴 Hard Scenarios:**
+- multi_factor_outage (3 simultaneous root causes!)
+- database_deadlock (lock mechanism knowledge)
 
-👉 Now go to **"⚙️ Interactive Sandbox"** and try it yourself!
+👉 Go to **"⚙️ Interactive Sandbox"** now and try it yourself!
                 """)
 
         # ─────────────────────────────────────────────────────────────────────────
