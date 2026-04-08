@@ -1,0 +1,92 @@
+spec_version: 1
+name: incident-response-env
+type: space
+runtime: fastapi
+app: server.app:app
+port: 7860
+description: >
+  Production Incident Response & Root Cause Analysis environment.
+  An AI agent acts as an on-call SRE, investigating production incidents
+  by examining logs, metrics, and configurations to diagnose root causes
+  and apply correct remediations across multi-service architectures.
+version: "1.0.0"
+tags:
+  - openenv
+  - reinforcement-learning
+  - incident-response
+  - sre
+  - devops
+  - real-world
+
+author: meta-hackathon
+license: MIT
+
+# Environment interface specification
+interface:
+  action:
+    type: object
+    model: IncidentResponseAction
+    description: >
+      Actions include: investigate_logs, check_metrics, read_config,
+      check_service_health, run_diagnostic, restart_service, update_config,
+      rollback_deployment, scale_service, declare_root_cause
+  observation:
+    type: object
+    model: IncidentResponseObservation
+    description: >
+      Returns action result text, active alerts, service statuses,
+      available services/actions, step info, and incident context
+  reward:
+    type: float
+    range: [-1.0, 1.0]
+    description: >
+      Rich reward signal with partial credit for investigation,
+      bonuses for correct root cause and remediation,
+      penalties for destructive/redundant actions
+
+# Task definitions
+tasks:
+  - name: db_connection_failure
+    difficulty: easy
+    description: >
+      Single service database connection failure due to port misconfiguration.
+      Agent must find the wrong port in user-api config and fix it.
+    max_steps: 20
+    expected_score_range: [0.5, 1.0]
+
+  - name: cascading_service_timeout
+    difficulty: medium
+    description: >
+      Multi-service cascading timeout. payment-service -> order-service ->
+      inventory-service. Root cause is memory leak in inventory-service
+      causing GC pauses. Red herring: recent payment-service deployment.
+    max_steps: 25
+    expected_score_range: [0.3, 0.9]
+
+  - name: multi_factor_outage
+    difficulty: hard
+    description: >
+      Complex multi-factor outage with 3 simultaneous root causes:
+      api-gateway routing bug, database connection pool exhaustion,
+      and traffic spike from marketing campaign. Multiple red herrings.
+    max_steps: 30
+    expected_score_range: [0.1, 0.8]
+
+# Server configuration
+server:
+  port: 7860
+  endpoints:
+    reset: POST /reset
+    step: POST /step
+    state: GET /state
+    health: GET /health
+    tasks: GET /tasks
+    score: GET /score
+    web_ui: GET /web
+
+# Docker configuration
+docker:
+  image: incident-response-env
+  port: 7860
+  build: docker build -t incident-response-env .
+  run: docker run -p 7860:7860 incident-response-env
