@@ -53,10 +53,11 @@ def _check_timeout():
 
 # ── Configuration ─────────────────────────────────────────────────────────
 
-IMAGE_NAME = os.getenv("IMAGE_NAME", os.getenv("LOCAL_IMAGE_NAME", "incident-response-env"))
-API_KEY = os.getenv("HF_TOKEN") or os.getenv("API_KEY")
 API_BASE_URL = os.getenv("API_BASE_URL", "https://router.huggingface.co/v1")
 MODEL_NAME = os.getenv("MODEL_NAME", "Qwen/Qwen2.5-72B-Instruct")
+HF_TOKEN = os.getenv("HF_TOKEN")
+LOCAL_IMAGE_NAME = os.getenv("LOCAL_IMAGE_NAME")
+IMAGE_NAME = LOCAL_IMAGE_NAME or os.getenv("IMAGE_NAME", "incident-response-env")
 BENCHMARK = "incident_response"
 MAX_STEPS = 20
 TEMPERATURE = 0.7
@@ -345,7 +346,7 @@ def stop_docker():
 # ── Main ──────────────────────────────────────────────────────────────────
 
 def main():
-    client = OpenAI(api_key=API_KEY, base_url=API_BASE_URL)
+    client = OpenAI(api_key=HF_TOKEN, base_url=API_BASE_URL)
 
     use_docker = os.getenv("USE_DOCKER", "true").lower() == "true"
     if use_docker:
