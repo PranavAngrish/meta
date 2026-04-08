@@ -14,7 +14,9 @@ Three difficulty levels:
 """
 
 from __future__ import annotations
-from typing import Any, Dict, List
+import copy
+import random
+from typing import Any, Dict, List, Optional
 from dataclasses import dataclass, field
 
 
@@ -711,10 +713,592 @@ def build_hard_scenario() -> ScenarioDef:
     )
 
 
+def build_ssl_expiry_scenario() -> ScenarioDef:
+    """
+    MEDIUM: SSL Certificate Expiry — Platform HTTPS Failure
+
+    api-gateway's TLS certificate expired 2 days ago.
+    cert-manager shows a pending renewal that requires manual approval.
+    All HTTPS-dependent services cascade into errors.
+    Red herring: auth-service was recently deployed (unrelated).
+
+    Inspired by: Microsoft Teams global outage (Jan 29, 2020) caused by
+    an expired TLS certificate on an identity service.
+    # Postmortem reference: https://azure.microsoft.com/en-us/blog/details-of-the-january-29-2020-windows-azure-active-directory-outage/
+    """
+    services = {
+        "api-gateway": ServiceDef(
+            name="api-gateway",
+            healthy=False,
+            response_time_ms=35.0,
+            error_rate=0.82,
+            cpu_percent=18.0,
+            memory_percent=22.0,
+            connections_active=400,
+            connections_max=5000,
+            uptime_seconds=172800,
+            version="3.9.4",
+            previous_version="3.9.4",
+            config={
+                "ssl_cert_path": "/certs/api-gw-2023.crt",   # EXPIRED — should be 2025 cert
+                "ssl_key_path": "/certs/api-gw-2023.key",
+                "ssl_verify_client": False,
+                "tls_min_version": "1.2",
+                "cert_renewal_mode": "manual",
+                "backend_timeout_ms": 30000,
+            },
+            correct_config={
+                "ssl_cert_path": "/certs/api-gw-2025-renewed.crt",
+                "ssl_key_path": "/certs/api-gw-2025-renewed.key",
+                "ssl_verify_client": False,
+                "tls_min_version": "1.2",
+                "cert_renewal_mode": "manual",
+                "backend_timeout_ms": 30000,
+            },
+            logs=[
+                {"timestamp": "2025-04-06T00:00:01Z", "level": "WARN", "message": "TLS certificate /certs/api-gw-2023.crt expires in 0 days (expired: 2025-04-06T00:00:00Z)"},
+                {"timestamp": "2025-04-06T00:01:00Z", "level": "ERROR", "message": "TLS handshake failed: certificate has expired (peer: 10.0.5.12)"},
+                {"timestamp": "2025-04-06T00:01:05Z", "level": "ERROR", "message": "HTTPS connection rejected: SSL certificate verify failed — 'certificate has expired'"},
+                {"timestamp": "2025-04-06T00:05:00Z", "level": "ERROR", "message": "TLS handshake failure rate: 82% (823/1005 connections rejected in last 5 min)"},
+                {"timestamp": "2025-04-08T02:10:00Z", "level": "CRITICAL", "message": "SSL cert /certs/api-gw-2023.crt EXPIRED 2 days ago. All HTTPS traffic failing."},
+                {"timestamp": "2025-04-08T02:10:30Z", "level": "ERROR", "message": "GET /api/products -> 000 (TLS handshake error — no response from client)"},
+                {"timestamp": "2025-04-08T02:11:00Z", "level": "ERROR", "message": "GET /api/auth/login -> 000 (TLS handshake error)"},
+            ],
+            metrics_history=[
+                {"timestamp_min": 0, "cpu": 18.0, "memory": 22.0, "req_per_sec": 200.0, "error_rate": 0.82, "tls_failures_per_min": 820},
+                {"timestamp_min": -1440, "cpu": 20.0, "memory": 22.0, "req_per_sec": 950.0, "error_rate": 0.0, "tls_failures_per_min": 0},
+            ],
+            dependencies=["cert-manager"],
+            deployment_status="stable",
+            diagnostic_output=(
+                "SSL Certificate Status:\n"
+                "  Path: /certs/api-gw-2023.crt\n"
+                "  Subject: CN=api.company.com\n"
+                "  Issued: 2023-04-06T00:00:00Z\n"
+                "  Expires: 2025-04-06T00:00:00Z  ← EXPIRED (2 days ago)\n"
+                "  Status: EXPIRED\n\n"
+                "Renewed certificate available at: /certs/api-gw-2025-renewed.crt\n"
+                "  Expires: 2027-04-06T00:00:00Z\n"
+                "  Status: VALID (awaiting config reload)\n\n"
+                "Fix: Update ssl_cert_path to /certs/api-gw-2025-renewed.crt"
+            ),
+        ),
+        "cert-manager": ServiceDef(
+            name="cert-manager",
+            healthy=True,
+            response_time_ms=8.0,
+            error_rate=0.0,
+            cpu_percent=5.0,
+            memory_percent=12.0,
+            connections_active=2,
+            connections_max=50,
+            uptime_seconds=2592000,
+            version="1.13.0",
+            previous_version="1.13.0",
+            config={
+                "renewal_mode": "manual",
+                "notify_days_before_expiry": 30,
+                "auto_reload": False,
+            },
+            correct_config={
+                "renewal_mode": "manual",
+                "notify_days_before_expiry": 30,
+                "auto_reload": False,
+            },
+            logs=[
+                {"timestamp": "2025-03-07T00:00:00Z", "level": "WARN", "message": "Certificate api-gw-2023.crt expiring in 30 days — manual renewal required"},
+                {"timestamp": "2025-03-20T00:00:00Z", "level": "WARN", "message": "Certificate api-gw-2023.crt expiring in 17 days — ACTION REQUIRED"},
+                {"timestamp": "2025-04-04T00:00:00Z", "level": "ERROR", "message": "Certificate api-gw-2023.crt expiring in 2 days — CRITICAL"},
+                {"timestamp": "2025-04-05T12:00:00Z", "level": "INFO", "message": "New certificate generated: api-gw-2025-renewed.crt (valid until 2027-04-06)"},
+                {"timestamp": "2025-04-05T12:01:00Z", "level": "WARN", "message": "Certificate renewal PENDING: api-gateway config not updated to use new cert (manual mode)"},
+                {"timestamp": "2025-04-08T02:00:00Z", "level": "CRITICAL", "message": "Certificate api-gw-2023.crt EXPIRED. api-gateway still using expired cert. Update required."},
+            ],
+            metrics_history=[
+                {"timestamp_min": 0, "cpu": 5.0, "memory": 12.0, "certs_managed": 8, "certs_expired": 1, "pending_renewals": 1},
+            ],
+            dependencies=[],
+            deployment_status="stable",
+            diagnostic_output=(
+                "cert-manager healthy. Managing 8 certificates.\n"
+                "Certificate: api-gw-2023.crt — EXPIRED (2025-04-06)\n"
+                "Renewed cert: api-gw-2025-renewed.crt — READY at /certs/api-gw-2025-renewed.crt\n"
+                "Action required: Update api-gateway config to use renewed certificate."
+            ),
+        ),
+        "auth-service": ServiceDef(
+            name="auth-service",
+            healthy=False,
+            response_time_ms=8500.0,
+            error_rate=0.78,
+            cpu_percent=22.0,
+            memory_percent=38.0,
+            connections_active=40,
+            connections_max=200,
+            uptime_seconds=3600,
+            version="4.1.0",
+            previous_version="4.0.9",
+            config={
+                "token_expiry_seconds": 3600,
+                "session_store": "redis",
+                "upstream_gateway": "https://api-gateway:443",
+            },
+            correct_config={
+                "token_expiry_seconds": 3600,
+                "session_store": "redis",
+                "upstream_gateway": "https://api-gateway:443",
+            },
+            logs=[
+                {"timestamp": "2025-04-08T02:00:00Z", "level": "INFO", "message": "Deployed v4.1.0 (added MFA improvements)"},
+                {"timestamp": "2025-04-08T02:10:00Z", "level": "ERROR", "message": "OAuth callback failed: upstream api-gateway returned SSL error"},
+                {"timestamp": "2025-04-08T02:11:00Z", "level": "ERROR", "message": "POST /auth/login -> TLS handshake failure calling api-gateway"},
+            ],
+            metrics_history=[
+                {"timestamp_min": 0, "cpu": 22.0, "memory": 38.0, "req_per_sec": 50.0, "error_rate": 0.78},
+                {"timestamp_min": -120, "cpu": 18.0, "memory": 35.0, "req_per_sec": 180.0, "error_rate": 0.0},
+            ],
+            dependencies=["api-gateway"],
+            deployment_status="recently_deployed",
+            diagnostic_output=(
+                "auth-service v4.1.0 deployed 2h ago (MFA improvements — no gateway changes)\n"
+                "Errors are 100% TLS-related failures calling api-gateway upstream\n"
+                "Service itself is healthy; failures are caused by api-gateway cert expiry\n"
+                "Recent deployment to v4.1.0 is NOT the root cause"
+            ),
+        ),
+        "user-api": ServiceDef(
+            name="user-api",
+            healthy=False,
+            response_time_ms=9000.0,
+            error_rate=0.74,
+            cpu_percent=15.0,
+            memory_percent=28.0,
+            connections_active=30,
+            connections_max=200,
+            uptime_seconds=604800,
+            version="2.4.1",
+            previous_version="2.4.1",
+            config={
+                "gateway_url": "https://api-gateway:443",
+                "retry_on_ssl_error": False,
+            },
+            correct_config={
+                "gateway_url": "https://api-gateway:443",
+                "retry_on_ssl_error": False,
+            },
+            logs=[
+                {"timestamp": "2025-04-08T02:10:00Z", "level": "ERROR", "message": "GET /users/profile -> TLS certificate expired on api-gateway"},
+                {"timestamp": "2025-04-08T02:11:00Z", "level": "ERROR", "message": "74% of requests failing: SSL handshake error from api-gateway"},
+            ],
+            metrics_history=[
+                {"timestamp_min": 0, "cpu": 15.0, "memory": 28.0, "req_per_sec": 40.0, "error_rate": 0.74},
+            ],
+            dependencies=["api-gateway"],
+            deployment_status="stable",
+            diagnostic_output="Service healthy. All errors are SSL-related from api-gateway upstream.",
+        ),
+    }
+
+    return ScenarioDef(
+        task_name="ssl_certificate_expiry",
+        difficulty="medium",
+        incident_summary=(
+            "INCIDENT: Platform-wide HTTPS failure. 82% of API requests failing with TLS errors. "
+            "Users unable to log in or access any HTTPS endpoints. auth-service was recently deployed "
+            "(v4.1.0, 2h ago). cert-manager shows 1 expired certificate. Started ~2 hours ago."
+        ),
+        services=services,
+        alerts=[
+            {"alert_id": "ALT-301", "severity": "critical", "service": "api-gateway", "message": "TLS failure rate >80% — HTTPS unavailable", "timestamp": "2025-04-08T02:10:00Z"},
+            {"alert_id": "ALT-302", "severity": "high", "service": "cert-manager", "message": "1 expired certificate detected (api-gw-2023.crt)", "timestamp": "2025-04-08T02:00:00Z"},
+            {"alert_id": "ALT-303", "severity": "high", "service": "auth-service", "message": "Authentication failure rate >75%", "timestamp": "2025-04-08T02:11:00Z"},
+        ],
+        root_causes=["api-gateway TLS certificate /certs/api-gw-2023.crt expired 2 days ago; renewed cert not yet applied to config"],
+        root_cause_keywords=[["ssl", "certificate", "expired", "tls", "cert", "api-gw-2023", "2025-renewed"]],
+        correct_remediations=[
+            {"action_type": "update_config", "service_name": "api-gateway", "parameters": {"key": "ssl_cert_path", "value": "/certs/api-gw-2025-renewed.crt"}},
+        ],
+        remediation_keywords=[["update_config", "ssl_cert_path", "2025-renewed"]],
+        max_steps=22,
+        investigation_hints={
+            "api-gateway": 0.09,
+            "cert-manager": 0.08,
+            "auth-service": 0.03,
+            "user-api": 0.02,
+        },
+        red_herrings=["auth-service recent deployment v4.1.0 (MFA improvements, completely unrelated to TLS errors)"],
+    )
+
+
+def build_database_deadlock_scenario() -> ScenarioDef:
+    """
+    HARD: Database Deadlock Storm — Lock Order Inversion
+
+    order-service v2.3.0 introduced a code change that acquires DB locks in
+    order [orders_table → users_table], while user-service acquires them as
+    [users_table → orders_table]. This creates a classic AB-BA deadlock under
+    concurrent load. analytics-db sharing the primary DB amplifies contention.
+
+    Three simultaneous issues:
+    1. Lock order inversion in order-service v2.3.0 (root cause)
+    2. analytics job running heavy aggregation queries on same DB (amplifier)
+    3. job-queue backing up with failed order transactions (symptom)
+
+    Red herrings:
+    - payment-service elevated latency (waiting on order-service)
+    - connection pool warning in user-service (consequence of deadlocks)
+
+    Inspired by: GitLab database deadlock incident (2017) + Shopify order
+    processing deadlocks under flash sale load.
+    """
+    services = {
+        "order-service": ServiceDef(
+            name="order-service",
+            healthy=False,
+            response_time_ms=45000.0,
+            error_rate=0.68,
+            cpu_percent=55.0,
+            memory_percent=60.0,
+            connections_active=180,
+            connections_max=200,
+            uptime_seconds=3600,
+            version="2.3.0",
+            previous_version="2.2.9",
+            config={
+                "db_host": "primary-db",
+                "db_port": 5432,
+                "db_pool_size": 50,
+                "transaction_timeout_ms": 30000,
+                "retry_on_deadlock": True,
+                "max_deadlock_retries": 3,
+            },
+            correct_config={
+                "db_host": "primary-db",
+                "db_port": 5432,
+                "db_pool_size": 50,
+                "transaction_timeout_ms": 30000,
+                "retry_on_deadlock": True,
+                "max_deadlock_retries": 3,
+            },
+            logs=[
+                {"timestamp": "2025-04-08T05:00:00Z", "level": "INFO", "message": "Deployed v2.3.0 (refactored order creation transaction for performance)"},
+                {"timestamp": "2025-04-08T05:05:00Z", "level": "ERROR", "message": "Deadlock detected in transaction: waiting for lock on users row (held by user-service)"},
+                {"timestamp": "2025-04-08T05:05:01Z", "level": "WARN", "message": "Deadlock retry #1 for order ORD-7821 (locks: orders → users)"},
+                {"timestamp": "2025-04-08T05:05:15Z", "level": "ERROR", "message": "Deadlock retry #2 failed for ORD-7821: same deadlock pattern"},
+                {"timestamp": "2025-04-08T05:06:00Z", "level": "ERROR", "message": "Deadlock retry #3 FAILED — order ORD-7821 aborted. Deadlock on: orders_table(row=82210), users_table(row=1502)"},
+                {"timestamp": "2025-04-08T05:07:00Z", "level": "CRITICAL", "message": "Deadlock rate: 68% of transactions failing. Lock contention: order-service (orders→users) vs user-service (users→orders)"},
+                {"timestamp": "2025-04-08T05:08:00Z", "level": "ERROR", "message": "DB transaction log: PID 44821 holding orders_table, waiting for users_table (PID 44830 holds it)"},
+                {"timestamp": "2025-04-08T05:08:01Z", "level": "ERROR", "message": "DB transaction log: PID 44830 holding users_table, waiting for orders_table (PID 44821 holds it)"},
+            ],
+            metrics_history=[
+                {"timestamp_min": 0, "cpu": 55.0, "memory": 60.0, "req_per_sec": 15.0, "error_rate": 0.68, "deadlocks_per_min": 42, "db_wait_time_ms": 45000},
+                {"timestamp_min": -15, "cpu": 40.0, "memory": 50.0, "req_per_sec": 60.0, "error_rate": 0.30, "deadlocks_per_min": 18, "db_wait_time_ms": 20000},
+                {"timestamp_min": -30, "cpu": 15.0, "memory": 40.0, "req_per_sec": 100.0, "error_rate": 0.0, "deadlocks_per_min": 0, "db_wait_time_ms": 12},
+            ],
+            dependencies=["primary-db", "user-service"],
+            deployment_status="recently_deployed",
+            diagnostic_output=(
+                "DEADLOCK ANALYSIS:\n"
+                "order-service v2.3.0 lock acquisition order: orders_table FIRST, then users_table\n"
+                "user-service lock acquisition order: users_table FIRST, then orders_table\n"
+                "This AB-BA pattern causes deadlock under concurrent order+user transactions.\n"
+                "Change introduced in v2.3.0: 'Refactored createOrder() to batch-update users after orders'\n"
+                "v2.2.9 lock order was: users_table FIRST, then orders_table (same as user-service)\n"
+                "RECOMMENDATION: Rollback to v2.2.9"
+            ),
+        ),
+        "user-service": ServiceDef(
+            name="user-service",
+            healthy=False,
+            response_time_ms=12000.0,
+            error_rate=0.35,
+            cpu_percent=40.0,
+            memory_percent=55.0,
+            connections_active=145,
+            connections_max=200,
+            uptime_seconds=604800,
+            version="5.1.2",
+            previous_version="5.1.2",
+            config={
+                "db_host": "primary-db",
+                "db_port": 5432,
+                "db_pool_size": 60,
+            },
+            correct_config={
+                "db_host": "primary-db",
+                "db_port": 5432,
+                "db_pool_size": 60,
+            },
+            logs=[
+                {"timestamp": "2025-04-08T05:05:00Z", "level": "WARN", "message": "Deadlock detected: waiting for orders_table lock (held by order-service PID 44821)"},
+                {"timestamp": "2025-04-08T05:06:00Z", "level": "ERROR", "message": "Transaction aborted due to deadlock — update user USR-1502 profile failed"},
+                {"timestamp": "2025-04-08T05:07:00Z", "level": "WARN", "message": "DB connection pool: 145/200 (connections backing up due to deadlock wait)"},
+                {"timestamp": "2025-04-08T05:08:00Z", "level": "ERROR", "message": "35% of user update requests failing: deadlock with order-service v2.3.0"},
+            ],
+            metrics_history=[
+                {"timestamp_min": 0, "cpu": 40.0, "memory": 55.0, "req_per_sec": 80.0, "error_rate": 0.35, "db_pool_waiting": 45},
+                {"timestamp_min": -30, "cpu": 20.0, "memory": 48.0, "req_per_sec": 200.0, "error_rate": 0.0, "db_pool_waiting": 0},
+            ],
+            dependencies=["primary-db"],
+            deployment_status="stable",
+            diagnostic_output=(
+                "user-service v5.1.2 (no recent deployment, stable)\n"
+                "Lock acquisition order: users_table FIRST, then orders_table (correct pattern)\n"
+                "Deadlocks initiated by order-service v2.3.0 which changed lock order\n"
+                "Connection pool: 145/200 — backing up due to deadlock waits (not a separate issue)"
+            ),
+        ),
+        "primary-db": ServiceDef(
+            name="primary-db",
+            healthy=False,
+            response_time_ms=1800.0,
+            error_rate=0.25,
+            cpu_percent=85.0,
+            memory_percent=72.0,
+            connections_active=180,
+            connections_max=200,
+            uptime_seconds=2592000,
+            version="15.4",
+            previous_version="15.4",
+            config={"max_connections": 200, "deadlock_timeout": "1s", "lock_timeout": "30s"},
+            correct_config={"max_connections": 200, "deadlock_timeout": "1s", "lock_timeout": "30s"},
+            logs=[
+                {"timestamp": "2025-04-08T05:05:00Z", "level": "ERROR", "message": "DEADLOCK DETECTED: PID 44821 (order-service) vs PID 44830 (user-service) on tables orders, users"},
+                {"timestamp": "2025-04-08T05:06:00Z", "level": "ERROR", "message": "Deadlock count last 60s: 42 — CRITICAL (normal: 0)"},
+                {"timestamp": "2025-04-08T05:07:00Z", "level": "WARN", "message": "Lock wait queue depth: 89 transactions waiting (normal: 0-2)"},
+                {"timestamp": "2025-04-08T05:08:00Z", "level": "ERROR", "message": "query stats: deadlock_query='UPDATE orders SET ... WHERE user_id=$1' vs 'UPDATE users SET ... WHERE id IN (SELECT user_id FROM orders ...)'"},
+            ],
+            metrics_history=[
+                {"timestamp_min": 0, "cpu": 85.0, "memory": 72.0, "connections": 180, "deadlocks_per_min": 42, "lock_waits_per_min": 290, "queries_per_sec": 85.0},
+                {"timestamp_min": -30, "cpu": 25.0, "memory": 60.0, "connections": 50, "deadlocks_per_min": 0, "lock_waits_per_min": 2, "queries_per_sec": 450.0},
+            ],
+            dependencies=[],
+            deployment_status="stable",
+            diagnostic_output=(
+                "DEADLOCK FREQUENCY: 42/min (CRITICAL)\n"
+                "Competing transactions:\n"
+                "  order-service: BEGIN → LOCK orders(row X) → LOCK users(row Y)\n"
+                "  user-service:  BEGIN → LOCK users(row Y) → LOCK orders(row X)\n"
+                "Pattern: AB-BA deadlock caused by lock order inversion in order-service v2.3.0\n"
+                "PostgreSQL resolves by aborting one victim per deadlock cycle\n"
+                "Also: analytics-job running heavy aggregation adds lock pressure\n"
+                "Primary fix: rollback order-service to v2.2.9"
+            ),
+        ),
+        "analytics-db": ServiceDef(
+            name="analytics-db",
+            healthy=True,
+            response_time_ms=3200.0,
+            error_rate=0.05,
+            cpu_percent=70.0,
+            memory_percent=65.0,
+            connections_active=45,
+            connections_max=200,
+            uptime_seconds=604800,
+            version="15.4",
+            previous_version="15.4",
+            config={"max_connections": 200, "shared_buffers": "2GB"},
+            correct_config={"max_connections": 200, "shared_buffers": "2GB"},
+            logs=[
+                {"timestamp": "2025-04-08T05:00:00Z", "level": "INFO", "message": "Daily analytics job started: ORDER_SUMMARY_AGG (estimated runtime: 45 min)"},
+                {"timestamp": "2025-04-08T05:05:00Z", "level": "WARN", "message": "Analytics job running slower than usual: 2800ms avg query (normal: 800ms)"},
+                {"timestamp": "2025-04-08T05:08:00Z", "level": "WARN", "message": "Heavy sequential scan on orders table acquiring shared locks — contributing to contention"},
+            ],
+            metrics_history=[
+                {"timestamp_min": 0, "cpu": 70.0, "memory": 65.0, "shared_lock_holds": 1200, "query_time_ms": 3200},
+            ],
+            dependencies=[],
+            deployment_status="stable",
+            diagnostic_output=(
+                "analytics-db running daily aggregation job ORDER_SUMMARY_AGG\n"
+                "Job acquires SHARED locks on orders table — amplifies deadlock contention\n"
+                "NOT the root cause, but should be deferred when order-service deadlocks are occurring\n"
+                "Stopping analytics job temporarily will reduce (but not eliminate) deadlock rate"
+            ),
+        ),
+        "payment-service": ServiceDef(
+            name="payment-service",
+            healthy=False,
+            response_time_ms=40000.0,
+            error_rate=0.60,
+            cpu_percent=30.0,
+            memory_percent=42.0,
+            connections_active=60,
+            connections_max=200,
+            uptime_seconds=604800,
+            version="3.1.0",
+            previous_version="3.1.0",
+            config={"order_service_url": "http://order-service:8081", "timeout_ms": 30000},
+            correct_config={"order_service_url": "http://order-service:8081", "timeout_ms": 30000},
+            logs=[
+                {"timestamp": "2025-04-08T05:07:00Z", "level": "ERROR", "message": "Order creation timeout (30000ms) — order-service deadlocked"},
+                {"timestamp": "2025-04-08T05:08:00Z", "level": "WARN", "message": "60% payment failure rate — all failures are 504 timeouts from order-service"},
+            ],
+            metrics_history=[
+                {"timestamp_min": 0, "cpu": 30.0, "memory": 42.0, "req_per_sec": 20.0, "error_rate": 0.60},
+            ],
+            dependencies=["order-service"],
+            deployment_status="stable",
+            diagnostic_output="payment-service healthy. Failures are 100% timeout-related from order-service. Not a root cause.",
+        ),
+        "job-queue": ServiceDef(
+            name="job-queue",
+            healthy=False,
+            response_time_ms=200.0,
+            error_rate=0.45,
+            cpu_percent=25.0,
+            memory_percent=35.0,
+            connections_active=20,
+            connections_max=100,
+            uptime_seconds=604800,
+            version="2.0.1",
+            previous_version="2.0.1",
+            config={"queue_backend": "redis", "dead_letter_threshold": 5},
+            correct_config={"queue_backend": "redis", "dead_letter_threshold": 5},
+            logs=[
+                {"timestamp": "2025-04-08T05:07:00Z", "level": "WARN", "message": "Dead letter queue depth: 1842 (normal <50) — order transactions failing"},
+                {"timestamp": "2025-04-08T05:08:00Z", "level": "ERROR", "message": "Queue backlog: 8500 pending order jobs (normal: <200)"},
+            ],
+            metrics_history=[
+                {"timestamp_min": 0, "cpu": 25.0, "memory": 35.0, "queue_depth": 8500, "dlq_depth": 1842, "processing_rate": 5.0},
+            ],
+            dependencies=["order-service"],
+            deployment_status="stable",
+            diagnostic_output="job-queue backing up due to order-service failures. This is a symptom, not the cause.",
+        ),
+    }
+
+    return ScenarioDef(
+        task_name="database_deadlock",
+        difficulty="hard",
+        incident_summary=(
+            "INCIDENT: Order processing failures at 68% error rate. Payment failures cascading. "
+            "order-service was deployed 8 minutes ago (v2.3.0). Database showing 42 deadlocks/min "
+            "(normal: 0). Analytics daily job is also running. Job queue depth: 8500 (normal <200)."
+        ),
+        services=services,
+        alerts=[
+            {"alert_id": "ALT-401", "severity": "critical", "service": "order-service", "message": "Order failure rate 68% — deadlock storm detected", "timestamp": "2025-04-08T05:07:00Z"},
+            {"alert_id": "ALT-402", "severity": "critical", "service": "primary-db", "message": "Deadlock rate: 42/min (threshold: 5/min)", "timestamp": "2025-04-08T05:06:00Z"},
+            {"alert_id": "ALT-403", "severity": "high", "service": "payment-service", "message": "Payment failure rate 60%", "timestamp": "2025-04-08T05:08:00Z"},
+            {"alert_id": "ALT-404", "severity": "high", "service": "job-queue", "message": "Queue depth 8500 — critical backlog", "timestamp": "2025-04-08T05:08:00Z"},
+        ],
+        root_causes=[
+            "order-service v2.3.0 lock order inversion: acquires orders_table then users_table (v2.2.9 was reversed), causing AB-BA deadlock with user-service",
+        ],
+        root_cause_keywords=[
+            ["order-service", "deadlock", "lock", "v2.3.0", "inversion", "rollback", "orders", "users"],
+        ],
+        correct_remediations=[
+            {"action_type": "rollback_deployment", "service_name": "order-service", "parameters": {}},
+        ],
+        remediation_keywords=[["rollback", "order-service"]],
+        max_steps=28,
+        investigation_hints={
+            "order-service": 0.09,
+            "primary-db": 0.08,
+            "user-service": 0.06,
+            "analytics-db": 0.04,
+            "payment-service": 0.03,
+            "job-queue": 0.02,
+        },
+        red_herrings=[
+            "payment-service elevated latency (symptom of order-service deadlock, not a root cause)",
+            "user-service connection pool warning (consequence of deadlock waits, not a separate issue)",
+            "analytics-db running heavy aggregation (amplifier, not root cause — fix order-service first)",
+        ],
+    )
+
+
+class ScenarioFactory:
+    """
+    Procedurally generates seeded variations of base scenarios.
+
+    v2.0 Design (superior to competitors' simple randomization):
+    - Seed-reproducible: same seed always produces same scenario
+    - Varies metric values within physically realistic bounds
+    - Randomizes red herring assignment from a curated pool
+    - Supports scenario selection by difficulty for curriculum learning
+    - From 5 archetypes × seeded variation = thousands of unique episodes
+      suitable for large-scale RL training runs
+
+    Usage:
+        scenario = ScenarioFactory.generate("cascading_service_timeout", seed=42)
+        scenario = ScenarioFactory.generate_by_difficulty("hard", seed=99)
+    """
+
+    # Pool of extra red herrings to inject across scenarios
+    _EXTRA_RED_HERRINGS = [
+        "monitoring-service showing elevated CPU (metric collection overhead, unrelated)",
+        "CDN cache miss rate elevated (expected for new content rollout, not an issue)",
+        "log aggregator reporting 2% packet loss (known infrastructure issue, unrelated)",
+        "internal metrics dashboard showing stale data (exporter restart lag, benign)",
+        "staging environment showing similar errors (pre-existing test issue, unrelated)",
+        "backup job running slower than usual (disk I/O contention from backup, normal)",
+        "load balancer health check latency +5ms (expected during high load, normal)",
+    ]
+
+    _TASKS_BY_DIFFICULTY = {
+        "easy": ["db_connection_failure"],
+        "medium": ["cascading_service_timeout", "ssl_certificate_expiry"],
+        "hard": ["multi_factor_outage", "database_deadlock"],
+    }
+
+    @classmethod
+    def generate(cls, task_name: str, seed: int) -> ScenarioDef:
+        """
+        Generate a seeded variation of a named scenario.
+
+        The variation applies realistic noise to metric values, slightly adjusts
+        investigation hint weights, and may inject an additional red herring.
+        The root cause and correct remediation are always preserved exactly.
+        """
+        rng = random.Random(seed)
+        base = get_scenario(task_name)
+        return cls._apply_variation(base, rng, seed)
+
+    @classmethod
+    def generate_by_difficulty(cls, difficulty: str, seed: int) -> ScenarioDef:
+        """Select a random task at the given difficulty level, then vary it by seed."""
+        rng = random.Random(seed)
+        task_pool = cls._TASKS_BY_DIFFICULTY.get(difficulty, cls._TASKS_BY_DIFFICULTY["easy"])
+        task_name = rng.choice(task_pool)
+        return cls.generate(task_name, seed)
+
+    @classmethod
+    def _apply_variation(cls, base: ScenarioDef, rng: random.Random, seed: int) -> ScenarioDef:
+        """Apply parameterized variation while preserving correctness."""
+        varied = copy.deepcopy(base)
+
+        # Vary metric values ±12% to prevent overfitting to exact values
+        for svc in varied.services.values():
+            svc.response_time_ms = round(svc.response_time_ms * rng.uniform(0.90, 1.12), 1)
+            svc.error_rate = min(1.0, round(svc.error_rate * rng.uniform(0.92, 1.08), 3))
+            svc.cpu_percent = min(100.0, round(svc.cpu_percent * rng.uniform(0.88, 1.12), 1))
+            svc.memory_percent = min(100.0, round(svc.memory_percent * rng.uniform(0.90, 1.10), 1))
+
+        # Vary investigation hints slightly (reward shaping texture)
+        for svc_name in varied.investigation_hints:
+            varied.investigation_hints[svc_name] = round(
+                varied.investigation_hints[svc_name] * rng.uniform(0.80, 1.20), 3
+            )
+
+        # 60% chance to inject one extra red herring from the pool
+        if rng.random() < 0.60:
+            extra = rng.choice(cls._EXTRA_RED_HERRINGS)
+            if extra not in varied.red_herrings:
+                varied.red_herrings.append(extra)
+
+        # Tag incident summary with seed for reproducibility auditing
+        varied.incident_summary = varied.incident_summary.rstrip() + f" [variant seed={seed}]"
+        return varied
+
+
 SCENARIOS = {
     "db_connection_failure": build_easy_scenario,
     "cascading_service_timeout": build_medium_scenario,
     "multi_factor_outage": build_hard_scenario,
+    "ssl_certificate_expiry": lambda: build_ssl_expiry_scenario(),
+    "database_deadlock": lambda: build_database_deadlock_scenario(),
 }
 
 
@@ -732,4 +1316,6 @@ def list_tasks() -> list[dict]:
         {"task_name": "db_connection_failure", "difficulty": "easy", "description": "Single service database connection failure due to port misconfiguration"},
         {"task_name": "cascading_service_timeout", "difficulty": "medium", "description": "Multi-service cascading timeout caused by memory leak in downstream service"},
         {"task_name": "multi_factor_outage", "difficulty": "hard", "description": "Complex multi-factor outage: routing bug + connection pool exhaustion + traffic spike"},
+        {"task_name": "ssl_certificate_expiry", "difficulty": "medium", "description": "Platform-wide HTTPS failure from expired TLS certificate on api-gateway, cert-manager pending renewal"},
+        {"task_name": "database_deadlock", "difficulty": "hard", "description": "Cascading deadlocks from lock-order inversion introduced in order-service v2.3.0, combined with analytics contention"},
     ]

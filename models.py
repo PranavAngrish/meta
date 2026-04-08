@@ -1,6 +1,10 @@
 """
 Pydantic models for the Incident Response OpenEnv environment.
 Defines typed Action, Observation, and State models following the OpenEnv spec.
+
+v2.1: Added `feedback` field to IncidentResponseObservation — per-step
+reward explanation string visible to the agent, matching cloud-incident-response
+design pattern.
 """
 
 from __future__ import annotations
@@ -23,6 +27,10 @@ class ActionType(str, Enum):
     ROLLBACK_DEPLOYMENT = "rollback_deployment"
     SCALE_SERVICE = "scale_service"
     DECLARE_ROOT_CAUSE = "declare_root_cause"
+    # Alert triage actions (added for alert_triage task)
+    SUBMIT_SEVERITY = "submit_severity"
+    EXECUTE_RUNBOOK_STEP = "execute_runbook_step"
+    DISABLE_FEATURE_FLAG = "disable_feature_flag"
 
 
 class AlertSeverity(str, Enum):
@@ -72,6 +80,16 @@ class IncidentResponseObservation(BaseModel):
     incident_summary: str = Field("")
     task_name: str = Field("")
     task_difficulty: str = Field("")
+    # v2 fields
+    degradation_warnings: List[str] = Field(
+        default_factory=list,
+        description="Services degrading due to unresolved upstream failures"
+    )
+    # v2.1: per-step feedback — explains reward earned/lost this step
+    feedback: str = Field(
+        default="",
+        description="Human-readable explanation of reward signal for this step"
+    )
 
 
 class IncidentResponseState(BaseModel):
@@ -91,6 +109,9 @@ class IncidentResponseState(BaseModel):
     cumulative_reward: float
     done: bool
     max_steps: int
+    # v2 fields: dynamic degradation + safety tracking
+    collateral_degraded_services: List[str] = Field(default_factory=list)
+    scenario_seed: Optional[int] = Field(None, description="Seed used for procedural generation")
 
 
 class IncidentResponseReward(BaseModel):
