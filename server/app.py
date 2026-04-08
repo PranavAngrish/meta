@@ -29,7 +29,7 @@ import traceback
 from typing import Any, Dict, List, Optional
 
 import gradio as gr
-from fastapi import FastAPI
+from fastapi import Body, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
@@ -98,7 +98,9 @@ def tasks():
 
 
 @app.post("/reset")
-def reset(req: ResetRequest):
+def reset(req: Optional[ResetRequest] = Body(default=None)):
+    if req is None:
+        req = ResetRequest()
     try:
         obs = env.reset(task_name=req.task_name, seed=req.seed)
         return {"observation": obs.model_dump()}
