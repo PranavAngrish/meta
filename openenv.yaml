@@ -1,0 +1,223 @@
+spec_version: 1
+name: incident-response-env
+type: space
+runtime: fastapi
+app: server.app:app
+port: 7860
+description: >
+  Production Incident Response & Root Cause Analysis environment — v4.0.
+  An AI agent acts as an on-call SRE, investigating production incidents
+  by examining logs, metrics, and configurations to diagnose root causes
+  and apply correct remediations across multi-service architectures.
+  Features: 6-dimensional reward (adds Sequence score), observation loop
+  detection & hard cap, diagnosis gate enforcement, failure type classification
+  (Efficient Reasoner / Symptom Chaser / Lucky Guesser / Observation Loop /
+  Late Corrector), dynamic system degradation, procedural scenario generation
+  with seeding, per-step feedback, service alias normalisation, 5 SRE scenario
+  archetypes + 1 alert triage task (P1/P2/P3/P4 severity classification).
+version: "4.0.0"
+tags:
+  - openenv
+  - reinforcement-learning
+  - incident-response
+  - sre
+  - devops
+  - real-world
+  - procedural-generation
+  - curriculum-learning
+  - anti-reward-hacking
+  - sequence-reasoning
+  - alert-severity-classification
+
+author: meta-hackathon
+license: MIT
+
+# Environment interface specification
+interface:
+  action:
+    type: object
+    model: IncidentResponseAction
+    description: >
+      Actions include: investigate_logs, check_metrics, read_config,
+      check_service_health, run_diagnostic, restart_service, update_config,
+      rollback_deployment, scale_service, declare_root_cause
+  observation:
+    type: object
+    model: IncidentResponseObservation
+    description: >
+      Returns action result text, active alerts, service statuses,
+      available services/actions, step info, incident context,
+      degradation_warnings for time-pressure signal, and per-step
+      feedback string explaining the reward earned/lost. v3.0: observation
+      loop warning text injected when agent performs ≥3 consecutive
+      diagnosis steps without a fix.
+  reward:
+    type: float
+    range: [-1.0, 1.0]
+    description: >
+      Rich 6-dimensional reward signal: investigation quality, correct root
+      cause declaration, remediation correctness, efficiency, safety
+      (no destructive actions on healthy services), and sequence (diagnosis
+      before fix). Score clamped to open interval (0.01, 0.99) for validator
+      compliance. Hard-capped at 0.45 for observation-loop agents.
+
+# Task definitions — 6 tasks × 3 episodes each = 18 unique episodes
+tasks:
+  - name: db_connection_failure
+    difficulty: easy
+    num_scenarios: 3
+    description: >
+      Single service database connection failure due to port misconfiguration.
+      Agent must find the wrong port in user-api config and fix it.
+    max_steps: 20
+    expected_score_range: [0.5, 1.0]
+
+  - name: cascading_service_timeout
+    difficulty: medium
+    num_scenarios: 3
+    description: >
+      Multi-service cascading timeout. payment-service -> order-service ->
+      inventory-service. Root cause is memory leak in inventory-service
+      causing GC pauses. Red herring: recent payment-service deployment.
+      Diagnosis Gate: fix receives 50% credit without prior investigation.
+    max_steps: 25
+    expected_score_range: [0.3, 0.9]
+
+  - name: multi_factor_outage
+    difficulty: hard
+    num_scenarios: 3
+    description: >
+      Complex multi-factor outage with 3 simultaneous root causes:
+      api-gateway routing bug, database connection pool exhaustion,
+      and traffic spike from marketing campaign. Multiple red herrings.
+    max_steps: 30
+    expected_score_range: [0.1, 0.8]
+
+  - name: ssl_certificate_expiry
+    difficulty: medium
+    num_scenarios: 3
+    description: >
+      Platform-wide HTTPS failure from TLS certificate expiry on api-gateway.
+      cert-manager has the renewed cert ready but config not updated.
+      Red herring: auth-service recently deployed (unrelated).
+      Inspired by: Microsoft Teams global outage Jan 2020.
+      Diagnosis Gate: fix receives 50% credit without prior investigation.
+    max_steps: 22
+    expected_score_range: [0.4, 0.95]
+
+  - name: database_deadlock
+    difficulty: hard
+    num_scenarios: 3
+    description: >
+      Cascading deadlock storm from lock-order inversion in order-service v2.3.0.
+      AB-BA deadlock with user-service, amplified by running analytics job.
+      Agent must identify the lock order inversion and rollback the deployment.
+      Inspired by: GitLab DB deadlock incident 2017.
+      Diagnosis Gate: fix receives 50% credit without prior investigation.
+    max_steps: 28
+    expected_score_range: [0.1, 0.75]
+
+  - name: alert_triage
+    difficulty: easy
+    num_scenarios: 3
+    description: >
+      Pure signal-reading task: classify a firing alert into P1/P2/P3/P4 severity
+      within 3 steps. Tests blast-radius reasoning vs error-rate reaction.
+      AT-001 (clear P1): 84% errors, $14k/min — connection pool exhaustion.
+      AT-002 (ambiguous P2): 18% errors, $600/min — CDN cache storm, checkout works.
+      AT-003 (trap P3): 52% errors, $0 revenue — ML fallback, zero real impact.
+      High error rate ≠ P1 if graceful fallback is active.
+      Score: 1.0 exact · 0.5 adjacent · 0.25 two-off + investigation bonus.
+    max_steps: 3
+    expected_score_range: [0.5, 1.0]
+
+# Reward dimensions (v3.0)
+reward_dimensions:
+  root_cause:
+    weight: 0.30
+    description: Correct root cause declarations vs required causes identified.
+  remediation:
+    weight: 0.25
+    description: >
+      Correct remediation actions applied. Diagnosis Gate scenarios apply
+      50% credit for blind fixes on cascading_service_timeout, ssl_certificate_expiry,
+      database_deadlock — full credit only if root-cause service investigated first.
+  investigation:
+    weight: 0.15
+    description: Fraction of services investigated before fixing.
+  efficiency:
+    weight: 0.10
+    description: Steps used relative to max budget. Faster = higher score.
+  safety:
+    weight: 0.10
+    description: >
+      No destructive actions on healthy/non-root-cause services.
+      Collateral degradation (from dynamic degradation) also penalised.
+  sequence:
+    weight: 0.10
+    description: >
+      NEW v3.0. Rewards correct investigation→diagnosis→fix ordering.
+      Penalises symptom fixes before root cause, lucky guessing, observation loops.
+
+# Anti-reward-hacking mechanisms (v3.0)
+anti_reward_hacking:
+  observation_loop_detection:
+    description: >
+      ≥3 consecutive diagnosis actions (investigate_logs, check_metrics, etc.)
+      with no fix attempt triggers a live penalty (-0.08) and a hard cap on
+      the final score (max 0.45). Rolling penalty (-0.03) applied each additional
+      step in the loop.
+    hard_cap: 0.45
+
+  diagnosis_gate:
+    description: >
+      On gated scenarios (cascading_service_timeout, ssl_certificate_expiry,
+      database_deadlock), applying a fix to the root-cause service without first
+      investigating it (investigate_logs or check_metrics) triggers a per-step
+      penalty (-0.05) and reduces remediation credit to 50% in the final grader.
+    applies_to:
+      - cascading_service_timeout
+      - ssl_certificate_expiry
+      - database_deadlock
+
+  failure_type_classification:
+    description: >
+      Each episode is classified into one of 5 failure types visible in /score,
+      /grader, and step info. Enables fine-grained process supervision.
+    types:
+      - Efficient Reasoner
+      - Symptom Chaser
+      - Lucky Guesser
+      - Stuck in Observation Loop
+      - Late Corrector
+
+# Procedural generation — same seed always yields same scenario
+procedural_generation:
+  enabled: true
+  description: >
+    All 5 tasks support seeded procedural variation via the seed parameter
+    in /reset. Same seed always produces same scenario (reproducible).
+    ScenarioFactory varies metric values ±12%, investigation hints, and
+    injects random red herrings. Suitable for large-scale RL training runs.
+    num_scenarios=3 per task: base + seeds 1 and 2 = 15 total unique episodes.
+
+# Server configuration
+server:
+  port: 7860
+  endpoints:
+    reset:    POST /reset
+    step:     POST /step
+    state:    GET /state
+    health:   GET /health
+    tasks:    GET /tasks
+    score:    GET /score
+    grader:   POST /grader
+    baseline: POST /baseline
+    web_ui:   GET /web
+
+# Docker configuration
+docker:
+  image: incident-response-env
+  port: 7860
+  build: docker build -t incident-response-env .
+  run: docker run -p 7860:7860 incident-response-env

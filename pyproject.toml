@@ -1,0 +1,27 @@
+[project]
+name = "incident-response-env"
+version = "1.0.0"
+description = "Production Incident Response & Root Cause Analysis OpenEnv Environment"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+
+dependencies = [
+    "fastapi>=0.104.0",
+    "uvicorn>=0.24.0",
+    "pydantic>=2.0.0",
+    "gradio>=4.0.0",
+    "requests>=2.31.0",
+    "openai>=1.0.0",
+    "openenv-core>=0.2.0",
+]
+
+[project.scripts]
+server = "server.app:main"
+
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["server*", "scenarios*", "models*", "client*"]
