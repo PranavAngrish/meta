@@ -2093,6 +2093,46 @@ with open(os.path.join(os.path.dirname(__file__), "incident_response_ui.html"), 
 
 with gr.Blocks() as web_ui:
     gr.HTML(custom_html)
+
+
+
+
+
+
+
+
+
+
+
+
+from fastapi.responses import HTMLResponse
+
+with open(os.path.join(os.path.dirname(__file__), "incident_response_ui.html"), "r") as f:
+    custom_html = f.read()
+
+@app.get("/", response_class=HTMLResponse)
+def serve_root():
+    return custom_html
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     
 app = gr.mount_gradio_app(app, web_ui, path="/web")
 
