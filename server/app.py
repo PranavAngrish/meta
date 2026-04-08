@@ -678,12 +678,7 @@ def gr_state():
     return _fmt_state_panel()
 
 
-"""
-Incident Response Environment — Premium UI Redesign
-Aesthetic: Luxury Editorial / High-end SRE Platform
-Fonts: Playfair Display (headings) + DM Mono (data) + DM Sans (body)
-Palette: Deep obsidian, warm cream, electric amber, surgical cyan
-"""
+
 
 CUSTOM_CSS = """
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Mono:wght@300;400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap');
