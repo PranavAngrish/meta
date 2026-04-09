@@ -38,6 +38,7 @@ for _p in (_SERVER_DIR, _PROJ_ROOT):
 import gradio as gr
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import RedirectResponse
 from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
 
 from api.routes import router
@@ -60,6 +61,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 app.add_middleware(ProxyHeadersMiddleware, trusted_hosts="*")
+
+# Root → redirect to the Gradio UI
+@app.get("/")
+def root():
+    return RedirectResponse(url="/web")
 
 # Mount all API routes
 app.include_router(router)
