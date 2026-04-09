@@ -52,15 +52,15 @@ def gr_reset(task_name: str, seed_str: str):
             render_obs(obs_dump, obs.action_result),
             render_history([]),
             render_state_panel(env),
-            "*Execute an action then click Grade.*",
+            render_score({}),
             render_step_detail_reset(obs_dump),
             gr.Dropdown(choices=services, value=services[0] if services else None),
-            gr.Button("Execute Action", variant="primary", interactive=True),
+            gr.Button("▶  Execute Action", variant="primary", interactive=True),
         )
     except Exception as e:
-        err = f"❌ **Error:** {e}"
-        return (err, "", err, "", "", gr.Dropdown(choices=[]),
-                gr.Button("Execute Action", variant="primary", interactive=True))
+        err = f"<p style='color:var(--red);font-family:var(--font-mono);padding:16px;'>❌ {e}</p>"
+        return (err, "", err, render_score({}), "", gr.Dropdown(choices=[]),
+                gr.Button("▶  Execute Action", variant="primary", interactive=True))
 
 
 # ── Step ──────────────────────────────────────────────────────────────────────
@@ -86,7 +86,7 @@ def gr_step(
             render_state_panel(env),
             render_score(env.get_score_breakdown()),
             render_step_detail_done(),
-            gr.Button("Episode Complete — Reset to continue", variant="secondary", interactive=False),
+            gr.Button("Episode complete — click New Episode to restart", variant="secondary", interactive=False),
         )
 
     try:
@@ -137,14 +137,14 @@ def gr_step(
             at, svc, obs.step_number,
         )
 
-        # If episode just ended, auto-show final score
-        score_md = render_score(env.get_score_breakdown()) if done else "*Click Grade (6D) for score.*"
+        # If episode just ended, auto-show final score; otherwise clear it
+        score_md = render_score(env.get_score_breakdown()) if done else render_score({})
 
         # Disable execute button once episode ends
         step_btn_update = (
-            gr.Button("Episode Complete — Reset to continue", variant="secondary", interactive=False)
+            gr.Button("Episode complete — click New Episode to restart", variant="secondary", interactive=False)
             if done else
-            gr.Button("Execute Action", variant="primary", interactive=True)
+            gr.Button("▶  Execute Action", variant="primary", interactive=True)
         )
 
         return (

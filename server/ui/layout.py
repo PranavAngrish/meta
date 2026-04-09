@@ -1,9 +1,15 @@
 """
 Gradio Blocks layout builder for the Incident Response sandbox UI.
 
-Call build_ui() to get the configured gr.Blocks instance.
-The layout is intentionally separate from callbacks and renderers so that
-the visual structure can be changed without touching business logic.
+Design goals
+------------
+- Two-column sandbox: narrow controls left, live output right
+- Numbered steps guide the user through Setup → Act → Grade
+- Episode state auto-updates on every action (no Refresh button)
+- Grade button lives next to the score panel (right column) so it's always visible
+- score_display is gr.HTML (not gr.Markdown) to avoid Gradio 6 re-render bugs
+
+Call build_ui() to get the fully wired gr.Blocks instance.
 """
 from __future__ import annotations
 
@@ -20,287 +26,280 @@ for _p in (_SERVER_DIR, _PROJ_ROOT):
 import gradio as gr
 
 from ui.styles import CUSTOM_CSS, HEADER_HTML
-from ui.renderers import render_history, render_state_panel
+from ui.renderers import render_history, render_state_panel, render_score
 from ui.callbacks import gr_reset, gr_step, gr_grade, gr_state
 
-# Lazily import env for the initial state panel render
 from state import env
 
+
+# ── Small HTML helpers ────────────────────────────────────────────────────────
+
+def _step_badge(n: str, label: str) -> str:
+    return f"""
+<div style="display:flex;align-items:center;gap:10px;padding:18px 0 10px;">
+  <div style="width:22px;height:22px;border-radius:6px;
+              background:var(--amber);display:flex;align-items:center;
+              justify-content:center;font-family:var(--font-mono);
+              font-size:11px;font-weight:700;color:#0a0700;flex-shrink:0;">{n}</div>
+  <span style="font-family:var(--font-mono);font-size:10px;font-weight:400;
+               letter-spacing:0.14em;text-transform:uppercase;
+               color:var(--text2);">{label}</span>
+  <div style="flex:1;height:1px;background:var(--line);"></div>
+</div>"""
+
+
+def _section_divider(label: str) -> str:
+    return f"""
+<div style="display:flex;align-items:center;gap:10px;padding:14px 0 8px;">
+  <span style="font-family:var(--font-mono);font-size:9px;font-weight:400;
+               letter-spacing:0.16em;text-transform:uppercase;
+               color:var(--text3);">{label}</span>
+  <div style="flex:1;height:1px;background:var(--line);"></div>
+</div>"""
+
+
+_EMPTY_OBS = """
+<div class="empty-state">
+  <div class="empty-icon" style="font-size:22px;">◌</div>
+  <div class="empty-label">
+    Choose a task and click <strong>New Episode</strong> to begin
+  </div>
+</div>"""
+
+_EMPTY_STEP = """
+<div class="empty-state">
+  <div class="empty-icon" style="font-size:22px;">◈</div>
+  <div class="empty-label">
+    Step details appear here after each action
+  </div>
+</div>"""
+
+
+# ── Builder ───────────────────────────────────────────────────────────────────
 
 def build_ui() -> gr.Blocks:
     """Construct and return the fully wired Gradio Blocks application."""
 
     with gr.Blocks(title="Incident Response Environment v4.0") as web_ui:
 
-        # Inject CSS via HTML component (Gradio 6 compatible — css/theme moved to launch())
+        # Inject global CSS (Gradio 6 compatible — css param moved to launch())
         gr.HTML(f"<style>{CUSTOM_CSS}</style>")
         gr.HTML(HEADER_HTML)
 
         with gr.Tabs():
 
-            # ── Overview tab ─────────────────────────────────────────────────
-            with gr.TabItem("overview"):
+            # ── Overview ─────────────────────────────────────────────────────
+            with gr.TabItem("Overview"):
                 gr.Markdown("""
 # The flight simulator for SREs
 
-Train AI agents — and humans — to diagnose real production incidents with precision and speed.
+Train AI agents — and humans — to diagnose real production incidents with precision.
 
 ---
 
-## Workflow
+## How it works
 
-| Phase | Actions | Purpose |
-|-------|---------|---------|
-| **Investigate** | check_service_health, investigate_logs, check_metrics, read_config, run_diagnostic | Gather evidence |
+| Phase | Actions | Goal |
+|-------|---------|------|
+| **Investigate** | check_service_health · investigate_logs · check_metrics · read_config · run_diagnostic | Gather evidence |
 | **Diagnose** | declare_root_cause | Name the problem |
-| **Remediate** | update_config, restart_service, rollback_deployment, scale_service | Apply the fix |
+| **Remediate** | restart_service · update_config · rollback_deployment · scale_service | Apply the fix |
 
 ---
 
 ## 6-Dimension Scoring
 
-| Dimension | Weight | What it measures |
-|-----------|--------|-----------------|
-| Root Cause | **30%** | Did you identify the correct failure mode? |
-| Remediation | **25%** | Did you apply the right fix to the right service? |
-| Investigation | **15%** | Did you check enough of the affected services? |
-| Efficiency | **10%** | Did you use your step budget wisely? |
-| Safety | **10%** | Did you avoid destructive actions on healthy services? |
-| Sequence | **10%** | Did you diagnose before fixing? |
+| Dimension | Weight | Measures |
+|-----------|--------|---------|
+| Root Cause | **30%** | Correct failure mode identified? |
+| Remediation | **25%** | Right fix on the right service? |
+| Investigation | **15%** | Enough services checked? |
+| Efficiency | **10%** | Steps used wisely? |
+| Safety | **10%** | No collateral damage? |
+| Sequence | **10%** | Diagnosed before fixing? |
 
-> ⚠ Observation loops (3+ diagnosis actions without a fix) hard-cap the score at **0.45**.
+> **Observation loop warning:** 3+ consecutive investigate actions without a fix → score capped at **0.45**
 
 ---
 
 ## Scenarios
 
-| Scenario | Difficulty | Root causes | Max steps |
-|----------|-----------|------------|-----------|
+| Task | Difficulty | Root causes | Steps |
+|------|-----------|------------|-------|
 | db_connection_failure | Easy | 1 | 20 |
-| alert_triage | Easy (Triage) | classify P1–P4 | 3 |
+| alert_triage | Easy (Triage) | P1–P4 classify | 3 |
 | cascading_service_timeout | Medium | 2 | 25 |
 | ssl_certificate_expiry | Medium | 1 | 25 |
 | multi_factor_outage | Hard | 3 | 30 |
 | database_deadlock | Hard | 1 | 30 |
 
----
-
-## Anti-reward-hacking Mechanisms
-
-| Mechanism | Trigger | Effect |
-|-----------|---------|--------|
-| Observation Loop Detection | ≥3 consecutive diagnosis steps | –0.08 penalty + 0.45 hard cap |
-| Diagnosis Gate | Blind fix before investigating gated services | 50% remediation credit |
-| Safety Penalty | Destructive action on healthy service | –0.25 per action |
-| Dynamic Degradation | Unresolved failure every 4 steps | +10% error rate, +40% latency cascade |
+→ Head to the **Sandbox** tab to start an episode.
                 """)
 
-            # ── Walkthrough tab ──────────────────────────────────────────────
-            with gr.TabItem("walkthrough"):
+            # ── Walkthrough ──────────────────────────────────────────────────
+            with gr.TabItem("Walkthrough"):
                 gr.Markdown("""
-# Step-by-step: DB Connection Failure
-
-A complete annotated solve from alert to resolution, scoring **0.89**.
+# Annotated solve: DB Connection Failure  ·  score 0.89
 
 ---
 
-## The alert (on reset)
-
+**On reset** — you see this alert:
 ```
-● CRITICAL  [ALT-001]  user-api  T=08:15:23
-  user-api returning 503 errors
-
-✗ user-api          error_rate=85%   rt=450ms
+● CRITICAL  user-api  "returning 503 errors"
+✗ user-api   error_rate=85%   rt=450ms
 ✓ postgres-primary  healthy
 ✓ nginx-lb          healthy
 ```
 
 ---
 
-## Investigation (steps 1–3)
-
-**Step 1** — `check_service_health` → `user-api`
+**Step 1** — Action: `check_service_health` → `user-api`
 ```
-Reward: +0.04   (investigation credit, 1st new service explored)
+Reward: +0.04   (first service investigated)
 ```
 
-**Step 2** — `investigate_logs` → `user-api` · keyword: `connection`
+**Step 2** — Action: `investigate_logs` → `user-api` · keyword: `connection`
 ```
 [08:15:12] ERROR: Connection refused for postgres-primary:5433
 Port 5433 is suspicious — default is 5432.
-
 Reward: +0.08
 ```
 
-**Step 3** — `read_config` → `user-api`
+**Step 3** — Action: `read_config` → `user-api`
 ```json
 { "db_port": 5433 }   ← should be 5432
-
 Reward: +0.06
 ```
 
----
-
-## Diagnosis (step 4)
-
-`declare_root_cause` → `"user-api db_port misconfigured as 5433 instead of 5432"`
+**Step 4** — Action: `declare_root_cause`
+> user-api db_port misconfigured as 5433 instead of 5432
 ```
 ✓ ROOT CAUSE MATCHED    Reward: +0.20
 ```
 
----
-
-## Remediation (step 5)
-
-`update_config` → `user-api` · key: `db_port` · value: `5432`
+**Step 5** — Action: `update_config` → `user-api` · key: `db_port` · value: `5432`
 ```
-✓ Configuration updated · INCIDENT RESOLVED    Reward: +0.15
+✓ INCIDENT RESOLVED    Reward: +0.15
 ```
 
 ---
-
-## Final score: 0.89 / 1.0
 
 | Dimension | Score | Note |
 |-----------|-------|------|
 | Root Cause | 1.00 | Exact match |
 | Remediation | 1.00 | Correct fix |
 | Investigation | 0.67 | postgres-primary not checked |
-| Efficiency | 1.00 | 5 steps used out of 20 |
+| Efficiency | 1.00 | 5/20 steps used |
 | Safety | 1.00 | No collateral damage |
 | Sequence | 1.00 | Diagnosed before fixing |
 
-**Pattern:** ◆ Efficient Reasoner
+**Final: 0.89 / 1.0 · Pattern: ◆ Efficient Reasoner**
                 """)
 
-            # ── FAQ tab ──────────────────────────────────────────────────────
-            with gr.TabItem("faq"):
+            # ── FAQ ──────────────────────────────────────────────────────────
+            with gr.TabItem("FAQ"):
                 gr.Markdown("""
-# FAQ
+# Frequently Asked Questions
 
 ### What is an observation loop?
-Three or more consecutive diagnosis actions with no fix in between.
-Score is hard-capped at **0.45** and you receive a –0.08 penalty on
-the first occurrence, –0.03 rolling.
+Three or more consecutive investigate actions with no fix in between.
+Penalty: –0.08 on first occurrence, –0.03 rolling. Score hard-capped at **0.45**.
 
 ### What is collateral degradation?
-Every 4 steps without resolution, all services upstream of the
-failure receive +10% error rate and +40% latency. Eventually the
-entire stack degrades, raising the urgency of timely remediation.
+Every 4 steps without resolution: +10% error rate and +40% latency cascade to dependent services. The stack degrades in real time — work quickly.
 
 ### What is a diagnosis gate?
-Some scenarios (cascading_service_timeout, ssl_certificate_expiry,
-database_deadlock) require investigating a specific service *before*
-a fix takes full effect. Blind fixes receive only **50%** remediation
-credit, to prevent reward-hacking via lucky guessing.
+Gated scenarios (`cascading_service_timeout`, `ssl_certificate_expiry`, `database_deadlock`) require investigating a specific service before a fix takes full effect. Blind fixes get **50% remediation credit only**.
 
-### How does Alert Triage work?
-Classify the severity of an ongoing alert (P1/P2/P3/P4) using up to 3
-investigation actions. Scoring: **1.0** exact · **0.5** adjacent ·
-**0.25** two-off, plus an investigation bonus for thorough triage.
+### How does Alert Triage scoring work?
+Classify the alert severity (P1/P2/P3/P4) in 3 steps.
+Scoring: **1.0** exact · **0.5** adjacent · **0.25** two-off + investigation bonus.
+A high error rate does not always mean P1 — check if a graceful fallback is active.
 
 ### What does a seed do?
-Same seed → identical procedurally generated incident. Leave blank for
-random variation. Use `seed=42` for reproducible benchmarking runs.
+Same seed → identical procedurally generated incident every time.
+Leave blank for random variation. Use `42` for reproducible benchmarks.
 
-### How do I maximise my score?
-1. Investigate first — always check the unhealthy service before touching healthy ones.
-2. Declare root cause *before* applying any remediation.
-3. Never chain 3+ diagnosis actions without a fix.
-4. Pick the minimal correct fix — avoid destructive actions on healthy services.
-5. Resolve the incident in as few steps as possible for the efficiency bonus.
+### Optimal strategy
+1. `check_service_health` on the unhealthy service first
+2. `investigate_logs` with a relevant keyword
+3. `declare_root_cause` before applying any fix
+4. Apply the minimal correct remediation
+5. Never chain 3+ investigate actions without a fix
                 """)
 
-            # ── Sandbox tab ──────────────────────────────────────────────────
-            with gr.TabItem("sandbox"):
+            # ── Sandbox ──────────────────────────────────────────────────────
+            with gr.TabItem("Sandbox"):
                 with gr.Row(equal_height=False):
 
-                    # ── Left column: controls ─────────────────────────────
-                    with gr.Column(scale=2, min_width=340):
+                    # ── Left: controls (narrower) ─────────────────────────
+                    with gr.Column(scale=3, min_width=280):
 
-                        gr.HTML('<div class="ir-section">Episode Setup</div>')
+                        # Step 1: Setup
+                        gr.HTML(_step_badge("1", "New Episode"))
                         with gr.Group():
-                            with gr.Column():
-                                task_dd = gr.Dropdown(
-                                    choices=[
-                                        ("Easy — DB Connection Failure",    "db_connection_failure"),
-                                        ("Medium — Cascading Timeout",      "cascading_service_timeout"),
-                                        ("Medium — SSL Certificate Expiry", "ssl_certificate_expiry"),
-                                        ("Hard — Multi-Factor Outage",      "multi_factor_outage"),
-                                        ("Hard — Database Deadlock",        "database_deadlock"),
-                                        ("Triage — Alert Severity P1–P4",   "alert_triage"),
-                                    ],
-                                    value="db_connection_failure",
-                                    label="Task",
-                                )
-                                seed_tb   = gr.Textbox(
-                                    label="Seed (optional)",
-                                    placeholder="e.g. 42 — leave blank for random",
-                                    value="",
-                                )
-                                reset_btn = gr.Button(
-                                    "Reset Environment",
-                                    variant="secondary",
-                                    size="lg",
-                                )
+                            task_dd = gr.Dropdown(
+                                choices=[
+                                    ("Easy — DB Connection Failure",    "db_connection_failure"),
+                                    ("Medium — Cascading Timeout",      "cascading_service_timeout"),
+                                    ("Medium — SSL Expiry",             "ssl_certificate_expiry"),
+                                    ("Hard — Multi-Factor Outage",      "multi_factor_outage"),
+                                    ("Hard — Database Deadlock",        "database_deadlock"),
+                                    ("Triage — Alert Severity P1–P4",   "alert_triage"),
+                                ],
+                                value="db_connection_failure",
+                                label="Scenario",
+                            )
+                            seed_tb = gr.Textbox(
+                                label="Seed  (leave blank for random)",
+                                placeholder="e.g. 42",
+                                value="",
+                            )
+                            reset_btn = gr.Button(
+                                "🔄  New Episode",
+                                variant="secondary",
+                                size="lg",
+                            )
 
-                        gr.HTML('<div class="ir-section">Episode State</div>')
-                        state_display = gr.HTML(render_state_panel(env))
-
-                        gr.HTML('<div class="ir-section">Action Controls</div>')
+                        # Step 2: Execute Action
+                        gr.HTML(_step_badge("2", "Execute Action"))
                         with gr.Group():
-                            with gr.Column():
-                                action_dd = gr.Dropdown(
-                                    choices=[
-                                        ("◈  investigate_logs",      "investigate_logs"),
-                                        ("◈  check_metrics",         "check_metrics"),
-                                        ("◈  read_config",           "read_config"),
-                                        ("◈  check_service_health",  "check_service_health"),
-                                        ("◈  run_diagnostic",        "run_diagnostic"),
-                                        ("⬡  restart_service",       "restart_service"),
-                                        ("⬡  update_config",         "update_config"),
-                                        ("⬡  rollback_deployment",   "rollback_deployment"),
-                                        ("⬡  scale_service",         "scale_service"),
-                                        ("◆  declare_root_cause",    "declare_root_cause"),
-                                        ("◆  submit_severity",       "submit_severity"),
-                                    ],
-                                    value="investigate_logs",
-                                    label="Action Type",
-                                )
-                                service_dd = gr.Dropdown(
-                                    choices=[],
-                                    label="Target Service",
-                                    allow_custom_value=True,
-                                )
+                            action_dd = gr.Dropdown(
+                                choices=[
+                                    ("◈  check_service_health",  "check_service_health"),
+                                    ("◈  investigate_logs",      "investigate_logs"),
+                                    ("◈  check_metrics",         "check_metrics"),
+                                    ("◈  read_config",           "read_config"),
+                                    ("◈  run_diagnostic",        "run_diagnostic"),
+                                    ("⬡  update_config",         "update_config"),
+                                    ("⬡  restart_service",       "restart_service"),
+                                    ("⬡  rollback_deployment",   "rollback_deployment"),
+                                    ("⬡  scale_service",         "scale_service"),
+                                    ("◆  declare_root_cause",    "declare_root_cause"),
+                                    ("◆  submit_severity",       "submit_severity"),
+                                ],
+                                value="check_service_health",
+                                label="Action",
+                            )
+                            service_dd = gr.Dropdown(
+                                choices=[],
+                                label="Target Service",
+                                allow_custom_value=True,
+                            )
 
-                        with gr.Accordion("Action Parameters", open=True):
-                            keyword_tb    = gr.Textbox(
-                                label="Keyword  ·  investigate_logs",
-                                placeholder="error, timeout, connection, deadlock…",
+                        with gr.Accordion("Parameters  (fill only what's needed)", open=False):
+                            keyword_tb = gr.Textbox(
+                                label="Keyword  —  investigate_logs",
+                                placeholder="error, timeout, connection…",
                                 value="",
                             )
-                            config_key_tb = gr.Textbox(
-                                label="Config Key  ·  update_config",
-                                placeholder="e.g. db_port",
-                                value="",
-                            )
-                            config_val_tb = gr.Textbox(
-                                label="Config Value  ·  update_config",
-                                placeholder="e.g. 5432",
-                                value="",
-                            )
-                            replicas_tb   = gr.Textbox(
-                                label="Replicas  ·  scale_service",
-                                placeholder="e.g. 3",
-                                value="",
-                            )
-                            cause_tb      = gr.Textbox(
-                                label="Root Cause  ·  declare_root_cause",
+                            cause_tb = gr.Textbox(
+                                label="Root Cause  —  declare_root_cause",
                                 placeholder="e.g. user-api db_port misconfigured as 5433 instead of 5432",
                                 lines=3,
                                 value="",
                             )
-                            severity_dd   = gr.Dropdown(
+                            severity_dd = gr.Dropdown(
                                 choices=[
                                     ("— not submitting",               ""),
                                     ("P1 — Critical: full outage",     "P1"),
@@ -309,45 +308,55 @@ random variation. Use `seed=42` for reproducible benchmarking runs.
                                     ("P4 — Low: informational",        "P4"),
                                 ],
                                 value="",
-                                label="Severity  ·  submit_severity",
+                                label="Severity  —  submit_severity",
+                            )
+                            config_key_tb = gr.Textbox(
+                                label="Config Key  —  update_config",
+                                placeholder="e.g. db_port",
+                                value="",
+                            )
+                            config_val_tb = gr.Textbox(
+                                label="Config Value  —  update_config",
+                                placeholder="e.g. 5432",
+                                value="",
+                            )
+                            replicas_tb = gr.Textbox(
+                                label="Replicas  —  scale_service",
+                                placeholder="e.g. 3",
+                                value="",
                             )
 
-                        step_btn = gr.Button("Execute Action", variant="primary", size="lg")
-
-                        gr.HTML('<div class="ir-section">Scoring</div>')
-                        with gr.Row():
-                            grade_btn = gr.Button("Grade (6D)", variant="secondary", size="sm")
-                            state_btn = gr.Button("Refresh State", variant="secondary", size="sm")
-
-                    # ── Right column: displays ────────────────────────────
-                    with gr.Column(scale=3, min_width=460):
-
-                        gr.HTML('<div class="ir-section">Environment Observation</div>')
-                        obs_display = gr.HTML("""
-<div class="empty-state">
-  <div class="empty-icon">◌</div>
-  <div class="empty-label">
-    Select a task and click <strong>Reset Environment</strong> to begin
-  </div>
-</div>""")
-
-                        gr.HTML('<div class="ir-section">Step Detail</div>')
-                        step_detail_display = gr.HTML("""
-<div class="empty-state">
-  <div class="empty-icon">◈</div>
-  <div class="empty-label">
-    Step details appear here after each action<br>
-    <strong>Reset an episode first</strong>
-  </div>
-</div>""")
-
-                        gr.HTML('<div class="ir-section">Action History</div>')
-                        history_display = gr.HTML(render_history([]))
-
-                        gr.HTML('<div class="ir-section">6D Score</div>')
-                        score_display = gr.Markdown(
-                            "*Execute actions then click **Grade (6D)**.*"
+                        step_btn = gr.Button(
+                            "▶  Execute Action",
+                            variant="primary",
+                            size="lg",
                         )
+
+                        # Episode State (auto-refreshes on every action)
+                        gr.HTML(_section_divider("Episode State"))
+                        state_display = gr.HTML(render_state_panel(env))
+
+                    # ── Right: live output (wider) ────────────────────────
+                    with gr.Column(scale=5, min_width=400):
+
+                        gr.HTML(_section_divider("Live Observation"))
+                        obs_display = gr.HTML(_EMPTY_OBS)
+
+                        gr.HTML(_section_divider("Last Action"))
+                        step_detail_display = gr.HTML(_EMPTY_STEP)
+
+                        with gr.Accordion("Action History", open=True):
+                            history_display = gr.HTML(render_history([]))
+
+                        # Score panel with Grade button inline
+                        gr.HTML(f"""
+<div style="display:flex;align-items:center;gap:10px;padding:14px 0 8px;">
+  <span style="font-family:var(--font-mono);font-size:9px;font-weight:400;
+               letter-spacing:0.16em;text-transform:uppercase;color:var(--text3);">6D Score</span>
+  <div style="flex:1;height:1px;background:var(--line);"></div>
+</div>""")
+                        grade_btn = gr.Button("Grade Episode", variant="secondary", size="sm")
+                        score_display = gr.HTML(render_score({}))
 
                 # ── Event wiring ──────────────────────────────────────────
                 _reset_outputs = [
@@ -383,6 +392,5 @@ random variation. Use `seed=42` for reproducible benchmarking runs.
                     outputs=_step_outputs,
                 )
                 grade_btn.click(fn=gr_grade, outputs=[score_display])
-                state_btn.click(fn=gr_state, outputs=[state_display])
 
     return web_ui

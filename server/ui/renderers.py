@@ -693,37 +693,75 @@ def render_state_panel(env_obj: Any) -> str:
 </div>"""
 
 
-# ── 6D Score panel ────────────────────────────────────────────────────────────
+# ── 6D Score panel (HTML — avoids Gradio 6 Markdown re-render issues) ────────
 
 def render_score(breakdown: Dict) -> str:
-    if not breakdown:
-        return "*Execute actions, then click **Grade (6D)** to evaluate.*"
+    """Return a rich HTML score card. Using HTML (not Markdown) guarantees
+    the gr.HTML component always re-renders when the grade button is clicked."""
 
-    # Alert triage has a different breakdown structure
+    if not breakdown or not breakdown.get("final"):
+        return """
+<div class="empty-state" style="padding:28px 16px;">
+  <div class="empty-icon">📊</div>
+  <div class="empty-label">
+    Click <strong>Grade Episode</strong> after taking actions<br>
+    to see your full 6-dimension score breakdown
+  </div>
+</div>"""
+
+    # ── Alert triage path ─────────────────────────────────────────────────────
     is_triage = "severity_match" in breakdown.get("breakdown", {})
     if is_triage:
         bd    = breakdown.get("breakdown", {})
         total = breakdown.get("final", 0.0)
-        sc    = "🟢" if total >= 0.8 else ("🟡" if total >= 0.5 else "🔴")
-        fb    = breakdown.get("feedback", "")
-        return f"""### {sc} Alert Triage Score: **{total:.4f}** / 1.0
+        sc    = "var(--green)" if total >= 0.8 else ("var(--amber)" if total >= 0.5 else "var(--red)")
+        fb    = _html.escape(breakdown.get("feedback", ""))
+        sub   = _html.escape(str(bd.get("submitted_severity", "—")))
+        cor   = _html.escape(str(bd.get("correct_severity", "—")))
+        sev_m = bd.get("severity_match", 0.0)
+        inv_b = bd.get("investigation_bonus", 0.0)
+        fb_html = f"""<div style="background:var(--cyan-bg);border-left:2px solid var(--cyan);
+            padding:10px 14px;margin:10px 14px;border-radius:0 var(--r) var(--r) 0;
+            font-family:var(--font-head);font-size:12px;color:var(--text1);">{fb}</div>""" if fb else ""
+        return f"""
+<div style="background:var(--bg2);border:1px solid var(--line);border-radius:var(--r2);overflow:hidden;">
+  <div style="padding:16px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:14px;">
+    <div>
+      <div style="font-family:var(--font-head);font-size:32px;font-weight:800;
+                  color:{sc};line-height:1;">{total:.4f}</div>
+      <div style="font-family:var(--font-mono);font-size:9px;color:var(--text3);margin-top:3px;">/ 1.0 · Alert Triage</div>
+    </div>
+    <div style="margin-left:auto;display:flex;flex-direction:column;gap:6px;">
+      <div style="display:flex;gap:8px;align-items:center;">
+        <span style="font-family:var(--font-mono);font-size:9px;color:var(--text3);width:70px;">Submitted</span>
+        <span style="font-family:var(--font-mono);font-size:12px;color:var(--text0);font-weight:600;">{sub}</span>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <span style="font-family:var(--font-mono);font-size:9px;color:var(--text3);width:70px;">Correct</span>
+        <span style="font-family:var(--font-mono);font-size:12px;color:var(--green);font-weight:600;">{cor}</span>
+      </div>
+    </div>
+  </div>
+  <div style="padding:12px 14px;border-bottom:1px solid var(--line);">
+    <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+      <span style="font-family:var(--font-mono);font-size:10px;color:var(--text2);">Severity accuracy</span>
+      <span style="font-family:var(--font-mono);font-size:11px;color:var(--text0);">{sev_m:.2f}</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;">
+      <span style="font-family:var(--font-mono);font-size:10px;color:var(--text2);">Investigation bonus</span>
+      <span style="font-family:var(--font-mono);font-size:11px;color:var(--green);">+{inv_b:.2f}</span>
+    </div>
+  </div>
+  {fb_html}
+</div>"""
 
-| Component | Value |
-|---|---|
-| Submitted | `{bd.get('submitted_severity', '—')}` |
-| Correct | `{bd.get('correct_severity', '—')}` |
-| Severity score | `{bd.get('severity_match', 0.0):.2f}` (1.0 exact · 0.5 adjacent · 0.25 two-off) |
-| Investigation bonus | `+{bd.get('investigation_bonus', 0.0):.2f}` |
-| **Total** | **`{total:.4f}`** |
-
-{('> ' + fb) if fb else ''}"""
-
+    # ── Standard 6D path ──────────────────────────────────────────────────────
     final    = breakdown.get("final", 0.0)
     ft       = breakdown.get("failure_type", "Unknown")
-    icon     = FAILURE_TYPE_ICON.get(ft, "·")
+    ft_icon  = FAILURE_TYPE_ICON.get(ft, "·")
     obs_loop = breakdown.get("observation_loop", False)
-    sc       = "🟢" if final >= 0.7 else ("🟡" if final >= 0.4 else "🔴")
-    obs_note = f"\n> ⚠ Observation loop — score capped at {_OBSERVATION_LOOP_CAP}" if obs_loop else ""
+    sc       = "var(--green)" if final >= 0.7 else ("var(--amber)" if final >= 0.4 else "var(--red)")
+    fb       = _html.escape(breakdown.get("feedback", ""))
 
     dims = [
         ("root_cause",    "Root Cause",    0.30),
@@ -733,20 +771,59 @@ def render_score(breakdown: Dict) -> str:
         ("safety",        "Safety",        0.10),
         ("sequence",      "Sequence",      0.10),
     ]
-    rows = "\n".join(
-        f"| {l} | `{breakdown.get(k, 0.0):.2f}` | ×{w:.2f} | "
-        f"{'█' * int(breakdown.get(k, 0) * 10)}{'░' * (10 - int(breakdown.get(k, 0) * 10))} |"
-        for k, l, w in dims
-    )
-    fb = breakdown.get("feedback", "")
+    dim_rows = ""
+    for key, label, weight in dims:
+        val    = breakdown.get(key, 0.0)
+        pct    = int(val * 100)
+        dc     = "var(--green)" if val >= 0.7 else ("var(--amber)" if val >= 0.4 else "var(--red)")
+        w_score = val * weight
+        dim_rows += f"""
+<div class="dim-bar">
+  <div class="dim-label">{label}</div>
+  <div style="font-family:var(--font-mono);font-size:9px;color:var(--text3);width:28px;
+              text-align:right;flex-shrink:0;">×{weight:.2f}</div>
+  <div class="dim-track" style="margin:0 10px;">
+    <div class="dim-fill" style="width:{pct}%;background:{dc};"></div>
+  </div>
+  <div style="font-family:var(--font-mono);font-size:10px;color:{dc};
+              width:34px;text-align:right;flex-shrink:0;">{val:.2f}</div>
+</div>"""
 
-    return f"""### {sc} Final Score: **{final:.4f}** / 1.0
+    loop_html = f"""
+<div class="warn-loop" style="margin:10px 14px 0;">
+  ⊗ Observation loop detected — score hard-capped at {_OBSERVATION_LOOP_CAP}
+</div>""" if obs_loop else ""
 
-**Pattern:** {icon} {ft}{obs_note}
+    fb_html = f"""
+<div style="background:var(--cyan-bg);border-left:2px solid var(--cyan);
+            padding:10px 14px;margin:12px 14px 4px;
+            border-radius:0 var(--r) var(--r) 0;
+            font-family:var(--font-head);font-size:12px;color:var(--text1);line-height:1.5;">
+  {fb}
+</div>""" if fb else ""
 
-#### 6D Breakdown
-| Dimension | Score | Weight | Bar |
-|---|---:|---:|---|
-{rows}
-
-{('> ' + fb) if fb else ''}"""
+    return f"""
+<div style="background:var(--bg2);border:1px solid var(--line);border-radius:var(--r2);overflow:hidden;">
+  <div style="padding:16px;border-bottom:1px solid var(--line);
+              display:flex;align-items:center;gap:14px;background:var(--bg3);">
+    <div>
+      <div style="font-family:var(--font-head);font-size:34px;font-weight:800;
+                  color:{sc};line-height:1;letter-spacing:-1px;">{final:.4f}</div>
+      <div style="font-family:var(--font-mono);font-size:9px;color:var(--text3);margin-top:3px;">
+        / 1.0 · open interval (0.01 – 0.99)
+      </div>
+    </div>
+    <div style="margin-left:auto;text-align:right;">
+      <div style="font-family:var(--font-mono);font-size:13px;color:var(--text0);">
+        {ft_icon} {_html.escape(ft)}
+      </div>
+      <div style="font-family:var(--font-mono);font-size:9px;color:var(--text3);margin-top:3px;">
+        pattern classification
+      </div>
+    </div>
+  </div>
+  {loop_html}
+  <div style="padding:8px 0 4px;">{dim_rows}</div>
+  {fb_html}
+  <div style="height:10px;"></div>
+</div>"""
