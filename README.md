@@ -1,3 +1,12 @@
+---
+title: Incident Response Environment
+emoji: 🚨
+colorFrom: orange
+colorTo: red
+sdk: docker
+pinned: false
+---
+
 # Incident Response Environment
 
 **An OpenEnv-compatible reinforcement learning environment for training AI agents to diagnose and resolve production incidents.**
