@@ -1,267 +1,353 @@
----
-title: Incident Response Environment
-emoji: 🚨
-colorFrom: red
-colorTo: blue
-sdk: docker
-pinned: false
-base_path: /web
+# Incident Response Environment
+
+**An OpenEnv-compatible reinforcement learning environment for training AI agents to diagnose and resolve production incidents.**
+
+Built for Meta's Hackathon · v4.0.0
+
 ---
 
-# Incident Response Environment — v2.0
+## What is this?
 
-**Production Incident Response and Root Cause Analysis — OpenEnv RL Environment**
+Modern cloud systems fail in complex, cascading ways. When they do, an on-call engineer has minutes — not hours — to identify the root cause, assess blast radius, and apply a safe fix. This environment simulates exactly that pressure.
 
-An AI agent acts as an on-call SRE (Site Reliability Engineer). It receives production incident alerts and must investigate logs, metrics, and configurations across multi-service microservice architectures to diagnose root causes, assess blast radius, and execute correct remediations — before the incident cascades further.
+AI agents (or human engineers using the sandbox UI) take on the role of an SRE responding to a live production incident. They must:
 
-## Why This Matters for Post-Training
+1. **Investigate** — query logs, metrics, configs, and service health across a multi-service architecture
+2. **Diagnose** — identify the precise root cause from noisy, partially misleading signals
+3. **Remediate** — apply the correct targeted fix without causing collateral damage
+4. **Work fast** — unresolved failures cascade every 4 steps, spreading degradation across the stack
 
-Current post-training pipelines at frontier labs are heavily skewed toward math, coding, and instruction-following. Incident response adds a completely different capability axis: **operational reasoning under uncertainty and time pressure**.
+---
 
-Key properties that make this environment uniquely valuable for post-training:
+## Key Features
 
-- **Partial observability forces active information gathering** — the agent cannot pattern-match; it must construct a causal model by choosing what to inspect.
-- **Multiple valid solution paths prevent reward hacking** — checking logs before metrics or after both produce correct solutions; the agent must develop investigation *strategy*, not memorize action sequences.
-- **Safety constraints teach risk-aware decision making** — destructive remediations (restart, rollback) on healthy services are penalized, training the model to prefer minimal-footprint interventions.
-- **Dynamic degradation creates genuine time pressure** — unresolved upstream failures cascade to dependent services every 4 steps, so dawdling is punished even without an explicit time penalty.
-- **5-dimensional reward enables process supervision** — rewarding investigation quality, diagnosis accuracy, remediation correctness, efficiency, and safety aligns with recent research on process reward models (Lightman et al., 2023). This enables training the model *how* to reason, not just *what answer* to give.
-- **Procedural generation supports large-scale RL runs** — `ScenarioFactory.generate(task, seed)` produces reproducible seeded variations from 5 base archetypes, generating thousands of unique training episodes without hardcoding.
+### 6-Dimensional Scoring System
 
-> This environment teaches a capability that every tech company at scale needs at 3 AM: an agent that can independently diagnose a production outage, identify the true root cause (not just the first alarming symptom), and apply a targeted fix without causing collateral damage.
+Every episode is graded across six independent dimensions:
 
-## Scenario Library — Grounded in Real Postmortems
-
-| Scenario | Difficulty | Based On | Services |
-|---|---|---|---|
-| `db_connection_failure` | Easy | Common misconfiguration pattern (PagerDuty SRE runbooks) | 3 |
-| `cascading_service_timeout` | Medium | Shopify GC pause cascades; LinkedIn timeout storm 2012 | 4 |
-| `multi_factor_outage` | Hard | Cloudflare BGP + DB saturation composite (2020-2023 events) | 6 |
-| `ssl_certificate_expiry` | Medium | **Microsoft Teams global outage Jan 29, 2020** (expired cert) | 4 |
-| `database_deadlock` | Hard | **GitLab DB deadlock incident 2017** + Shopify flash sale deadlocks | 6 |
-
-Each scenario cites a real-world incident. Agents that solve these environments have learned to diagnose the same failure modes that took human SREs hours to resolve.
-
-## Reward Function — 5 Dimensions
-
-### Per-Step Dense Rewards
-| Event | Reward |
-|---|---|
-| First investigation of a new service | +0.02 to +0.10 |
-| Correct root cause declaration | +0.20 |
-| Correct remediation applied | +0.12 to +0.15 |
-| Time bonus (resolved in <50% of max steps) | +0.10 |
-| Time bonus (resolved in 50-75% of max steps) | +0.05 |
-| Redundant action (already checked) | -0.01 |
-| Wrong root cause | -0.05 |
-| Unnecessary destructive action | -0.02 |
-| Timeout (max steps without resolution) | -0.05 |
-
-### Terminal Grader Score (0.0 → 1.0)
 | Dimension | Weight | What it measures |
-|---|---|---|
-| Root Cause Identification | 35% | Did the agent correctly identify the root cause(s)? |
-| Remediation Quality | 30% | Did the agent apply the correct fix(es)? |
-| Investigation Thoroughness | 15% | Did the agent check the relevant services? |
-| Efficiency | 10% | Did the agent resolve quickly (fewer steps = better)? |
-| **Safety** | **10%** | Did the agent avoid destructive actions on healthy services? |
+|-----------|--------|-----------------|
+| **Root Cause** | 30% | Did the agent identify the correct failure mode? |
+| **Remediation** | 25% | Was the right fix applied to the right service? |
+| **Investigation** | 15% | Did the agent check enough of the affected services? |
+| **Efficiency** | 10% | Were steps used wisely (fewer = higher bonus)? |
+| **Safety** | 10% | Were destructive actions avoided on healthy services? |
+| **Sequence** | 10% | Did the agent diagnose before applying any fix? |
 
-The safety dimension is unique — most competitors only have 4 dimensions and miss this critical axis. An agent that restarts every service "just to be safe" will be penalized even if it eventually resolves the incident.
+The final score is clamped to the open interval **(0.01, 0.99)** for OpenEnv validator compliance. Each dimension is independently measurable — enabling fine-grained process supervision for RL training.
 
-## Dynamic System Degradation (v2.0)
+### Anti-Reward-Hacking Mechanisms
 
-**What competitors don't have:** In a real incident, inaction has consequences. Services dependent on an unresolved failure progressively degrade.
+Three mechanisms prevent agents from gaming the reward signal:
 
-Every 4 steps, services whose upstream dependencies remain unhealthy accumulate +10% error rate and +40% latency. Once a service crosses 50% error rate, it tips to unhealthy and a new alert fires. This creates genuine urgency: an agent that investigates carefully but acts slowly will face a *larger* outage than when it started.
+**1. Observation Loop Detection**
+Agents that chain 3+ consecutive investigation actions without applying a fix receive:
+- Per-occurrence penalty: –0.08 (first), –0.03 (rolling)
+- Final score hard-capped at **0.45** while the incident remains unresolved
 
-This is tracked in `degradation_warnings` in each observation, and collateral degradation is penalized in the safety score.
+**2. Diagnosis Gate**
+On gated scenarios (`cascading_service_timeout`, `ssl_certificate_expiry`, `database_deadlock`), applying a remediation before investigating the required service yields only **50% remediation credit**. Lucky guessing is penalised; structured investigation is rewarded.
 
-## Procedural Scenario Generation (v2.0)
+**3. Safety Penalty**
+Applying a destructive action (restart, rollback, scale-down) to a service that is currently healthy incurs a **–0.25 per-step penalty**. Collateral damage is tracked and shown in the UI.
 
-```python
-# Reset with a specific scenario
-POST /reset {"task_name": "ssl_certificate_expiry"}
+### Dynamic System Degradation
 
-# Reset with seeded procedural variation
-POST /reset {"task_name": "ssl_certificate_expiry", "seed": 42}
+Real incidents don't wait. Every 4 steps without resolution:
+- Unresolved failures cascade to dependent services
+- Error rates increase by +10% per cascade tick
+- Response times increase by +40% per cascade tick
 
-# Different seed → same archetype, different metric values, possible extra red herrings
-POST /reset {"task_name": "ssl_certificate_expiry", "seed": 99}
-```
+This creates genuine time pressure: slow investigation leads to a larger outage, which affects the Investigation and Safety dimensions.
 
-`ScenarioFactory.generate(task_name, seed)` varies metric values ±12%, investigation hint weights, and optionally injects one extra red herring from a curated pool of 7. The seed is deterministic — same seed always produces the same episode. This enables:
-- **Anti-overfitting**: agents can't memorize exact metric values
-- **Large-scale training**: theoretically unlimited unique episodes from 5 archetypes
-- **Reproducible evaluation**: leaderboard runs can use fixed seeds
+### Failure Type Classification
 
-## Sample Trajectory (db_connection_failure, Easy)
+After each step, the agent is classified into one of five failure types, providing a human-readable process signal:
 
-```json
-{
-  "task": "db_connection_failure",
-  "difficulty": "easy",
-  "steps": [
-    {
-      "step": 1,
-      "action": {"action_type": "check_service_health", "service_name": "user-api"},
-      "reward": 0.04,
-      "observation_summary": "user-api UNHEALTHY: error_rate=0.85, response_time=12000ms"
-    },
-    {
-      "step": 2,
-      "action": {"action_type": "investigate_logs", "service_name": "user-api", "parameters": {"keyword": "connection"}},
-      "reward": 0.08,
-      "observation_summary": "ERROR: Connection refused postgres-primary:5433 (5 attempts)"
-    },
-    {
-      "step": 3,
-      "action": {"action_type": "read_config", "service_name": "user-api"},
-      "reward": 0.06,
-      "observation_summary": "db_port: 5433 (should be 5432)"
-    },
-    {
-      "step": 4,
-      "action": {"action_type": "declare_root_cause", "parameters": {"cause": "user-api db_port misconfigured as 5433 instead of 5432"}},
-      "reward": 0.20,
-      "observation_summary": "ROOT CAUSE: Matches known cause!"
-    },
-    {
-      "step": 5,
-      "action": {"action_type": "update_config", "service_name": "user-api", "parameters": {"key": "db_port", "value": "5432"}},
-      "reward": 0.15,
-      "observation_summary": "Fix applied. user-api now healthy."
-    }
-  ],
-  "final_score": 0.89,
-  "score_breakdown": {
-    "root_cause": 1.0,
-    "remediation": 1.0,
-    "investigation": 0.67,
-    "efficiency": 1.0,
-    "safety": 1.0
-  }
-}
-```
+| Type | Description |
+|------|-------------|
+| **Efficient Reasoner** | Investigated, diagnosed, fixed in order — high score |
+| **Symptom Chaser** | Investigated many services without identifying root cause |
+| **Lucky Guesser** | Fixed before properly diagnosing — blind fix |
+| **Stuck in Observation Loop** | Too many investigation steps without a fix |
+| **Late Corrector** | Fixed the right thing but far too late |
 
-## Action Space
+### Procedural Generation
 
-| Action | Parameters | Description |
-|---|---|---|
-| `investigate_logs` | `{"keyword": "<optional>"}` | Read service logs with optional filter |
-| `check_metrics` | `{"metric_type": "all\|cpu\|memory\|..."}` | Query service metrics history |
-| `read_config` | — | Read current service configuration |
-| `check_service_health` | — | Get health, error rate, response time |
-| `run_diagnostic` | — | Run diagnostic with targeted output |
-| `restart_service` | — | Restart the service |
-| `update_config` | `{"key": "...", "value": "..."}` | Update a config key |
-| `rollback_deployment` | — | Rollback to previous version |
-| `scale_service` | `{"replicas": N}` | Scale to N replicas |
-| `declare_root_cause` | `{"cause": "<description>"}` | Submit root cause (no service needed) |
+All 5 main tasks support seeded procedural variation via `ScenarioFactory.generate(task_name, seed)`:
+- Metric values vary ±12% from baseline
+- Random red herring services are injected to test signal-from-noise reasoning
+- Investigation hints are varied across seeds
+- Same seed always produces the same scenario — reproducible benchmarking
 
-Action format: `{"action_type": "<type>", "service_name": "<name>", "parameters": {...}}`
+### Per-Step Feedback
 
-## Tasks
+Every step returns a human-readable `feedback` string explaining the reward earned or lost in plain language. Agents can use this to self-correct mid-episode; it also makes the training signal interpretable for humans reviewing trajectories.
 
-### db_connection_failure (Easy)
-Services: user-api, postgres-primary, nginx-lb. user-api returning 503 errors — db_port misconfigured as 5433 instead of 5432 during maintenance. Expected score: 0.5–1.0.
+---
 
-### cascading_service_timeout (Medium)
-Services: payment-service, order-service, inventory-service, orders-db. Payment failures cascading — memory leak in inventory-service causing 18-second GC pauses. Red herring: recent payment-service deployment. Expected score: 0.3–0.9.
+## Scenario Library
 
-### multi_factor_outage (Hard)
-Services: api-gateway, auth-service, product-service, primary-db, redis-cache, search-service. 45% platform error rate — three simultaneous root causes: routing bug + connection pool exhaustion + traffic spike. Multiple red herrings. Expected score: 0.1–0.8.
+### Easy
 
-### ssl_certificate_expiry (Medium) — New in v2.0
-Services: api-gateway, cert-manager, auth-service, user-api. Platform HTTPS failure — api-gateway TLS cert expired 2 days ago; renewed cert ready but config not updated. Red herring: auth-service recent deployment. Inspired by Microsoft Teams Jan 2020 outage. Expected score: 0.4–0.95.
+**`db_connection_failure`** — A single misconfigured `db_port` causes 503 errors on the user-facing API. One root cause, one remediation, 20-step budget. Perfect curriculum learning entry point.
 
-### database_deadlock (Hard) — New in v2.0
-Services: order-service, user-service, primary-db, analytics-db, payment-service, job-queue. Deadlock storm (42/min) — lock order inversion in order-service v2.3.0 causes AB-BA deadlock with user-service. Analytics job amplifies contention. Inspired by GitLab 2017 deadlock incident. Expected score: 0.1–0.75.
+**`alert_triage`** — Classify the severity of three different alert scenarios (P1/P2/P3/P4) using up to 3 investigation actions each. Tests precision: a high error rate does *not* always mean P1 if graceful fallback is active.
 
-## Setup Instructions
+### Medium
 
-### Build and Run
+**`cascading_service_timeout`** — A memory leak in an upstream service causes cascading timeouts down the dependency chain. Multiple services show degradation, but only one is the true root. Red herrings are present.
+
+**`ssl_certificate_expiry`** — An expired TLS certificate causes platform-wide HTTPS failures. The fix (`update_config`) must target the correct service after investigating the certificate expiry indicator.
+
+### Hard
+
+**`multi_factor_outage`** — Three simultaneous root causes: a routing bug, connection pool exhaustion, and a traffic spike. All three must be declared and remediated for full credit. Requires systematic triage.
+
+**`database_deadlock`** — A lock-order inversion bug in the order service causes intermittent deadlocks that eventually become persistent. The only correct fix is a deployment rollback. Requires log analysis to distinguish from a flaky service.
+
+---
+
+## Quick Start
+
+### Native Python
 
 ```bash
-# Install dependencies
+# Clone and install
+git clone <repo-url>
+cd meta-hackathon
 pip install -e .
 
-# Build Docker image
+# Start the server
+python server/app.py
+```
+
+The server starts on `http://localhost:7860`.
+- **Web UI:** `http://localhost:7860/web`
+- **API docs:** `http://localhost:7860/docs`
+- **Health check:** `http://localhost:7860/health`
+
+### Docker
+
+```bash
 docker build -t incident-response-env .
-
-# Run the environment
 docker run -p 7860:7860 incident-response-env
-
-# Web UI: http://localhost:7860/web
-# API docs: http://localhost:7860/docs
 ```
 
-### Test the API
+### Environment Variables
 
-```bash
-# List tasks
-curl http://localhost:7860/tasks
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `PORT` | `7860` | Server listen port |
+| `HF_TOKEN` | — | Hugging Face token (for inference.py) |
+| `API_BASE_URL` | — | LLM API base URL |
+| `MODEL_NAME` | — | Model identifier for inference |
 
-# Reset (standard)
-curl -X POST http://localhost:7860/reset \
-  -H "Content-Type: application/json" \
-  -d '{"task_name": "db_connection_failure"}'
+Copy `.env.example` → `.env` and fill in values.
 
-# Reset with procedural seed
-curl -X POST http://localhost:7860/reset \
-  -H "Content-Type: application/json" \
-  -d '{"task_name": "ssl_certificate_expiry", "seed": 42}'
+---
 
-# Step
-curl -X POST http://localhost:7860/step \
-  -H "Content-Type: application/json" \
-  -d '{"action_type": "investigate_logs", "service_name": "user-api", "parameters": {"keyword": "error"}}'
+## HTTP API Reference
 
-# Score with breakdown
-curl http://localhost:7860/score
+All endpoints are available at the server root. Interactive docs: `/docs`.
 
-# Grader endpoint (compatible with incident-triage-env evaluators)
-curl -X POST http://localhost:7860/grader
+### `GET /health`
+Liveness probe.
+```json
+{"status": "ok", "environment": "incident-response-env", "version": "4.0.0"}
 ```
 
-### Run Inference
+### `GET /tasks`
+List all available tasks with difficulty and max steps.
+
+### `POST /reset`
+Start a new episode.
+```json
+{"task_name": "db_connection_failure", "seed": 42}
+```
+Returns the initial `IncidentResponseObservation`.
+
+### `POST /step`
+Execute one action.
+```json
+{
+  "action_type": "investigate_logs",
+  "service_name": "user-api",
+  "parameters": {"keyword": "connection"}
+}
+```
+Returns `{observation, reward, done, info}`.
+
+### `GET /score`
+Current 6D score breakdown including `failure_type` and `observation_loop` flag.
+
+### `POST /grader`
+Standalone grader compatible with external trajectory evaluators. Returns the full 6D breakdown with weighted components.
+
+### `POST /baseline`
+Runs the built-in heuristic agent over all tasks and returns per-task scores. Useful for sanity-checking the reward signal after scenario changes.
+
+### `GET /state`
+Full internal environment state snapshot for checkpointing.
+
+---
+
+## Python Client
+
+```python
+from client import IncidentResponseClient
+
+client = IncidentResponseClient("http://localhost:7860")
+client.wait_for_server()
+
+obs = client.reset(task_name="db_connection_failure", seed=42)
+print(obs["observation"]["incident_summary"])
+
+result = client.step(
+    action_type="check_service_health",
+    service_name="user-api",
+)
+print(result["reward"], result["observation"]["feedback"])
+```
+
+---
+
+## Running Inference
+
+`inference.py` runs a configured LLM against all 6 tasks and prints a per-task score report:
 
 ```bash
-export HF_TOKEN=hf_your_token_here
+export HF_TOKEN=your_token
+export MODEL_NAME=meta-llama/Llama-3-70b-instruct
 python inference.py
 ```
 
-### Deploy to HuggingFace Spaces
+The inference script:
+- Uses structured `[START]` / `[STEP]` / `[END]` logging
+- Integrates per-step feedback into the prompt context
+- Has an 18-minute timeout guard per task
+- Reports success thresholds: >0.5 for alert_triage, >0.3 for standard tasks
 
-```bash
-pip install openenv-core
-openenv push <your-hf-username>/incident-response-env
+---
+
+## Codebase Architecture
+
 ```
-
-## Project Structure
-
-```
-incident-response-env/
-├── Dockerfile              # Container definition
-├── openenv.yaml            # OpenEnv metadata (v2.0)
-├── pyproject.toml          # Python project config
-├── inference.py            # Mandatory inference script
-├── models.py               # Pydantic models (Action, Observation, State)
-├── client.py               # HTTP client library
-├── .env.example            # Environment variable template
-├── README.md               # This file
+meta-hackathon/
+├── server/
+│   ├── app.py              # Entry point: FastAPI + Gradio wiring
+│   ├── state.py            # Shared IncidentResponseEnv singletons
+│   ├── env.py              # Core RL environment logic
+│   ├── env_rubric_patch.py # Optional rubric-based grading extension
+│   ├── api/
+│   │   ├── routes.py       # All HTTP endpoint handlers
+│   │   └── models.py       # Pydantic request/response models
+│   └── ui/
+│       ├── layout.py       # Gradio Blocks definition
+│       ├── callbacks.py    # Event handlers (gr_reset, gr_step, ...)
+│       ├── renderers.py    # Pure HTML/Markdown rendering functions
+│       ├── constants.py    # Shared display constants
+│       └── styles.py       # CSS + header HTML
 ├── scenarios/
-│   ├── __init__.py
-│   └── definitions.py      # 5 scenarios + ScenarioFactory
-└── server/
-    ├── __init__.py
-    ├── app.py              # FastAPI server + Gradio UI
-    └── env.py              # Core environment logic (5D reward, degradation)
+│   ├── definitions.py      # ScenarioDef + 5 scenario builders
+│   ├── scenario_classes.py # Service health simulation
+│   ├── base_scenario.py    # RubricCheck grader base
+│   └── alert_triage.py     # Alert triage task definitions
+├── models.py               # IncidentResponseAction/Observation/State
+├── graders.py              # Standalone 6D deterministic grader
+├── client.py               # HTTP client helper
+├── inference.py            # LLM inference runner
+├── openenv.yaml            # OpenEnv specification
+└── Dockerfile
 ```
 
-## Environment Variables
+### Design Principles
 
-| Variable | Default | Description |
-|---|---|---|
-| `HF_TOKEN` | required | HuggingFace API token |
-| `API_BASE_URL` | `https://router.huggingface.co/v1` | LLM API endpoint |
-| `MODEL_NAME` | `Qwen/Qwen2.5-72B-Instruct` | Model for inference |
-| `ENV_URL` | `http://localhost:7860` | Environment server URL |
+- **Separation of concerns** — API routes, UI callbacks, rendering, and environment logic live in separate modules. No file has more than one responsibility.
+- **Pure renderers** — All `render_*` functions in `renderers.py` take data and return HTML/Markdown strings. They have no side effects and are independently testable.
+- **Shared state via `state.py`** — Both API routes and UI callbacks import the same `env` singleton, so browser actions and API calls affect the same environment instance.
+- **Episode guards** — The `gr_step` callback checks `env._done` before executing. Once an episode ends, further clicks are rejected gracefully (UI button is disabled, clear message shown) rather than silently appending phantom rows.
+- **OpenEnv compliance** — Scores are clamped to open interval (0.01, 0.99). The `/grader` endpoint is compatible with external trajectory evaluators.
+
+---
+
+## Sandbox UI Guide
+
+The web sandbox at `/web` has four tabs:
+
+| Tab | Purpose |
+|-----|---------|
+| **overview** | Workflow summary, scoring table, scenario list |
+| **walkthrough** | Annotated full solve of DB Connection Failure (score 0.89) |
+| **faq** | Common questions about scoring mechanics |
+| **sandbox** | Interactive episode runner |
+
+### Sandbox layout
+
+**Left column (controls)**
+- Episode Setup: task selector, optional seed, Reset button
+- Episode State: live metric cards (step, reward, diag streak, collateral)
+- Action Controls: action type + target service dropdowns
+- Action Parameters: keyword, config key/value, replicas, root cause text, severity
+
+**Right column (displays)**
+- Environment Observation: active alerts, service health table, degradation warnings
+- Step Detail Card: per-step reward, feedback callout, action output log, service snapshot, warnings
+- Action History: table with step, action type badge, service, per-step reward, cumulative reward
+- 6D Score: dimension breakdown with progress bars (shown after clicking Grade)
+
+### Episode lifecycle
+
+1. Select a task → click **Reset Environment**
+2. Choose an action + target service → click **Execute Action**
+3. Read the Step Detail card: feedback tells you what reward was earned/lost and why
+4. Repeat until the episode ends (button auto-disables) or click **Grade (6D)** at any point
+5. Click **Reset Environment** to start a new episode with a fresh or different task
+
+---
+
+## Reward Signal Design
+
+The reward signal is designed to be **dense** (feedback every step), **honest** (no sparse terminal-only rewards), and **multi-dimensional** (six independently interpretable components):
+
+```
+Step reward = investigation_credit      # +0.04 per new service explored
+           + root_cause_bonus           # +0.20 per matched root cause
+           + remediation_bonus          # +0.15 per correct fix applied
+           + efficiency_bonus           # scales with steps remaining
+           + time_bonus                 # +0.10 if resolved in <50% of budget
+           - safety_penalty             # -0.25 per destructive action on healthy svc
+           - observation_loop_penalty   # -0.08 / -0.03 per loop detection
+           - blind_fix_penalty          # -0.05 per fix before gated investigation
+```
+
+Per-step feedback is generated in plain English and returned in every observation, enabling agents to self-correct without external tooling.
+
+---
+
+## Contributing
+
+1. **New scenarios** — Add a builder function in `scenarios/definitions.py` and register it in `get_scenario()` and `ScenarioFactory.generate()`.
+2. **New action types** — Add to `ActionType` enum in `models.py`, handle in `env.py`'s `step()`, and add display metadata in `ui/constants.py`.
+3. **New scoring dimensions** — Add computation in `graders.py` and a row in `ui/renderers.py`'s `render_score()`.
+4. **UI components** — All rendering is in `ui/renderers.py`. Each `render_*` function is independent and easy to modify.
+
+---
+
+## Version History
+
+| Version | Changes |
+|---------|---------|
+| **4.0.0** | Rich Gradio UI with step detail cards, action history table with cumulative reward, episode-done guard (button disabled after last step), 6D score panel; alert_triage task; procedural generation; modular server package structure |
+| **3.0** | Sequence scoring (6th dimension); observation loop detection + hard cap; diagnosis gate enforcement; failure type classification |
+| **2.1** | Per-step feedback strings; dynamic system degradation; service alias normalisation; standalone `graders.py` |
+| **2.0** | Service alias normalisation; gated information exposure; multi-service scenarios |
+| **1.0** | Initial release: single-service DB failure scenario; basic 5D scoring |
+
+---
+
+## License
+
+Apache 2.0 — see `LICENSE` for details.
+
+Built for the Meta Hackathon · Powered by [OpenEnv](https://openenv.dev)
